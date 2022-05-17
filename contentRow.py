@@ -11,5 +11,6 @@ class contentRow(QWidget):
         layout.addWidget(contentHead())
         layout.addWidget(contentHead())
         layout.addWidget(contentHead())
+        layout.addWidget(contentHead())
 
         self.setLayout(layout)
