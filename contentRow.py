@@ -1,14 +1,15 @@
 import sys
 
 from PyQt6.QtWidgets import QHBoxLayout, QWidget, QPushButton, QApplication
+from contentCell import contentCell
 
 class contentRow(QWidget):
     def __init__(self):
         super().__init__()
 
         layout = QHBoxLayout()
-        layout.addWidget(QPushButton("Left-most"))
-        layout.addWidget(QPushButton("Center"))
-        layout.addWidget(QPushButton("Right-most"))
+        layout.addWidget(contentCell())
+        layout.addWidget(contentCell())
+        layout.addWidget(contentCell())
 
         self.setLayout(layout)
