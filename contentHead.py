@@ -1,9 +1,11 @@
 # Header of each column (topmost block of data that is static to vertical scrolling)
+from logging.handlers import QueueListener
 import sys
 
-from PyQt6.QtWidgets import QWidget, QTextEdit, QToolButton, QPushButton
+from PyQt6.QtWidgets import QWidget, QTextEdit, QToolButton, QPushButton, QLineEdit, QGridLayout
 from PyQt6.QtGui import QPainter, QPainterPath, QBrush, QPen, QColor, QTextOption, QIcon
 from PyQt6.QtCore import Qt, QRectF
+from window import Window
 
 # `size` = Width and height of the contentHead widget (box-shaped, user-customizable)
 # `text` = Main description of the contentHead widget (to be displayed in the center)
@@ -17,7 +19,7 @@ class contentHead(QWidget):
         self.size = 200
         self.setMinimumSize(self.size, self.size)
         self.text = "\nWake up"
-        icon = QIcon(r"images\appIcons\cogwheel.png")
+        icon = QIcon(r"images\appIcons\cogwheel_trans.png")
 
         btn = QPushButton(icon, None, self)
         btn.resize(btn.sizeHint())
@@ -29,6 +31,7 @@ class contentHead(QWidget):
                 background: transparent;
             }
         """)
+        btn.clicked.connect(self.settingsWindow)
         
         self.show()
 
@@ -44,7 +47,7 @@ class contentHead(QWidget):
         qp.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         path = QPainterPath()
 
-        pen = QPen(col, 3)
+        pen = QPen(col, 0.5)
         qp.setPen(pen)
         brush = QBrush(col2)
         qp.setBrush(brush)
@@ -59,3 +62,13 @@ class contentHead(QWidget):
         qp.drawText(rect, self.text, QTextOption(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop))
 
         qp.end()
+
+    def settingsWindow(self):
+        self.window = Window("Settings", 0, 0, 250, 250)
+
+        nameEdit = QLineEdit(self.text)
+        grid = QGridLayout()
+        grid.addWidget(nameEdit, 1, 0)
+
+        self.window.setLayout(grid)
+        self.window.show()
