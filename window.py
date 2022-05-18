@@ -20,3 +20,5 @@ class Window(QWidget):
         self.setWindowIcon(QIcon(r"images\icon3_trans.png"))
         self.setWindowTitle(name)
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_ID)
+
+        self.setMinimumSize(w, h)

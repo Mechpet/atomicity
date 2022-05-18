@@ -6,7 +6,7 @@ from window import Window
 SETTINGS_WINDOW_NAME = "Settings"
 class contentHeadSettingsWindow(Window):
     """A pop-up window that allows users to adjust the settings of contentHeads."""
-    apply = pyqtSignal(str)
+    apply = pyqtSignal(str, QColor)
     def __init__(self, x, y, w, h, name, color):
         super().__init__(SETTINGS_WINDOW_NAME, x, y, w, h)
         self.color = color
@@ -31,6 +31,7 @@ class contentHeadSettingsWindow(Window):
         # PushButton to the right of the colorLabel that allows editing of color
         self.colorEdit = QPushButton(self)
         self.colorEdit.clicked.connect(self.openColorDialog)
+        self.colorEdit.setMinimumHeight(150)
         self.colorEdit.setStyleSheet (f"""
             QPushButton {{
                 border: 0px;
@@ -44,24 +45,34 @@ class contentHeadSettingsWindow(Window):
 
 
         # Format the widgets in a gridLayout
-        grid.addWidget(self.nameLabel, 1, 0)
-        grid.addWidget(self.nameEdit, 1, 1)
-        grid.addWidget(self.colorLabel, 2, 0)
-        grid.addWidget(self.colorEdit, 2, 1)
-        grid.addWidget(self.applyButton, 3, 1)
+        grid.addWidget(self.nameLabel, 0, 0)
+        grid.addWidget(self.nameEdit, 0, 1, 1, -1)
+        grid.addWidget(self.colorLabel, 1, 0)
+        grid.addWidget(self.colorEdit, 1, 1, 2, 2)
+        grid.addWidget(self.applyButton, 2, 1, 1, 1)
 
         self.setLayout(grid)
 
     def sendData(self):
-        """[Signal] apply"""
-        """[Slot] Communicate backward to associated contentHead the new text"""
+        """[Slot] Communicate backward to associated contentHead the text and color, then force close window"""
         newText = self.nameEdit.text()
         if newText[0] != '\n':
             newText = '\n' + newText
-        self.apply.emit(newText)
+        self.apply.emit(newText, self.color)
+        self.close()
 
     def openColorDialog(self):
+        """Open a colorDialog that prompts the user for an inputted color"""
         self.dialog = QColorDialog()
-        self.dialog.setCurrentColor(self.color)
         self.dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.dialog.show()
+        newColor = self.dialog.getColor(self.color, self, "Color Picker")
+
+        if newColor.isValid() and newColor != self.color:
+            self.color = newColor
+            # Update the pushButton's color for colorEdit
+            self.colorEdit.setStyleSheet (f"""
+                QPushButton {{
+                    border: 0px;
+                    background: {newColor.name()};
+                }}
+            """)
