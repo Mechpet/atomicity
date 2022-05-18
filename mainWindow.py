@@ -3,11 +3,10 @@ import sys
 import ctypes
 
 from PyQt6.QtWidgets import QApplication, QWidget, QTextEdit, QPushButton, QHBoxLayout, QVBoxLayout
-from contentRow import *
 from PyQt6.QtGui import QIcon
+from contentRow import *
 from window import *
 
-# Wraps every small module/widget
 class mainWrapper(QWidget):
     def __init__(self):
         super().__init__()

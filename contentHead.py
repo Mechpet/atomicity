@@ -6,10 +6,14 @@ from PyQt6.QtWidgets import QWidget, QTextEdit, QToolButton, QPushButton, QLineE
 from PyQt6.QtGui import QPainter, QPainterPath, QBrush, QPen, QColor, QTextOption, QIcon
 from PyQt6.QtCore import Qt, QRectF
 from window import Window
+from settingsWindow import contentHeadSettingsWindow
 
+# # # Attributes:
 # `size` = Width and height of the contentHead widget (box-shaped, user-customizable)
-# `text` = Main description of the contentHead widget (to be displayed in the center)
+# `text` = Main description of the contentHead widget (to be displayed in the center; adjustable via `settingsWindow`)
+# `color` = Color of the contentHead widget's body (adjustable via `settingsWindow`)
 class contentHead(QWidget):
+    """A block that acts as the head of the list of contentCells."""
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -64,11 +68,5 @@ class contentHead(QWidget):
         qp.end()
 
     def settingsWindow(self):
-        self.window = Window("Settings", 0, 0, 250, 250)
-
-        nameEdit = QLineEdit(self.text)
-        grid = QGridLayout()
-        grid.addWidget(nameEdit, 1, 0)
-
-        self.window.setLayout(grid)
+        self.window = contentHeadSettingsWindow(0, 0, 250, 250, self.text)
         self.window.show()

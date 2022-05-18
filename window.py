@@ -9,6 +9,7 @@ APP_ID = "Atomicity"
 
 # Common window of the application (sharing the same appId)
 class Window(QWidget):
+    """A new window that share the same appID with all other `Windows`."""
     def __init__(self, name, x, y, w, h):
         super().__init__()
 
@@ -19,5 +20,3 @@ class Window(QWidget):
         self.setWindowIcon(QIcon(r"images\icon3_trans.png"))
         self.setWindowTitle(name)
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_ID)
-
-        self.show()
