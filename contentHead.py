@@ -69,4 +69,9 @@ class contentHead(QWidget):
 
     def settingsWindow(self):
         self.window = contentHeadSettingsWindow(0, 0, 250, 250, self.text)
+        self.window.apply.connect(self.updateData)
         self.window.show()
+
+    def updateData(self, text):
+        """[Slot] Update the contentHead's text"""
+        self.text = text
