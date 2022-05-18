@@ -23,6 +23,7 @@ class contentHead(QWidget):
         self.size = 200
         self.setMinimumSize(self.size, self.size)
         self.text = "\nWake up"
+        self.color = QColor(55, 55, 55)
         icon = QIcon(r"images\appIcons\cogwheel_trans.png")
 
         btn = QPushButton(icon, None, self)
@@ -46,14 +47,12 @@ class contentHead(QWidget):
         col = QColor(0, 0, 0)
         col.setNamedColor('#d4d4d4')
 
-        col2 = QColor(55, 55, 55)
-
         qp.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         path = QPainterPath()
 
         pen = QPen(col, 0.5)
         qp.setPen(pen)
-        brush = QBrush(col2)
+        brush = QBrush(self.color)
         qp.setBrush(brush)
 
         #rect = QRectF(e.rect())
@@ -68,7 +67,7 @@ class contentHead(QWidget):
         qp.end()
 
     def settingsWindow(self):
-        self.window = contentHeadSettingsWindow(0, 0, 250, 250, self.text)
+        self.window = contentHeadSettingsWindow(0, 0, 250, 250, self.text, self.color)
         self.window.apply.connect(self.updateData)
         self.window.show()
 
