@@ -4,8 +4,11 @@ import ctypes
 
 from PyQt6.QtWidgets import QApplication, QWidget, QTextEdit, QPushButton, QHBoxLayout, QVBoxLayout
 from PyQt6.QtGui import QIcon
-from contentRow import *
-from window import *
+from PyQt6.QtCore import Qt
+from contentRow import contentRow
+from window import Window, APP_ID
+from dateColumn import dateColumn
+from contentAdder import contentAdder
 
 class mainWrapper(QWidget):
     def __init__(self):
@@ -21,9 +24,11 @@ class mainWrapper(QWidget):
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_ID)
 
         hbox = QHBoxLayout()
-        hbox.addWidget(contentRow())
+        hbox.addWidget(contentAdder(), 0, Qt.AlignmentFlag.AlignCenter)
+        hbox.addWidget(contentRow(), 1, Qt.AlignmentFlag.AlignLeft)
         vbox = QVBoxLayout()
         vbox.addLayout(hbox)
+        vbox.addWidget(dateColumn(), 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
         self.setLayout(vbox)
 

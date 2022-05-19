@@ -1,8 +1,7 @@
 # The main window of the application 
-import sys
 import ctypes
 
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
+from PyQt6.QtWidgets import QWidget
 from PyQt6.QtGui import QIcon
 
 APP_ID = "Atomicity"

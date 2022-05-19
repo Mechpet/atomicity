@@ -1,6 +1,4 @@
-import sys
-
-from PyQt6.QtWidgets import QHBoxLayout, QWidget, QPushButton, QApplication
+from PyQt6.QtWidgets import QHBoxLayout, QWidget
 from contentHead import contentHead
 
 # Layout of contentHeaders in a horizontal row

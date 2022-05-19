@@ -1,11 +1,7 @@
 # Header of each column (topmost block of data that is static to vertical scrolling)
-from logging.handlers import QueueListener
-import sys
-
-from PyQt6.QtWidgets import QWidget, QTextEdit, QToolButton, QPushButton, QLineEdit, QGridLayout
+from PyQt6.QtWidgets import QWidget, QPushButton
 from PyQt6.QtGui import QPainter, QPainterPath, QBrush, QPen, QColor, QTextOption, QIcon
-from PyQt6.QtCore import Qt, QRectF
-from window import Window
+from PyQt6.QtCore import Qt, QRectF, QSize
 from settingsWindow import contentHeadSettingsWindow
 
 # # # Attributes:
@@ -24,19 +20,26 @@ class contentHead(QWidget):
         self.setMinimumSize(self.size, self.size)
         self.text = "\nWake up"
         self.color = QColor(55, 55, 55)
-        icon = QIcon(r"images\appIcons\cogwheel_trans.png")
 
-        btn = QPushButton(icon, None, self)
-        btn.resize(btn.sizeHint())
-        btn.move(0, self.size * 0.85)
-        btn.setToolTip("<b>Settings</b>")
-        btn.setStyleSheet("""
+        self.btn = QPushButton("", self)
+        self.btn.resize(QSize(25, 25))
+        self.btn.move(self.size * 0.05, self.size * 0.85)
+        self.btn.setToolTip("<b>Settings</b>")
+        self.btn.setProperty("opened", False)
+        self.btn.setStyleSheet("""
             QPushButton {
                 border: 0px;
                 background: transparent;
+                border-image: url(images/appIcons/cogwheel_idle.png)
+            }
+            QPushButton:hover {
+                border-image: url(images/appIcons/cogwheel_hover.png);
+            }
+            *[opened = "true"] {
+                background: red;
             }
         """)
-        btn.clicked.connect(self.settingsWindow)
+        self.btn.clicked.connect(self.settingsWindow)
         
         self.show()
 
@@ -67,6 +70,8 @@ class contentHead(QWidget):
         qp.end()
 
     def settingsWindow(self):
+        # Doesn't work yet: when opened, change appearance of the pushButton
+        self.btn.setProperty("opened", True)
         self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.color)
         self.window.apply.connect(self.updateData)
         self.window.show()
