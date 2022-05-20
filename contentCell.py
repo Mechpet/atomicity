@@ -16,7 +16,7 @@ class contentCell(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.color = QColor(55, 55, 55)
+        self.color = QColor(155, 155, 155)
         self.setStyleSheet("""
             QPushButton {
                 width: 90px;
@@ -25,10 +25,10 @@ class contentCell(QWidget):
                 background: transparent;
             }
             QPushButton#trueBtn {
-                border-image: url(images/appIcons/cogwheel_idle.png);
+                border-image: url(images/appIcons/check_trans.png);
             }
             QPushButton#falseBtn {
-                border-image: url(images/appIcons/add_trans.png);
+                border-image: url(images/appIcons/cross_trans.png);
             }
         """)
 
@@ -37,13 +37,15 @@ class contentCell(QWidget):
     def initUI(self):
         """Initialize the appearance of the widgets (for now, only accepts binary-type)"""
         self.size = 200
-        self.setFixedSize(self.size, self.size)
+        self.setMaximumSize(self.size, self.size)
 
         self.value = None
         self.trueBtn = QPushButton("", self)
         self.trueBtn.setObjectName("trueBtn")
+        self.trueBtn.clicked.connect(self.setTrue)
         self.falseBtn = QPushButton("", self)
         self.falseBtn.setObjectName("falseBtn")
+        self.falseBtn.clicked.connect(self.setFalse)
 
         layout = QHBoxLayout()
         layout.addWidget(self.trueBtn)
@@ -68,7 +70,7 @@ class contentCell(QWidget):
         qp.setBrush(brush)
 
         #rect = QRectF(e.rect())
-        rect = QRectF(0, 0, 200, 200)
+        rect = QRectF(0, 0, self.size, self.size / 2)
         rect.adjust(0.0, 0.0, 1, 1)
         path.addRoundedRect(rect, 10, 10)
         qp.setClipPath(path)
@@ -76,3 +78,9 @@ class contentCell(QWidget):
         qp.strokePath(path, qp.pen())
 
         qp.end()
+    
+    def setTrue(self):
+        print("Did the thing")
+
+    def setFalse(self):
+        print("Did not do the thing")

@@ -31,7 +31,7 @@ class mainWrapper(QWidget):
         vbox.addLayout(hboxTop)
         hboxBot = QHBoxLayout()
         hboxBot.addWidget(dateColumn(), 0, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        hboxBot.addWidget(contentCell(), 1, Qt.AlignmentFlag.AlignLeft)
+        hboxBot.addWidget(contentCell(), 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
         vbox.addLayout(hboxBot)
 
         self.setLayout(vbox)
