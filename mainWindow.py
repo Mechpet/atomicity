@@ -9,6 +9,7 @@ from contentRow import contentRow
 from window import Window, APP_ID
 from dateColumn import dateColumn
 from contentAdder import contentAdder
+from contentCell import contentCell
 
 class mainWrapper(QWidget):
     def __init__(self):
@@ -23,12 +24,15 @@ class mainWrapper(QWidget):
         self.setWindowTitle('Atomicity')
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_ID)
 
-        hbox = QHBoxLayout()
-        hbox.addWidget(contentAdder(), 0, Qt.AlignmentFlag.AlignCenter)
-        hbox.addWidget(contentRow(), 1, Qt.AlignmentFlag.AlignLeft)
+        hboxTop = QHBoxLayout()
+        hboxTop.addWidget(contentAdder(), 0, Qt.AlignmentFlag.AlignCenter)
+        hboxTop.addWidget(contentRow(3), 1, Qt.AlignmentFlag.AlignLeft)
         vbox = QVBoxLayout()
-        vbox.addLayout(hbox)
-        vbox.addWidget(dateColumn(), 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        vbox.addLayout(hboxTop)
+        hboxBot = QHBoxLayout()
+        hboxBot.addWidget(dateColumn(), 0, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        hboxBot.addWidget(contentCell(), 1, Qt.AlignmentFlag.AlignLeft)
+        vbox.addLayout(hboxBot)
 
         self.setLayout(vbox)
 

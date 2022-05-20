@@ -46,10 +46,4 @@ class dateColumn(QWidget):
 
         self.setLayout(layout)
 
-        #Scroll Area Properties
-        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.scroll.setWidgetResizable(True)
-        #self.scroll.setWidget(self)
-
         self.show()

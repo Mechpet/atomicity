@@ -30,7 +30,7 @@ class contentHead(QWidget):
             QPushButton {
                 border: 0px;
                 background: transparent;
-                border-image: url(images/appIcons/cogwheel_idle.png)
+                border-image: url(images/appIcons/cogwheel_idle.png);
             }
             QPushButton:hover {
                 border-image: url(images/appIcons/cogwheel_hover.png);
