@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QPushButton, QVBoxLayout
-from PyQt6.QtGui import QIcon
-from PyQt6.QtCore import QSize
+from PyQt6.QtGui import QIcon, QCursor
+from PyQt6.QtCore import QSize, Qt
 
 
 class contentAdder(QWidget):
@@ -16,10 +16,13 @@ class contentAdder(QWidget):
 
 
         icon = QIcon(r"images\appIcons\add_trans.png")
+
+        # Customize the 'Adder' button
         self.btn = QPushButton(icon, None, self)
         self.btn.resize(self.width, self.height)
         self.btn.setIconSize(QSize(self.width, self.height))
         self.btn.setToolTip("<b>Add new item</b>")
+        self.btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn.setStyleSheet("""
             QPushButton {
                 border: 0px;
