@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QPushButton, QVBoxLayout
 from PyQt6.QtGui import QIcon, QCursor
 from PyQt6.QtCore import QSize, Qt
+from addWindow import addWindow
 
 
 class contentAdder(QWidget):
@@ -36,3 +37,8 @@ class contentAdder(QWidget):
         """)
 
         self.show()
+
+    def add(self):
+        """Opens the window for adding a new contentHeader"""
+        self.window = addWindow(0, 0, 500, 500)
+        self.window.show()

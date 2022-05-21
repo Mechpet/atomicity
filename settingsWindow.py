@@ -43,6 +43,9 @@ class contentHeadSettingsWindow(Window):
         self.applyButton = QPushButton("Apply", self)
         self.applyButton.clicked.connect(self.sendData)
 
+        # PushButton on the bottom-right corner to cancel 
+        self.cancelButton = QPushButton("Cancel", self)
+        self.cancelButton.clicked.connect(self.close)
 
         # Format the widgets in a gridLayout
         grid.addWidget(self.nameLabel, 0, 0)
@@ -50,6 +53,7 @@ class contentHeadSettingsWindow(Window):
         grid.addWidget(self.colorLabel, 1, 0)
         grid.addWidget(self.colorEdit, 1, 1, 2, 2)
         grid.addWidget(self.applyButton, 2, 1, 1, 1)
+        grid.addWidget(self.cancelButton, 2, 2, 1, 1)
 
         self.setLayout(grid)
 

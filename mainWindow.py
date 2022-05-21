@@ -9,7 +9,8 @@ from contentRow import contentRow
 from window import Window, APP_ID
 from dateColumn import dateColumn
 from contentAdder import contentAdder
-from contentCell import contentCell
+from binaryCell import binaryCell
+from benchmarkCell import benchmarkCell
 
 class mainWrapper(QWidget):
     def __init__(self):
@@ -31,7 +32,8 @@ class mainWrapper(QWidget):
         vbox.addLayout(hboxTop)
         hboxBot = QHBoxLayout()
         hboxBot.addWidget(dateColumn(), 0, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        hboxBot.addWidget(contentCell(), 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        hboxBot.addWidget(binaryCell(), 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        hboxBot.addWidget(benchmarkCell(), 10, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
         vbox.addLayout(hboxBot)
 
         self.setLayout(vbox)
