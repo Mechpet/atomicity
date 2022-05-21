@@ -11,8 +11,8 @@ class binaryCell(contentCell):
 
         self.setStyleSheet("""
             QPushButton {
-                width: 90px;
-                height: 90px;
+                width: 75px;
+                height: 75px;
                 border: 0px;
                 background: transparent;
             }

@@ -2,7 +2,7 @@
 import sys
 import ctypes
 
-from PyQt6.QtWidgets import QApplication, QWidget, QTextEdit, QPushButton, QHBoxLayout, QVBoxLayout
+from PyQt6.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QScrollArea
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt
 from contentRow import contentRow
@@ -27,7 +27,18 @@ class mainWrapper(QWidget):
 
         hboxTop = QHBoxLayout()
         hboxTop.addWidget(contentAdder(), 0, Qt.AlignmentFlag.AlignCenter)
-        hboxTop.addWidget(contentRow(3), 1, Qt.AlignmentFlag.AlignLeft)
+
+        scroll = QScrollArea()
+        scroll.setStyleSheet("""
+            QScrollBar:vertical {
+                height: 0px;
+            }
+            QScrollBar:horizontal {
+                background: blue;
+            }
+        """)
+        scroll.setWidget(contentRow(14))
+        hboxTop.addWidget(scroll, 1, Qt.AlignmentFlag.AlignLeft)
         vbox = QVBoxLayout()
         vbox.addLayout(hboxTop)
         hboxBot = QHBoxLayout()

@@ -35,6 +35,7 @@ class contentAdder(QWidget):
                 background-color: grey;
             }
         """)
+        self.btn.clicked.connect(self.add)
 
         self.show()
 
