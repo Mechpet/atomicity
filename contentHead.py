@@ -14,17 +14,18 @@ class contentHead(QWidget):
         super().__init__()
         self.initUI()
 
-
     def initUI(self):
-        self.size = 200
-        self.setMinimumSize(self.size, self.size)
+        self.minSize = 100
+        self.maxSize = 200
+        self.setMinimumSize(self.minSize, self.minSize)
+        self.setMaximumSize(self.maxSize, self.maxSize)
         self.text = "\nWake up"
         self.color = QColor(55, 55, 55)
 
         # Customize the 'Settings' button
         self.btn = QPushButton("", self)
         self.btn.resize(QSize(25, 25))
-        self.btn.move(self.size * 0.05, self.size * 0.85)
+        #self.btn.move(self.size * 0.05, self.size * 0.85)
         self.btn.setToolTip("<b>Settings</b>")
         self.btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn.setProperty("opened", False)
@@ -42,8 +43,6 @@ class contentHead(QWidget):
             }
         """)
         self.btn.clicked.connect(self.settingsWindow)
-        
-        self.show()
 
     def paintEvent(self, e):
         qp = QPainter(self)

@@ -47,5 +47,3 @@ class dateColumn(QWidget):
             layout.addSpacing(50)
 
         self.setLayout(layout)
-
-        self.show()

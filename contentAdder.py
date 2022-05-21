@@ -15,7 +15,6 @@ class contentAdder(QWidget):
         self.height = 200
         self.setMinimumSize(self.width, self.height)
 
-
         icon = QIcon(r"images\appIcons\add_trans.png")
 
         # Customize the 'Adder' button
@@ -37,7 +36,6 @@ class contentAdder(QWidget):
         """)
         self.btn.clicked.connect(self.add)
 
-        self.show()
 
     def add(self):
         """Opens the window for adding a new contentHeader"""

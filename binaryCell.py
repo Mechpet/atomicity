@@ -36,11 +36,10 @@ class binaryCell(contentCell):
         #   Marked   cell: indicator of true / false
         
         # on click: swap to the opposite cell
-        self.cell = QStackedWidget()
+        self.cell = QStackedWidget(self)
 
         # Unmarked cell:
         self.unmarked = QWidget(self)
-        self.unmarked.setMaximumSize(self.size, self.size)
 
         self.trueBtn = QPushButton("", self)
         self.trueBtn.setObjectName("trueBtn")
@@ -72,7 +71,6 @@ class binaryCell(contentCell):
         layout2 = QHBoxLayout()
         layout2.addWidget(self.cell)
         self.setLayout(layout2)
-        self.show()
     
     def setTrue(self):
         self.value = True

@@ -27,8 +27,10 @@ class contentCell(QWidget):
 
     def initUI(self):
         """Initialize the appearance of the widgets (for now, only accepts binary-type)"""
-        self.size = 200
-        self.setMaximumSize(self.size, self.size)
+        self.minSize = 100
+        self.maxSize = 200
+        self.setMinimumSize(self.minSize, self.minSize / 2)
+        self.setMaximumSize(self.maxSize, self.maxSize / 2)
 
         self.value = None
 
@@ -48,7 +50,7 @@ class contentCell(QWidget):
         qp.setBrush(brush)
 
         #rect = QRectF(e.rect())
-        rect = QRectF(0, 0, self.size, self.size / 2)
+        rect = QRectF(0, 0, self.frameGeometry().width(), self.frameGeometry().width() / 2)
         rect.adjust(0.0, 0.0, 1, 1)
         path.addRoundedRect(rect, 10, 10)
         qp.setClipPath(path)

@@ -11,8 +11,7 @@ from window import Window, APP_ID
 from dateColumn import dateColumn
 from contentAdder import contentAdder
 from contentCell import cellType
-from binaryCell import binaryCell
-from benchmarkCell import benchmarkCell
+from contentGrid import contentGrid
 
 class mainWrapper(QWidget):
     def __init__(self):
@@ -29,14 +28,25 @@ class mainWrapper(QWidget):
 
         self.adder = contentAdder()
         self.contentRow = contentRow(14)
+
+        # Create a scrolling option for the contentRow
+        self.contentRowScroll = QScrollArea(self)
+        self.contentRowScroll.setWidget(self.contentRow)
+        self.contentRowScroll.verticalScrollBar().setDisabled(True)
+        self.contentRowScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.contentRowScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.contentRowScroll.setStyleSheet("""
+            border: 1px;
+        """)
         self.dateColumn = dateColumn()
-        self.contentColumn = contentColumn(cellType.binary)
+
+        self.contentGrid = contentGrid(cellType.binary)
 
         self.layout = QGridLayout()
         self.layout.addWidget(self.adder, 0, 0, 1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        self.layout.addWidget(self.contentRow, 0, 1, 1, -1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        self.layout.addWidget(self.dateColumn, 1, 0, -1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        self.layout.addWidget(self.contentColumn, 1, 1, -1, 1, Qt.AlignmentFlag.AlignLeft)
+        self.layout.addWidget(self.contentRow, 0, 1, 1, 3, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        self.layout.addWidget(self.dateColumn, 1, 0, 3, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        self.layout.addWidget(self.contentGrid, 1, 1, 3, 1, Qt.AlignmentFlag.AlignLeft)
 
         self.setLayout(self.layout)
 

@@ -22,14 +22,12 @@ class benchmarkCell(contentCell):
     def initWidgets(self):
         self.input = QLineEdit(self)
         self.input.returnPressed.connect(self.test)
-        self.btn = QPushButton()
-        layout = QHBoxLayout()
+        self.btn = QPushButton(self)
+        layout = QHBoxLayout(self)
 
         layout.addWidget(self.input)
         layout.addWidget(QLabel("50"), 0, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBottom)
         self.setLayout(layout)
-
-        self.show()
 
     def test(self):
         print("Done")
