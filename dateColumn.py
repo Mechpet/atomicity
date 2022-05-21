@@ -28,7 +28,9 @@ class dateColumn(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.scroll = QScrollArea()
+        self.size = 200
+        self.setMinimumSize(self.size, self.size)
+
         self.topDate = QDate.currentDate()
         self.dates = [self.topDate]
         for i in range(self.numDays):

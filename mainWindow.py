@@ -2,13 +2,15 @@
 import sys
 import ctypes
 
-from PyQt6.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QScrollArea
+from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt
+from contentColumn import contentColumn
 from contentRow import contentRow
 from window import Window, APP_ID
 from dateColumn import dateColumn
 from contentAdder import contentAdder
+from contentCell import cellType
 from binaryCell import binaryCell
 from benchmarkCell import benchmarkCell
 
@@ -25,29 +27,28 @@ class mainWrapper(QWidget):
         self.setWindowTitle('Atomicity')
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_ID)
 
-        hboxTop = QHBoxLayout()
-        hboxTop.addWidget(contentAdder(), 0, Qt.AlignmentFlag.AlignCenter)
+        self.adder = contentAdder()
+        self.contentRow = contentRow(14)
+        self.dateColumn = dateColumn()
+        self.contentColumn = contentColumn(cellType.binary)
 
-        scroll = QScrollArea()
-        scroll.setStyleSheet("""
-            QScrollBar:vertical {
-                height: 0px;
-            }
-            QScrollBar:horizontal {
-                background: blue;
-            }
-        """)
-        scroll.setWidget(contentRow(14))
-        hboxTop.addWidget(scroll, 1, Qt.AlignmentFlag.AlignLeft)
-        vbox = QVBoxLayout()
-        vbox.addLayout(hboxTop)
-        hboxBot = QHBoxLayout()
-        hboxBot.addWidget(dateColumn(), 0, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        hboxBot.addWidget(binaryCell(), 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        hboxBot.addWidget(benchmarkCell(), 10, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        vbox.addLayout(hboxBot)
+        self.layout = QGridLayout()
+        self.layout.addWidget(self.adder, 0, 0, 1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        self.layout.addWidget(self.contentRow, 0, 1, 1, -1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        self.layout.addWidget(self.dateColumn, 1, 0, -1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        self.layout.addWidget(self.contentColumn, 1, 1, -1, 1, Qt.AlignmentFlag.AlignLeft)
 
-        self.setLayout(vbox)
+        self.setLayout(self.layout)
+
+        # Useful scroll methods:
+        #scroll = QScrollArea()
+        #scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        #scroll.verticalScrollBar().setDisabled(True)
+        #scroll.setStyleSheet("""
+        #    QScrollBar:horizontal {
+        #        background: blue;
+        #    }
+        #""")
 
         self.setGeometry(300, 300, 650, 550)
         self.show()
