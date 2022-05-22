@@ -27,17 +27,10 @@ class mainWrapper(QWidget):
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_ID)
 
         self.adder = contentAdder()
-        self.contentRow = contentRow(14)
+        self.adder.added.connect(self.addHeader)
 
-        # Create a scrolling option for the contentRow
-        self.contentRowScroll = QScrollArea(self)
-        self.contentRowScroll.setWidget(self.contentRow)
-        self.contentRowScroll.verticalScrollBar().setDisabled(True)
-        self.contentRowScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.contentRowScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.contentRowScroll.setStyleSheet("""
-            border: 1px;
-        """)
+        self.contentRow = contentRow(2)
+
         self.dateColumn = dateColumn()
 
         self.contentGrid = contentGrid(cellType.binary)
@@ -62,6 +55,10 @@ class mainWrapper(QWidget):
 
         self.setGeometry(300, 300, 650, 550)
         self.show()
+
+    def addHeader(self):
+        self.contentRow.addHeader()
+        
 
 def main():
     app = QApplication(sys.argv)

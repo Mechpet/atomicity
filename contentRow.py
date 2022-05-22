@@ -6,9 +6,19 @@ class contentRow(QWidget):
     """A row of contentHeads."""
     def __init__(self, numCols):
         super().__init__()
+        self.list = []
 
-        layout = QHBoxLayout()
+        self.layout = QHBoxLayout()
         for i in range(numCols):
-            layout.addWidget(contentHead())
+            self.list.append(contentHead())
+            self.layout.addWidget(self.list[-1])
 
-        self.setLayout(layout)
+        self.setLayout(self.layout)
+
+    def addHeader(self):
+        self.list.append(contentHead())
+        self.layout.addWidget(self.list[-1])
+
+        self.setLayout(self.layout)
+
+        self.list[-1].settingsWindow()

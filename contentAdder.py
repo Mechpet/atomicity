@@ -1,11 +1,12 @@
 from PyQt6.QtWidgets import QWidget, QPushButton, QVBoxLayout
 from PyQt6.QtGui import QIcon, QCursor
-from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtCore import QSize, Qt, pyqtSignal
 from addWindow import addWindow
 
 
 class contentAdder(QWidget):
     """Fixed cell that allows adding new contentHeaders"""
+    added = pyqtSignal()
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -34,11 +35,7 @@ class contentAdder(QWidget):
                 background-color: grey;
             }
         """)
-        self.btn.clicked.connect(self.add)
+        self.btn.clicked.connect(self.confirmAdd)
 
-    def add(self):
-        """Opens the window for adding a new contentHeader"""
-        # Later on, it should communicate a signal to the widget that holds the contentHeader's and settingWindow's
-        # It will create a new contentHeader and force open settingWindow 
-        self.window = addWindow(0, 0, 500, 500)
-        self.window.show()
+    def confirmAdd(self):
+        self.added.emit()
