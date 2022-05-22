@@ -4,12 +4,25 @@ from PyQt6.QtGui import QColor, QIcon
 from window import Window
 
 SETTINGS_WINDOW_NAME = "Settings"
+acceptedExtensions = (
+    ".jpg",
+    ".png",
+    ".xmp"
+)
+
+# `iconPath`    = Current icon path that the contentHead is using {str}.
+# `color`       = Current color that the contentHead is using {QColor}.
+# `dialog`      = Current opened dialog (if any).
 class contentHeadSettingsWindow(Window):
     """A pop-up window that allows users to adjust the settings of contentHeads."""
-    apply = pyqtSignal(str, QColor)
+    apply = pyqtSignal(str, QColor, str)
     def __init__(self, x, y, w, h, name, color):
         super().__init__(SETTINGS_WINDOW_NAME, x, y, w, h)
+
+        self.dialog = None
+        self.iconPath = None
         self.color = color
+
         self.initUI(SETTINGS_WINDOW_NAME, x, y, w, h)
         
         # Block inputs to the mainWindow
@@ -63,11 +76,12 @@ class contentHeadSettingsWindow(Window):
         self.setLayout(grid)
 
     def sendData(self):
-        """[Slot] Communicate backward to associated contentHead the text and color, then force close window"""
+        """[Slot] Communicate backward to associated contentHead the text and color, then force close window to immediately update."""
         newText = self.nameEdit.text()
         if newText[0] != '\n':
             newText = '\n' + newText
-        self.apply.emit(newText, self.color)
+        newIconPath = self.dialog.selectedFiles()[0]
+        self.apply.emit(newText, self.color, newIconPath)
         self.close()
 
     def openColorDialog(self):
@@ -86,6 +100,8 @@ class contentHeadSettingsWindow(Window):
                     background: {newColor.name()};
                 }}
             """)
+        
+        self.dialog = None
 
     def openFileDialog(self):
         """Open a fileDialog that prompts the user for a file"""
@@ -96,12 +112,13 @@ class contentHeadSettingsWindow(Window):
         self.dialog.setNameFilter(self.tr("Images (*.png *.xpm *.jpg)"))
         # Accept only one single file
         self.dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
-        # When a file is selected and the user clicks 'Open', check if allowed
-        self.dialog.fileSelected.connect(self.smth)
-
+        # Instead of 'Open' button, use 'Save' button
+        self.dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
 
         self.dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.dialog.show()
 
-    def smth(self):
-        print("File selected")
+    def verifyFile(self, fileName):
+        """Verify that the chosen file is an image."""
+        # Must end with certain compatible extensions
+        return fileName.lower().endswith(acceptedExtensions)

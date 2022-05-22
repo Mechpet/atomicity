@@ -37,9 +37,9 @@ class mainWrapper(QWidget):
 
         self.layout = QGridLayout()
         self.layout.addWidget(self.adder, 0, 0, 1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        self.layout.addWidget(self.contentRow, 0, 1, 1, 3, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        self.layout.addWidget(self.dateColumn, 1, 0, 3, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        self.layout.addWidget(self.contentGrid, 1, 1, 3, 1, Qt.AlignmentFlag.AlignLeft)
+        self.layout.addWidget(self.contentRow, 0, 1, 1, 3)#, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        #self.layout.addWidget(self.dateColumn, 1, 0, 3, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        #self.layout.addWidget(self.contentGrid, 1, 1, 3, 1, Qt.AlignmentFlag.AlignLeft)
 
         self.setLayout(self.layout)
 

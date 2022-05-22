@@ -1,13 +1,13 @@
 # Header of each column (topmost block of data that is static to vertical scrolling)
 from PyQt6.QtWidgets import QWidget, QPushButton
-from PyQt6.QtGui import QPainter, QPainterPath, QBrush, QPen, QColor, QTextOption, QCursor
+from PyQt6.QtGui import QPainter, QPainterPath, QBrush, QPen, QColor, QTextOption, QCursor, QIcon
 from PyQt6.QtCore import Qt, QRectF, QSize
 from settingsWindow import contentHeadSettingsWindow
 
 # # # Attributes:
-# `size` = Width and height of the contentHead widget (box-shaped, user-customizable)
-# `text` = Main description of the contentHead widget (to be displayed in the center; adjustable via `settingsWindow`)
-# `color` = Color of the contentHead widget's body (adjustable via `settingsWindow`)
+# `size` = Width and height of the contentHead widget (box-shaped, user-customizable) {int}.
+# `text` = Main description of the contentHead widget (to be displayed in the center; adjustable via `settingsWindow`) {str}.
+# `color` = Color of the contentHead widget's body (adjustable via `settingsWindow`) {QColor}.
 class contentHead(QWidget):
     """A block that acts as the head of the list of contentCells."""
     def __init__(self):
@@ -21,6 +21,7 @@ class contentHead(QWidget):
         self.setMaximumSize(self.maxSize, self.maxSize)
         self.text = "\nWake up"
         self.color = QColor(55, 55, 55)
+        self.iconPath = None
 
         # Customize the 'Settings' button
         self.btn = QPushButton("", self)
@@ -43,6 +44,7 @@ class contentHead(QWidget):
             }
         """)
         self.btn.clicked.connect(self.settingsWindow)
+        self.btn2 = QPushButton("Icon", self)
 
     def paintEvent(self, e):
         qp = QPainter(self)
@@ -77,7 +79,11 @@ class contentHead(QWidget):
         self.window.apply.connect(self.updateData)
         self.window.show()
 
-    def updateData(self, text, color):
+    def updateData(self, newName, color, newIconPath):
         """[Slot] Update the contentHead's text"""
-        self.text = text
+        self.text = newName
         self.color = color
+        if self.window.verifyFile(newIconPath):
+            self.iconPath = newIconPath
+            newIcon = QIcon(self.iconPath)
+            self.btn2.setIcon(newIcon)
