@@ -1,5 +1,6 @@
-from PyQt6.QtWidgets import QPushButton, QHBoxLayout
+from PyQt6.QtWidgets import QPushButton, QGridLayout, QLineEdit
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QColor
 
 from window import Window
 
@@ -9,10 +10,4 @@ class addWindow(Window):
         super().__init__(ADD_WINDOW_NAME, x, y, w, h)
         self.initUI(ADD_WINDOW_NAME, x, y, w, h)
 
-        pushbtn = QPushButton("YO", self)
-        layout = QHBoxLayout()
-        layout.addWidget(pushbtn)
-        self.setLayout(layout)
-        
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
-        

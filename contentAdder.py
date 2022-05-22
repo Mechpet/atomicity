@@ -36,8 +36,9 @@ class contentAdder(QWidget):
         """)
         self.btn.clicked.connect(self.add)
 
-
     def add(self):
         """Opens the window for adding a new contentHeader"""
+        # Later on, it should communicate a signal to the widget that holds the contentHeader's and settingWindow's
+        # It will create a new contentHeader and force open settingWindow 
         self.window = addWindow(0, 0, 500, 500)
         self.window.show()

@@ -71,6 +71,7 @@ class contentHeadSettingsWindow(Window):
         self.dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
         newColor = self.dialog.getColor(self.color, self, "Color Picker")
 
+        # Valid color implies the user did not click 'Cancel'
         if newColor.isValid() and newColor != self.color:
             self.color = newColor
             # Update the pushButton's color for colorEdit
