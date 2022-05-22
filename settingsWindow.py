@@ -1,6 +1,6 @@
-from PyQt6.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QColorDialog
+from PyQt6.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QColorDialog, QFileDialog
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QColor
+from PyQt6.QtGui import QColor, QIcon
 from window import Window
 
 SETTINGS_WINDOW_NAME = "Settings"
@@ -39,6 +39,10 @@ class contentHeadSettingsWindow(Window):
             }}
         """)
 
+        icon = QIcon(r"images\appIcons\icon_edit.png")
+        self.iconEdit = QPushButton(icon, "Edit icon", self)
+        self.iconEdit.clicked.connect(self.openFileDialog)
+
         # PushButton on the bottom-right corner that allows applying the settings
         self.applyButton = QPushButton("Apply", self)
         self.applyButton.clicked.connect(self.sendData)
@@ -52,8 +56,9 @@ class contentHeadSettingsWindow(Window):
         grid.addWidget(self.nameEdit, 0, 1, 1, -1)
         grid.addWidget(self.colorLabel, 1, 0)
         grid.addWidget(self.colorEdit, 1, 1, 2, 2)
-        grid.addWidget(self.applyButton, 2, 1, 1, 1)
-        grid.addWidget(self.cancelButton, 2, 2, 1, 1)
+        grid.addWidget(self.iconEdit, 2, 0)
+        grid.addWidget(self.applyButton, 3, 1, 1, 1)
+        grid.addWidget(self.cancelButton, 3, 2, 1, 1)
 
         self.setLayout(grid)
 
@@ -81,3 +86,22 @@ class contentHeadSettingsWindow(Window):
                     background: {newColor.name()};
                 }}
             """)
+
+    def openFileDialog(self):
+        """Open a fileDialog that prompts the user for a file"""
+
+        # Initialize the file dialog for a single image
+        self.dialog = QFileDialog()
+        # Set initial filter to image file extensions only
+        self.dialog.setNameFilter(self.tr("Images (*.png *.xpm *.jpg)"))
+        # Accept only one single file
+        self.dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
+        # When a file is selected and the user clicks 'Open', check if allowed
+        self.dialog.fileSelected.connect(self.smth)
+
+
+        self.dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.dialog.show()
+
+    def smth(self):
+        print("File selected")
