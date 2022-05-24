@@ -80,7 +80,10 @@ class contentHeadSettingsWindow(Window):
         newText = self.nameEdit.text()
         if newText[0] != '\n':
             newText = '\n' + newText
-        newIconPath = self.dialog.selectedFiles()[0]
+        if self.dialog:
+            newIconPath = self.dialog.selectedFiles()[0]
+        else:
+            newIconPath = None
         self.apply.emit(newText, self.color, newIconPath)
         self.close()
 
@@ -121,4 +124,5 @@ class contentHeadSettingsWindow(Window):
     def verifyFile(self, fileName):
         """Verify that the chosen file is an image."""
         # Must end with certain compatible extensions
-        return fileName.lower().endswith(acceptedExtensions)
+        if fileName:
+            return fileName.lower().endswith(acceptedExtensions)

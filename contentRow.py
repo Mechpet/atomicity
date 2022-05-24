@@ -13,15 +13,19 @@ class contentRow(QWidget):
         self.list = []
 
         self.layout = QHBoxLayout()
-        for i in range(len(self.list)):
-            self.list.append(contentHead(i))
-            self.layout.addWidget(self.list[-1])
+        try:
+            for i in range(int(self.settings.value("num"))):
+                self.list.append(contentHead(i))
+                self.layout.addWidget(self.list[-1])
+        except TypeError:
+            # The key "num" is not a QString of an integer
+            self.settings.setValue("num", 0)
 
         self.setLayout(self.layout)
 
     def addHeader(self):
         # Create a new contentHead devoid of settings
-        self.list.append(contentHead(len(self.list)))
+        self.list.append(contentHead(-(len(self.list) + 1)))
         # Set the index of the contentHead to be at the end of the row
         self.layout.addWidget(self.list[-1])
         self.settings.setValue("num", len(self.list))

@@ -15,8 +15,6 @@ class contentHead(QWidget):
         super().__init__()
 
         self.index = index
-        self.settingName = f"contentHead{abs(self.index)}.ini"
-        self.settings = QSettings(self.settingName, QSettings.Format.IniFormat)
 
         self.initUI()
 
@@ -26,12 +24,15 @@ class contentHead(QWidget):
         self.setMinimumSize(self.minSize, self.minSize)
         self.setMaximumSize(self.maxSize, self.maxSize)
         if self.index >= 0:
+            # Open the correct settings file
+            self.initSettings()
             self.fetch()
         else:
             # Default settings
-            self.text = ""
-            self.color = QColor(55, 55, 55)
-            self.iconPath = None
+            self.index = abs(self.index + 1)
+            # Open the correct settings file
+            self.initSettings()
+            self.default()
 
         # Customize the 'Settings' button
         self.btn = QPushButton("", self)
@@ -55,6 +56,9 @@ class contentHead(QWidget):
         """)
         self.btn.clicked.connect(self.settingsWindow)
         self.iconBtn = QPushButton("Icon", self)
+        if self.iconPath:
+            newIcon = QIcon(self.iconPath)
+            self.iconBtn.setIcon(newIcon)
 
     def paintEvent(self, e):
         qp = QPainter(self)
@@ -89,6 +93,10 @@ class contentHead(QWidget):
         self.window.apply.connect(self.updateData)
         self.window.show()
 
+    def initSettings(self):
+        self.settingName = f"contentHead{self.index}.ini"
+        self.settings = QSettings(self.settingName, QSettings.Format.IniFormat)
+
     def updateData(self, newName, color, newIconPath):
         """[Slot] Update the contentHead's text"""
         self.text = newName
@@ -116,6 +124,8 @@ class contentHead(QWidget):
 
     def default(self):
         """Sets all of its attributes to default settings and saves settings"""
-        self.text = ""
+        self.text = None
         self.color = QColor(55, 55, 55)
         self.iconPath = None
+
+        self.synchronize()
