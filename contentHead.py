@@ -1,7 +1,7 @@
 # Header of each column (topmost block of data that is static to vertical scrolling)
 from PyQt6.QtWidgets import QWidget, QPushButton
 from PyQt6.QtGui import QPainter, QPainterPath, QBrush, QPen, QColor, QTextOption, QCursor, QIcon
-from PyQt6.QtCore import Qt, QRectF, QSize
+from PyQt6.QtCore import Qt, QRectF, QSize, QSettings
 from settingsWindow import contentHeadSettingsWindow
 
 # # # Attributes:
@@ -10,8 +10,17 @@ from settingsWindow import contentHeadSettingsWindow
 # `color` = Color of the contentHead widget's body (adjustable via `settingsWindow`) {QColor}.
 class contentHead(QWidget):
     """A block that acts as the head of the list of contentCells."""
-    def __init__(self):
+    def __init__(self, index):
         super().__init__()
+
+        self.index = abs(index)
+        self.settings = QSettings("Mechpet", f"contentHead{self.index}")
+        if index >= 0:
+            # Old contentHead: persistent settings
+
+        else:
+            # New contentHead: no settings
+
         self.initUI()
 
     def initUI(self):

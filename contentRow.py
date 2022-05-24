@@ -14,7 +14,7 @@ class contentRow(QWidget):
 
         self.layout = QHBoxLayout()
         for i in range(len(self.list)):
-            self.list.append(contentHead())
+            self.list.append(contentHead(i))
             self.layout.addWidget(self.list[-1])
 
         self.setLayout(self.layout)
