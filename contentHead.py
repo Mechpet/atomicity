@@ -8,18 +8,15 @@ from settingsWindow import contentHeadSettingsWindow
 # `size` = Width and height of the contentHead widget (box-shaped, user-customizable) {int}.
 # `text` = Main description of the contentHead widget (to be displayed in the center; adjustable via `settingsWindow`) {str}.
 # `color` = Color of the contentHead widget's body (adjustable via `settingsWindow`) {QColor}.
+# `index` = Position in the contentRow (negative implies that the contentHead is newly constructed) {int}.
 class contentHead(QWidget):
     """A block that acts as the head of the list of contentCells."""
     def __init__(self, index):
         super().__init__()
 
-        self.index = abs(index)
-        self.settings = QSettings("Mechpet", f"contentHead{self.index}")
-        if index >= 0:
-            # Old contentHead: persistent settings
-
-        else:
-            # New contentHead: no settings
+        self.index = index
+        self.settingName = f"contentHead{abs(self.index)}.ini"
+        self.settings = QSettings(self.settingName, QSettings.Format.IniFormat)
 
         self.initUI()
 
@@ -28,9 +25,13 @@ class contentHead(QWidget):
         self.maxSize = 200
         self.setMinimumSize(self.minSize, self.minSize)
         self.setMaximumSize(self.maxSize, self.maxSize)
-        self.text = "\nWake up"
-        self.color = QColor(55, 55, 55)
-        self.iconPath = None
+        if self.index >= 0:
+            self.fetch()
+        else:
+            # Default settings
+            self.text = ""
+            self.color = QColor(55, 55, 55)
+            self.iconPath = None
 
         # Customize the 'Settings' button
         self.btn = QPushButton("", self)
@@ -53,7 +54,7 @@ class contentHead(QWidget):
             }
         """)
         self.btn.clicked.connect(self.settingsWindow)
-        self.btn2 = QPushButton("Icon", self)
+        self.iconBtn = QPushButton("Icon", self)
 
     def paintEvent(self, e):
         qp = QPainter(self)
@@ -95,4 +96,26 @@ class contentHead(QWidget):
         if self.window.verifyFile(newIconPath):
             self.iconPath = newIconPath
             newIcon = QIcon(self.iconPath)
-            self.btn2.setIcon(newIcon)
+            self.iconBtn.setIcon(newIcon)
+        self.synchronize()
+    
+    def synchronize(self):
+        """Update all of the settings of the contentHead"""
+        self.settings.setValue("text", self.text)
+        self.settings.setValue("red", self.color.red())
+        self.settings.setValue("green", self.color.green())
+        self.settings.setValue("blue", self.color.blue())
+        self.settings.setValue("path", self.iconPath)
+        self.settings.sync()
+
+    def fetch(self):
+        """Sets all of its attributes based on the settings"""
+        self.text = self.settings.value("text")
+        self.color = QColor(int(self.settings.value("red")), int(self.settings.value("green")), int(self.settings.value("blue")))
+        self.iconPath = self.settings.value("path")
+
+    def default(self):
+        """Sets all of its attributes to default settings and saves settings"""
+        self.text = ""
+        self.color = QColor(55, 55, 55)
+        self.iconPath = None

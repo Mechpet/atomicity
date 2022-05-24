@@ -20,7 +20,9 @@ class contentRow(QWidget):
         self.setLayout(self.layout)
 
     def addHeader(self):
-        self.list.append(contentHead())
+        # Create a new contentHead devoid of settings
+        self.list.append(contentHead(len(self.list)))
+        # Set the index of the contentHead to be at the end of the row
         self.layout.addWidget(self.list[-1])
         self.settings.setValue("num", len(self.list))
         print(self.settings.value("num"))
