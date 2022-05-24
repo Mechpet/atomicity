@@ -1,15 +1,19 @@
 from PyQt6.QtWidgets import QHBoxLayout, QWidget
+from PyQt6.QtCore import QSettings
 from contentHead import contentHead
 
 # Layout of contentHeaders in a horizontal row
 class contentRow(QWidget):
     """A row of contentHeads."""
-    def __init__(self, numCols):
+    def __init__(self):
         super().__init__()
+        self.settings = QSettings("Mechpet", "Atomicity")
+        self.settings.beginGroup("contentRow")
+
         self.list = []
 
         self.layout = QHBoxLayout()
-        for i in range(numCols):
+        for i in range(len(self.list)):
             self.list.append(contentHead())
             self.layout.addWidget(self.list[-1])
 
@@ -18,6 +22,8 @@ class contentRow(QWidget):
     def addHeader(self):
         self.list.append(contentHead())
         self.layout.addWidget(self.list[-1])
+        self.settings.setValue("num", len(self.list))
+        print(self.settings.value("num"))
 
         self.setLayout(self.layout)
 

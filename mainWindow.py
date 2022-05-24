@@ -4,7 +4,7 @@ import ctypes
 
 from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout
 from PyQt6.QtGui import QIcon
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QSettings
 from contentColumn import contentColumn
 from contentRow import contentRow
 from window import Window, APP_ID
@@ -29,7 +29,7 @@ class mainWrapper(QWidget):
         self.adder = contentAdder()
         self.adder.added.connect(self.addHeader)
 
-        self.contentRow = contentRow(2)
+        self.contentRow = contentRow()
 
         self.dateColumn = dateColumn()
 
