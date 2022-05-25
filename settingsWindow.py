@@ -1,6 +1,8 @@
+from posixpath import split
 from PyQt6.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QColorDialog, QFileDialog
-from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtCore import Qt, pyqtSignal, QFile
 from PyQt6.QtGui import QColor, QIcon
+import os
 from window import Window
 
 SETTINGS_WINDOW_NAME = "Settings"
@@ -117,6 +119,9 @@ class contentHeadSettingsWindow(Window):
         self.dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
         # Instead of 'Open' button, use 'Save' button
         self.dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
+        # Set the initial directory to whatever directory the current iconPath resides in, if any
+        if QFile.exists(self.iconPath):
+            self.dialog.setDirectory(os.path.split(self.iconPath)[0])
 
         self.dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.dialog.show()

@@ -1,7 +1,7 @@
 # Header of each column (topmost block of data that is static to vertical scrolling)
-from PyQt6.QtWidgets import QWidget, QPushButton
+from PyQt6.QtWidgets import QWidget, QPushButton, QDialog, QGridLayout, QLabel
 from PyQt6.QtGui import QPainter, QPainterPath, QBrush, QPen, QColor, QTextOption, QCursor, QIcon
-from PyQt6.QtCore import Qt, QRectF, QSize, QSettings
+from PyQt6.QtCore import Qt, QRectF, QSize, QSettings, QFile
 from settingsWindow import contentHeadSettingsWindow
 
 # # # Attributes:
@@ -34,6 +34,7 @@ class contentHead(QWidget):
             self.initSettings()
             self.default()
 
+        self.layout = QGridLayout()
         # Customize the 'Settings' button
         self.btn = QPushButton("", self)
         self.btn.resize(QSize(25, 25))
@@ -50,15 +51,37 @@ class contentHead(QWidget):
             QPushButton:hover {
                 border-image: url(images/appIcons/cogwheel_hover.png);
             }
-            *[opened = "true"] {
-                background: red;
-            }
         """)
         self.btn.clicked.connect(self.settingsWindow)
         self.iconBtn = QPushButton("Icon", self)
+        self.iconBtn.setStyleSheet("""
+            QPushButton {
+                border: 0px;
+                background: transparent;
+            }
+        """)
         if self.iconPath:
-            newIcon = QIcon(self.iconPath)
-            self.iconBtn.setIcon(newIcon)
+            if QFile.exists(self.iconPath):
+                # Path given to icon image exists: able to construct a visible icon
+                newIcon = QIcon(self.iconPath)
+                self.iconBtn.setIcon(newIcon)
+            else:
+                # Path given to icon image doesn't exist: alert user
+                self.alert = QDialog()
+                layout = QGridLayout()
+                layout.addWidget(QLabel(f"Icon path {self.iconPath} was not found."), 0, 0)
+                fixBtn = QPushButton("Set new icon")
+                fixBtn.clicked.connect(self.setIcon)
+                layout.addWidget(fixBtn, 0, 1)
+                self.alert.setLayout(layout)
+                self.alert.exec()
+        
+        self.layout.addWidget(self.btn, 0, 0)
+        self.layout.addWidget(self.iconBtn, 0, 1)
+        self.setLayout(self.layout)
+
+        print("SUP")
+
 
     def paintEvent(self, e):
         qp = QPainter(self)
@@ -92,6 +115,12 @@ class contentHead(QWidget):
         self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.color)
         self.window.apply.connect(self.updateData)
         self.window.show()
+
+    def setIcon(self):
+        self.settingsWindow()
+        self.window.openFileDialog()
+        if QFile.exists(self.iconPath):
+            self.alert.close()
 
     def initSettings(self):
         self.settingName = f"contentHead{self.index}.ini"

@@ -13,11 +13,12 @@ class contentRow(QWidget):
         self.list = []
 
         self.layout = QHBoxLayout()
-        try:
+
+        if self.settings.value("num"):
             for i in range(int(self.settings.value("num"))):
                 self.list.append(contentHead(i))
                 self.layout.addWidget(self.list[-1])
-        except TypeError:
+        else:
             # The key "num" is not a QString of an integer
             self.settings.setValue("num", 0)
 
