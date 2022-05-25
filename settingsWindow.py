@@ -6,6 +6,7 @@ import os
 from window import Window
 
 SETTINGS_WINDOW_NAME = "Settings"
+# Accepted file extensions for the icon image file:
 acceptedExtensions = (
     ".jpg",
     ".png",
@@ -17,22 +18,20 @@ acceptedExtensions = (
 # `dialog`      = Current opened dialog (if any).
 class contentHeadSettingsWindow(Window):
     """A pop-up window that allows users to adjust the settings of contentHeads."""
-    apply = pyqtSignal(str, QColor, str)
+    apply = pyqtSignal(str, QColor, QColor, str)
     def __init__(self, x, y, w, h, name, cellColor, textColor):
         super().__init__(SETTINGS_WINDOW_NAME, x, y, w, h)
 
         self.dialog = None
         self.iconPath = None
-        self.cellColor = cellColor
-        self.textColor = textColor
 
         self.initUI(SETTINGS_WINDOW_NAME, x, y, w, h)
         
         # Block inputs to the mainWindow
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.initLayout(name)
+        self.initLayout(name, cellColor, textColor)
 
-    def initLayout(self, name):
+    def initLayout(self, name, initCellColor, initTextColor):
         grid = QGridLayout()
 
         # Label that says 'Name:'
@@ -46,12 +45,12 @@ class contentHeadSettingsWindow(Window):
 
         # PushButton to the right of the colorLabel that allows editing of color
         self.cellColorEdit = QPushButton(self)
-        self.cellColorEdit.clicked.connect(lambda color, type: self.openCellColorDialog(color, self.cellColorEdit))
+        self.cellColorEdit.clicked.connect(lambda: self.openColorDialog(initCellColor, self.cellColorEdit))
         self.cellColorEdit.setMinimumHeight(150)
         self.cellColorEdit.setStyleSheet (f"""
             QPushButton {{
                 border: 0px;
-                background: {self.cellColor.name()};
+                background: {initCellColor.name()};
             }}
         """)
 
@@ -60,12 +59,12 @@ class contentHeadSettingsWindow(Window):
 
         # PushButton to the right of the colorLabel that allows editing of color
         self.textColorEdit = QPushButton(self)
-        self.textColorEdit.clicked.connect(self.openTextColorDialog)
+        self.textColorEdit.clicked.connect(lambda: self.openColorDialog(initTextColor, self.textColorEdit))
         self.textColorEdit.setMinimumHeight(150)
         self.textColorEdit.setStyleSheet (f"""
             QPushButton {{
                 border: 0px;
-                background: {self.textColor.name()};
+                background: {initTextColor.name()};
             }}
         """)
 
@@ -86,59 +85,46 @@ class contentHeadSettingsWindow(Window):
         grid.addWidget(self.nameEdit, 0, 1, 1, -1)
         grid.addWidget(self.cellColorLabel, 1, 0)
         grid.addWidget(self.cellColorEdit, 1, 1, 2, 2)
-        grid.addWidget(self.iconEdit, 2, 0)
-        grid.addWidget(self.applyButton, 3, 1, 1, 1)
-        grid.addWidget(self.cancelButton, 3, 2, 1, 1)
+        grid.addWidget(self.textColorLabel, 2, 0)
+        grid.addWidget(self.textColorEdit, 2, 1, 1, 1)
+        grid.addWidget(self.iconEdit, 3, 2)
+        grid.addWidget(self.applyButton, 4, 1, 1, 1)
+        grid.addWidget(self.cancelButton, 4, 2, 1, 1)
 
         self.setLayout(grid)
 
     def sendData(self):
         """[Slot] Communicate backward to associated contentHead the text and color, then force close window to immediately update."""
         newText = self.nameEdit.text()
-        if newText[0] != '\n':
+        if newText and newText[0] != '\n':
             newText = '\n' + newText
         if self.dialog:
+            print("Dialog exists")
             newIconPath = self.dialog.selectedFiles()[0]
         else:
+            print("Dialog does not exist")
             newIconPath = None
-        self.apply.emit(newText, self.cellColor, newIconPath)
+        # Pass the currently selected colors (apparent in the pushButtons)
+        self.apply.emit(newText, self.cellColorEdit.palette().button().color(), self.textColorEdit.palette().button().color(), newIconPath)
         self.close()
 
     def openColorDialog(self, initColor, widget):
         """Open a colorDialog that prompts the user for an inputted color for the cell color"""
         self.dialog = QColorDialog()
         self.dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-        newColor = self.dialog.getColor(self.cellColor, self, "Color Picker")
+        newColor = self.dialog.getColor(initColor, self, "Color Picker")
 
         # Valid color implies the user did not click 'Cancel'
-        if newColor.isValid() and newColor != self.cellColor:
-            self.cellColor = newColor
-            # Update the pushButton's color for colorEdit
-            self.cellColorEdit.setStyleSheet (f"""
+        # Check for change before repainting widget
+        if newColor.isValid() and newColor != initColor:
+            # Update the widget's pushButton color to the new color
+            widget.setStyleSheet (f"""
                 QPushButton {{
                     border: 0px;
                     background: {newColor.name()};
                 }}
             """)
-        
-        self.dialog = None
-
-    def openTextColorDialog(self):
-        """Open a colorDialog that prompts the user for an inputted color for the cell color"""
-        self.dialog = QColorDialog()
-        self.dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-        newColor = self.dialog.getColor(self.cellColor, self, "Color Picker")
-
-        # Valid color implies the user did not click 'Cancel'
-        if newColor.isValid() and newColor != self.cellColor:
-            self.cellColor = newColor
-            # Update the pushButton's color for colorEdit
-            self.cellColorEdit.setStyleSheet (f"""
-                QPushButton {{
-                    border: 0px;
-                    background: {newColor.name()};
-                }}
-            """)
+            print("Set widget's color")
         
         self.dialog = None
 

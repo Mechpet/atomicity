@@ -63,6 +63,12 @@ class mainWrapper(QWidget):
 def main():
     app = QApplication(sys.argv)
 
+    
+    settings = QSettings("Mechpet", "Atomicity")
+    settings.beginGroup("contentRow")
+
+    settings.setValue("num", 0)
+
     window = mainWrapper()
 
     sys.exit(app.exec())

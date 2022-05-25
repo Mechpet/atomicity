@@ -92,9 +92,6 @@ class contentHead(QWidget):
         print(f"Num rows = {self.layout.rowCount()}")
         self.setLayout(self.layout)
         
-
-
-
     def paintEvent(self, e):
         qp = QPainter(self)
 
@@ -119,7 +116,7 @@ class contentHead(QWidget):
         qp.strokePath(path, qp.pen())
 
         # Set the text color
-        textPen = QPen(QColor(255, 0, 0), 0.5)
+        textPen = QPen(self.textColor, 0.5)
         qp.setPen(textPen)
         qp.drawText(rect, self.text, QTextOption(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop))
 
@@ -128,7 +125,7 @@ class contentHead(QWidget):
     def settingsWindow(self):
         # Doesn't work yet: when opened, change appearance of the pushButton
         self.btn.setProperty("opened", True)
-        self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.cellColor)
+        self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.cellColor, self.textColor)
         self.window.apply.connect(self.updateData)
         self.window.show()
 
@@ -142,35 +139,43 @@ class contentHead(QWidget):
         self.settingName = f"contentHead{self.index}.ini"
         self.settings = QSettings(self.settingName, QSettings.Format.IniFormat)
 
-    def updateData(self, newName, color, newIconPath):
+    def updateData(self, newName, newCellColor, newTextColor, newIconPath):
         """[Slot] Update the contentHead's text"""
         self.text = newName
-        self.cellColor = color
+        self.cellColor = newCellColor
+        self.textColor = newTextColor
+        # If the passed path exists, able to set the icon
         if self.window.verifyFile(newIconPath):
             self.iconPath = newIconPath
             newIcon = QIcon(self.iconPath)
             self.iconBtn.setIcon(newIcon)
+        # Update on local device
         self.synchronize()
     
     def synchronize(self):
         """Update all of the settings of the contentHead"""
         self.settings.setValue("text", self.text)
-        self.settings.setValue("red", self.cellColor.red())
-        self.settings.setValue("green", self.cellColor.green())
-        self.settings.setValue("blue", self.cellColor.blue())
+        self.settings.setValue("cellRed", self.cellColor.red())
+        self.settings.setValue("cellGreen", self.cellColor.green())
+        self.settings.setValue("cellBlue", self.cellColor.blue())
+        self.settings.setValue("textRed", self.textColor.red())
+        self.settings.setValue("textGreen", self.textColor.green())
+        self.settings.setValue("textBlue", self.textColor.blue())
         self.settings.setValue("path", self.iconPath)
         self.settings.sync()
 
     def fetch(self):
-        """Sets all of its attributes based on the settings"""
+        """Sets all of its attributes based on the currently set settings"""
         self.text = self.settings.value("text")
-        self.cellColor = QColor(int(self.settings.value("red")), int(self.settings.value("green")), int(self.settings.value("blue")))
+        self.cellColor = QColor(int(self.settings.value("cellRed")), int(self.settings.value("cellGreen")), int(self.settings.value("cellBlue")))
+        self.textColor = QColor(int(self.settings.value("textRed")), int(self.settings.value("textGreen")), int(self.settings.value("textBlue")))
         self.iconPath = self.settings.value("path")
 
     def default(self):
         """Sets all of its attributes to default settings and saves settings"""
         self.text = None
         self.cellColor = QColor(55, 55, 55)
+        self.textColor = QColor(0, 0, 0)
         self.iconPath = None
 
         self.synchronize()
