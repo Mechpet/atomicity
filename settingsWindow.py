@@ -18,12 +18,13 @@ acceptedExtensions = (
 class contentHeadSettingsWindow(Window):
     """A pop-up window that allows users to adjust the settings of contentHeads."""
     apply = pyqtSignal(str, QColor, str)
-    def __init__(self, x, y, w, h, name, color):
+    def __init__(self, x, y, w, h, name, cellColor, textColor):
         super().__init__(SETTINGS_WINDOW_NAME, x, y, w, h)
 
         self.dialog = None
         self.iconPath = None
-        self.color = color
+        self.cellColor = cellColor
+        self.textColor = textColor
 
         self.initUI(SETTINGS_WINDOW_NAME, x, y, w, h)
         
@@ -40,17 +41,31 @@ class contentHeadSettingsWindow(Window):
         # Line edit box to the right of the nameLabel
         self.nameEdit = QLineEdit(name, self)
 
-        # Label that says 'Edit color:'
-        self.colorLabel = QLabel("Edit color:", self)
+        # Label that says 'Edit cell color:'
+        self.cellColorLabel = QLabel("Edit cell color:", self)
 
         # PushButton to the right of the colorLabel that allows editing of color
-        self.colorEdit = QPushButton(self)
-        self.colorEdit.clicked.connect(self.openColorDialog)
-        self.colorEdit.setMinimumHeight(150)
-        self.colorEdit.setStyleSheet (f"""
+        self.cellColorEdit = QPushButton(self)
+        self.cellColorEdit.clicked.connect(lambda color, type: self.openCellColorDialog(color, self.cellColorEdit))
+        self.cellColorEdit.setMinimumHeight(150)
+        self.cellColorEdit.setStyleSheet (f"""
             QPushButton {{
                 border: 0px;
-                background: {self.color.name()};
+                background: {self.cellColor.name()};
+            }}
+        """)
+
+        # Label that says 'Edit text color:'
+        self.textColorLabel = QLabel("Edit text color:", self)
+
+        # PushButton to the right of the colorLabel that allows editing of color
+        self.textColorEdit = QPushButton(self)
+        self.textColorEdit.clicked.connect(self.openTextColorDialog)
+        self.textColorEdit.setMinimumHeight(150)
+        self.textColorEdit.setStyleSheet (f"""
+            QPushButton {{
+                border: 0px;
+                background: {self.textColor.name()};
             }}
         """)
 
@@ -69,8 +84,8 @@ class contentHeadSettingsWindow(Window):
         # Format the widgets in a gridLayout
         grid.addWidget(self.nameLabel, 0, 0)
         grid.addWidget(self.nameEdit, 0, 1, 1, -1)
-        grid.addWidget(self.colorLabel, 1, 0)
-        grid.addWidget(self.colorEdit, 1, 1, 2, 2)
+        grid.addWidget(self.cellColorLabel, 1, 0)
+        grid.addWidget(self.cellColorEdit, 1, 1, 2, 2)
         grid.addWidget(self.iconEdit, 2, 0)
         grid.addWidget(self.applyButton, 3, 1, 1, 1)
         grid.addWidget(self.cancelButton, 3, 2, 1, 1)
@@ -86,20 +101,39 @@ class contentHeadSettingsWindow(Window):
             newIconPath = self.dialog.selectedFiles()[0]
         else:
             newIconPath = None
-        self.apply.emit(newText, self.color, newIconPath)
+        self.apply.emit(newText, self.cellColor, newIconPath)
         self.close()
 
-    def openColorDialog(self):
-        """Open a colorDialog that prompts the user for an inputted color"""
+    def openColorDialog(self, initColor, widget):
+        """Open a colorDialog that prompts the user for an inputted color for the cell color"""
         self.dialog = QColorDialog()
         self.dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-        newColor = self.dialog.getColor(self.color, self, "Color Picker")
+        newColor = self.dialog.getColor(self.cellColor, self, "Color Picker")
 
         # Valid color implies the user did not click 'Cancel'
-        if newColor.isValid() and newColor != self.color:
-            self.color = newColor
+        if newColor.isValid() and newColor != self.cellColor:
+            self.cellColor = newColor
             # Update the pushButton's color for colorEdit
-            self.colorEdit.setStyleSheet (f"""
+            self.cellColorEdit.setStyleSheet (f"""
+                QPushButton {{
+                    border: 0px;
+                    background: {newColor.name()};
+                }}
+            """)
+        
+        self.dialog = None
+
+    def openTextColorDialog(self):
+        """Open a colorDialog that prompts the user for an inputted color for the cell color"""
+        self.dialog = QColorDialog()
+        self.dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
+        newColor = self.dialog.getColor(self.cellColor, self, "Color Picker")
+
+        # Valid color implies the user did not click 'Cancel'
+        if newColor.isValid() and newColor != self.cellColor:
+            self.cellColor = newColor
+            # Update the pushButton's color for colorEdit
+            self.cellColorEdit.setStyleSheet (f"""
                 QPushButton {{
                     border: 0px;
                     background: {newColor.name()};
