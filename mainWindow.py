@@ -4,7 +4,7 @@ import ctypes
 
 from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout
 from PyQt6.QtGui import QIcon
-from PyQt6.QtCore import Qt, QSettings
+from PyQt6.QtCore import Qt, QSettings, QDate
 from contentColumn import contentColumn
 from contentRow import contentRow
 from window import Window, APP_ID
@@ -37,8 +37,25 @@ class mainWrapper(QWidget):
 
         self.layout = QGridLayout()
         self.layout.addWidget(self.adder, 0, 0, 1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        self.layout.addWidget(self.contentRow, 0, 1, 1, 3)#, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        #self.layout.addWidget(self.dateColumn, 1, 0, 3, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        self.layout.addWidget(self.contentRow, 0, 1, 1, 3)
+        scroll1 = QScrollArea()
+        scroll1.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll1.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll1.horizontalScrollBar().setDisabled(True)
+        scroll1.setWidget(self.dateColumn)
+        self.layout.addWidget(scroll1, 1, 0, -1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+
+        dateColumn2 = dateColumn(QDate(2020, 3, 20))
+        scroll2 = QScrollArea()
+        scroll2.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll2.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll2.horizontalScrollBar().setDisabled(True)
+        scroll2.setWidget(dateColumn2)
+        self.layout.addWidget(scroll2, 1, 1, -1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+
+        scroll1.verticalScrollBar().valueChanged.connect(scroll2.verticalScrollBar().setValue)
+        scroll2.verticalScrollBar().valueChanged.connect(scroll1.verticalScrollBar().setValue)
+
         #self.layout.addWidget(self.contentGrid, 1, 1, 3, 1, Qt.AlignmentFlag.AlignLeft)
 
         self.setLayout(self.layout)

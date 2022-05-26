@@ -13,7 +13,7 @@ dayNames = {
 }
 
 class dateColumn(QWidget):
-    def __init__(self):
+    def __init__(self, firstDay = QDate.currentDate()):
         super().__init__()
         self.numDays = 14
         self.setStyleSheet("""
@@ -25,13 +25,13 @@ class dateColumn(QWidget):
                 font: 10pt Helvetica;
             }
         """)
-        self.initUI()
+        self.initUI(firstDay)
 
-    def initUI(self):
+    def initUI(self, firstDay):
         self.size = 200
         self.setMinimumSize(self.size, self.size)
 
-        self.topDate = QDate.currentDate()
+        self.topDate = firstDay
         self.dates = [self.topDate]
         for i in range(self.numDays):
             self.dates.append(self.dates[-1].addDays(-1))
