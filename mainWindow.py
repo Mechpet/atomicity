@@ -2,7 +2,7 @@
 import sys
 import ctypes
 
-from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout
+from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QSizePolicy, QPushButton
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt, QSettings, QDate
 from contentColumn import contentColumn
@@ -17,7 +17,23 @@ class mainWrapper(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.initUI()
+        self.testExpand()
+        #self.initUI()
+
+    def testExpand(self):
+        self.dateColumn = dateColumn()
+        self.scroll1 = QScrollArea()
+        self.scroll1.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.scroll1.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.scroll1.horizontalScrollBar().setDisabled(True)
+        self.scroll1.setWidget(self.dateColumn)
+        self.scroll1.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+
+        self.layout = QGridLayout()
+        self.layout.addWidget(self.scroll1, 0, 0, -1, 1)
+        self.layout.setRowStretch(0, 10)
+        self.setLayout(self.layout)
+        self.show()
 
     def initUI(self):
         """Initialize the interface"""
@@ -44,6 +60,7 @@ class mainWrapper(QWidget):
         scroll1.horizontalScrollBar().setDisabled(True)
         scroll1.setWidget(self.dateColumn)
         self.layout.addWidget(scroll1, 1, 0, -1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        scroll1.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         dateColumn2 = dateColumn(QDate(2020, 3, 20))
         scroll2 = QScrollArea()
@@ -51,7 +68,10 @@ class mainWrapper(QWidget):
         scroll2.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         scroll2.horizontalScrollBar().setDisabled(True)
         scroll2.setWidget(dateColumn2)
+        scroll2.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.layout.addWidget(scroll2, 1, 1, -1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+
+        self.layout.addWidget(QPushButton("Back to Top"), 2, 0, 1, 1)
 
         scroll1.verticalScrollBar().valueChanged.connect(scroll2.verticalScrollBar().setValue)
         scroll2.verticalScrollBar().valueChanged.connect(scroll1.verticalScrollBar().setValue)

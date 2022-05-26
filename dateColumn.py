@@ -40,7 +40,9 @@ class dateColumn(QWidget):
         for date in self.dates:
             dateLabel = QLabel(date.toString(Qt.DateFormat.RFC2822Date), self)
             dateLabel.setObjectName("dateLabel")
+            dateLabel.setWordWrap(True)
             dayLabel = QLabel(dayNames[date.dayOfWeek()], self)
+            dayLabel.setWordWrap(True)
             dayLabel.setObjectName("dayLabel")
             layout.addWidget(dateLabel)
             layout.addWidget(dayLabel, 0, Qt.AlignmentFlag.AlignHCenter)
