@@ -1,4 +1,5 @@
 from posixpath import split
+from tkinter import NONE
 from PyQt6.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QColorDialog, QFileDialog
 from PyQt6.QtCore import Qt, pyqtSignal, QFile
 from PyQt6.QtGui import QColor, QIcon
@@ -19,19 +20,19 @@ acceptedExtensions = (
 class contentHeadSettingsWindow(Window):
     """A pop-up window that allows users to adjust the settings of contentHeads."""
     apply = pyqtSignal(str, QColor, QColor, str)
-    def __init__(self, x, y, w, h, name, cellColor, textColor):
+    removeIconSignal = pyqtSignal()
+    def __init__(self, x, y, w, h, name, cellColor, textColor, iconPath):
         super().__init__(SETTINGS_WINDOW_NAME, x, y, w, h)
 
         self.dialog = None
-        self.iconPath = None
 
         self.initUI(SETTINGS_WINDOW_NAME, x, y, w, h)
         
         # Block inputs to the mainWindow
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.initLayout(name, cellColor, textColor)
+        self.initLayout(name, cellColor, textColor, iconPath)
 
-    def initLayout(self, name, initCellColor, initTextColor):
+    def initLayout(self, name, initCellColor, initTextColor, iconPath):
         grid = QGridLayout()
 
         # Label that says 'Name:'
@@ -68,6 +69,10 @@ class contentHeadSettingsWindow(Window):
             }}
         """)
 
+        # Line that allows editing of the icon 
+        self.iconLine = QLineEdit(iconPath, self)
+
+        # PushButton that allows editing of the icon that represents the habit
         icon = QIcon(r"images\appIcons\icon_edit.png")
         self.iconEdit = QPushButton(icon, "Edit icon", self)
         self.iconEdit.clicked.connect(self.openFileDialog)
@@ -85,11 +90,12 @@ class contentHeadSettingsWindow(Window):
         grid.addWidget(self.nameEdit, 0, 1, 1, -1)
         grid.addWidget(self.cellColorLabel, 1, 0)
         grid.addWidget(self.cellColorEdit, 1, 1, 2, 2)
-        grid.addWidget(self.textColorLabel, 2, 0)
-        grid.addWidget(self.textColorEdit, 2, 1, 1, 1)
-        grid.addWidget(self.iconEdit, 3, 2)
-        grid.addWidget(self.applyButton, 4, 1, 1, 1)
-        grid.addWidget(self.cancelButton, 4, 2, 1, 1)
+        grid.addWidget(self.textColorLabel, 3, 0)
+        grid.addWidget(self.textColorEdit, 3, 1, 1, 1)
+        grid.addWidget(self.iconLine, 4, 0, 1, 3)
+        grid.addWidget(self.iconEdit, 4, 3)
+        grid.addWidget(self.applyButton, 5, 2, 1, 1)
+        grid.addWidget(self.cancelButton, 5, 3, 1, 1)
 
         self.setLayout(grid)
 
@@ -98,12 +104,7 @@ class contentHeadSettingsWindow(Window):
         newText = self.nameEdit.text()
         if newText and newText[0] != '\n':
             newText = '\n' + newText
-        if self.dialog:
-            print("Dialog exists")
-            newIconPath = self.dialog.selectedFiles()[0]
-        else:
-            print("Dialog does not exist")
-            newIconPath = None
+        newIconPath = self.iconLine.text()
         # Pass the currently selected colors (apparent in the pushButtons)
         self.apply.emit(newText, self.cellColorEdit.palette().button().color(), self.textColorEdit.palette().button().color(), newIconPath)
         self.close()
@@ -140,10 +141,11 @@ class contentHeadSettingsWindow(Window):
         # Instead of 'Open' button, use 'Save' button
         self.dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
         # Set the initial directory to whatever directory the current iconPath resides in, if any
-        if QFile.exists(self.iconPath):
-            self.dialog.setDirectory(os.path.split(self.iconPath)[0])
+        if QFile.exists(self.iconLine.text()):
+            self.dialog.setDirectory(os.path.split(self.iconLine.text())[0])
 
         self.dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.dialog.fileSelected.connect(self.setIconPath)
         self.dialog.show()
 
     def verifyFile(self, fileName):
@@ -151,3 +153,6 @@ class contentHeadSettingsWindow(Window):
         # Must end with certain compatible extensions
         if fileName:
             return fileName.lower().endswith(acceptedExtensions)
+
+    def setIconPath(self):
+        self.iconLine.setText(self.dialog.selectedFiles()[0])

@@ -125,7 +125,7 @@ class contentHead(QWidget):
     def settingsWindow(self):
         # Doesn't work yet: when opened, change appearance of the pushButton
         self.btn.setProperty("opened", True)
-        self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.cellColor, self.textColor)
+        self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.cellColor, self.textColor, self.iconPath)
         self.window.apply.connect(self.updateData)
         self.window.show()
 
@@ -149,6 +149,10 @@ class contentHead(QWidget):
             self.iconPath = newIconPath
             newIcon = QIcon(self.iconPath)
             self.iconBtn.setIcon(newIcon)
+        else:
+            # Set current icon to null
+            self.iconPath = None
+            self.iconBtn.setIcon(QIcon())
         # Update on local device
         self.synchronize()
     
