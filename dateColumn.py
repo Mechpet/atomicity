@@ -47,5 +47,9 @@ class dateColumn(QWidget):
             layout.addWidget(dateLabel)
             layout.addWidget(dayLabel, 0, Qt.AlignmentFlag.AlignHCenter)
             layout.addSpacing(50)
-
+        
         self.setLayout(layout)
+
+    def setDate(self):
+        self.dialog = QCalendarWidget()
+        self.dialog.show()

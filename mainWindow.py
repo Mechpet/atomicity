@@ -2,7 +2,7 @@
 import sys
 import ctypes
 
-from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QSizePolicy, QPushButton
+from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QSizePolicy, QPushButton, QFrame, QLabel, QVBoxLayout
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt, QSettings, QDate
 from contentColumn import contentColumn
@@ -17,20 +17,22 @@ class mainWrapper(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.testExpand()
-        #self.initUI()
+        #self.testExpand()
+
+        self.initUI()
 
     def testExpand(self):
         self.dateColumn = dateColumn()
-        self.scroll1 = QScrollArea()
-        self.scroll1.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.scroll1.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.scroll1.horizontalScrollBar().setDisabled(True)
-        self.scroll1.setWidget(self.dateColumn)
-        self.scroll1.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.self.dateScroll = QScrollArea()
+        self.self.dateScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.self.dateScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.self.dateScroll.horizontalScrollBar().setDisabled(True)
+        self.self.dateScroll.setWidget(self.dateColumn)
+        self.self.dateScroll.setMaximumSize(self.dateColumn.width(), self.dateColumn.height())
+        #self.self.dateScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         self.layout = QGridLayout()
-        self.layout.addWidget(self.scroll1, 0, 0, -1, 1)
+        self.layout.addWidget(self.self.dateScroll, 0, 0, -1, 1)
         self.layout.setRowStretch(0, 10)
         self.setLayout(self.layout)
         self.show()
@@ -47,21 +49,34 @@ class mainWrapper(QWidget):
 
         self.contentRow = contentRow()
 
+        vbox = QVBoxLayout()
+
         self.dateColumn = dateColumn()
+        self.dateScroll = QScrollArea()
+        self.dateScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.dateScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.dateScroll.horizontalScrollBar().setDisabled(True)
+        self.dateScroll.setWidget(self.dateColumn)
+        self.dateScroll.setMaximumSize(self.dateColumn.width(), self.dateColumn.height())
+        self.dateScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.dateScroll.setFrameShape(QFrame.Shape.NoFrame)
+
+        self.dateEdit = QPushButton("Jump to date", self)
+        self.dateEdit.clicked.connect(self.dateColumn.setDate)
 
         self.contentGrid = contentGrid(cellType.binary)
 
+        vbox.addWidget(self.dateEdit)
+        vbox.addWidget(self.dateScroll)
+
         self.layout = QGridLayout()
+        
         self.layout.addWidget(self.adder, 0, 0, 1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
         self.layout.addWidget(self.contentRow, 0, 1, 1, 3)
-        scroll1 = QScrollArea()
-        scroll1.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll1.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll1.horizontalScrollBar().setDisabled(True)
-        scroll1.setWidget(self.dateColumn)
-        self.layout.addWidget(scroll1, 1, 0, -1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        scroll1.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.layout.addLayout(vbox, 1, 0, -1, 1)
+        self.layout.addWidget(QLabel("Copyright", self), 6, 7, 1, 1)
 
+        # Filler:
         dateColumn2 = dateColumn(QDate(2020, 3, 20))
         scroll2 = QScrollArea()
         scroll2.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -71,12 +86,8 @@ class mainWrapper(QWidget):
         scroll2.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.layout.addWidget(scroll2, 1, 1, -1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
-        self.layout.addWidget(QPushButton("Back to Top"), 2, 0, 1, 1)
-
-        scroll1.verticalScrollBar().valueChanged.connect(scroll2.verticalScrollBar().setValue)
-        scroll2.verticalScrollBar().valueChanged.connect(scroll1.verticalScrollBar().setValue)
-
-        #self.layout.addWidget(self.contentGrid, 1, 1, 3, 1, Qt.AlignmentFlag.AlignLeft)
+        self.dateScroll.verticalScrollBar().valueChanged.connect(scroll2.verticalScrollBar().setValue)
+        scroll2.verticalScrollBar().valueChanged.connect(self.dateScroll.verticalScrollBar().setValue)
 
         self.setLayout(self.layout)
 

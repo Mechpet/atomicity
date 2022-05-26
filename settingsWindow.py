@@ -155,4 +155,5 @@ class contentHeadSettingsWindow(Window):
             return fileName.lower().endswith(acceptedExtensions)
 
     def setIconPath(self):
+        """Set the textEdit to the icon path selected in the fileDialog"""
         self.iconLine.setText(self.dialog.selectedFiles()[0])
