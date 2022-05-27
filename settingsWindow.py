@@ -1,5 +1,3 @@
-from posixpath import split
-from tkinter import NONE
 from PyQt6.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QColorDialog, QFileDialog
 from PyQt6.QtCore import Qt, pyqtSignal, QFile
 from PyQt6.QtGui import QColor, QIcon

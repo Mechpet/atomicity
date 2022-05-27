@@ -17,25 +17,7 @@ class mainWrapper(QWidget):
     def __init__(self):
         super().__init__()
 
-        #self.testExpand()
-
         self.initUI()
-
-    def testExpand(self):
-        self.dateColumn = dateColumn()
-        self.self.dateScroll = QScrollArea()
-        self.self.dateScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.self.dateScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.self.dateScroll.horizontalScrollBar().setDisabled(True)
-        self.self.dateScroll.setWidget(self.dateColumn)
-        self.self.dateScroll.setMaximumSize(self.dateColumn.width(), self.dateColumn.height())
-        #self.self.dateScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-
-        self.layout = QGridLayout()
-        self.layout.addWidget(self.self.dateScroll, 0, 0, -1, 1)
-        self.layout.setRowStretch(0, 10)
-        self.setLayout(self.layout)
-        self.show()
 
     def initUI(self):
         """Initialize the interface"""
@@ -44,12 +26,10 @@ class mainWrapper(QWidget):
         self.setWindowTitle('Atomicity')
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_ID)
 
+        # Initialize widgets
         self.adder = contentAdder()
-        self.adder.added.connect(self.addHeader)
 
         self.contentRow = contentRow()
-
-        vbox = QVBoxLayout()
 
         self.dateColumn = dateColumn()
         self.dateScroll = QScrollArea()
@@ -62,10 +42,15 @@ class mainWrapper(QWidget):
         self.dateScroll.setFrameShape(QFrame.Shape.NoFrame)
 
         self.dateEdit = QPushButton("Jump to date", self)
-        self.dateEdit.clicked.connect(self.dateColumn.setDate)
 
         self.contentGrid = contentGrid(cellType.binary)
 
+        # Connect widgets
+        self.adder.added.connect(self.contentRow.addHeader)
+        self.dateEdit.clicked.connect(self.dateColumn.setDate)
+
+        # Layout the widgets
+        vbox = QVBoxLayout()
         vbox.addWidget(self.dateEdit)
         vbox.addWidget(self.dateScroll)
 
@@ -104,8 +89,7 @@ class mainWrapper(QWidget):
         self.setGeometry(300, 300, 650, 550)
         self.show()
 
-    def addHeader(self):
-        self.contentRow.addHeader()
+    
         
 
 def main():
