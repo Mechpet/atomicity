@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QHBoxLayout, QWidget
-from PyQt6.QtCore import QSettings
+from PyQt6.QtCore import QSettings, QEvent, Qt
 from contentHead import contentHead
 
 # Layout of contentHeaders in a horizontal row
@@ -7,6 +7,7 @@ class contentRow(QWidget):
     """A row of contentHeads."""
     def __init__(self):
         super().__init__()
+        self.installEventFilter(self)
         self.settings = QSettings("Mechpet", "Atomicity")
         self.settings.beginGroup("contentRow")
 
@@ -35,3 +36,28 @@ class contentRow(QWidget):
         self.setLayout(self.layout)
 
         self.list[-1].settingsWindow()
+
+    def eventFilter(self, object, event):
+        """Filter mouse events"""
+        if event.type() == QEvent.Type.MouseButtonPress:
+            self.mousePressEvent(event)
+        return super().eventFilter(object, event)
+    
+    def mousePressEvent(self, event):
+        """When the mouse left-clicks on a contentHead, store information about the item being moved"""
+        if event.button() == Qt.MouseButton.LeftButton:
+            #self.showAllGeometries()
+            self.selectedIndex = self.getIndex(event.position().x(), event.position().y())
+
+    def getIndex(self, x, y):
+        """Get the item index of the content"""
+        for item in self.list:
+            # Iterate through list of contentHeads, looking for the one that the user selected
+            print(f"Geometry = {item.geometry()}")
+            if item.geometry().contains(x, y):
+                self.layout.removeWidget(item)
+        return None
+
+    def showAllGeometries(self):
+        for item in self.list:
+            print(f"Geometry = {item.geometry()}")

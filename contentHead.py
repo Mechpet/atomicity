@@ -19,10 +19,8 @@ class contentHead(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.minSize = 100
-        self.maxSize = 200
-        self.setMinimumSize(self.minSize, self.minSize)
-        self.setMaximumSize(self.maxSize, self.maxSize)
+        self.size = 200
+        self.setFixedSize(self.size, self.size)
         if self.index >= 0:
             # Open the correct settings file
             self.initSettings()
