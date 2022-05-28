@@ -117,9 +117,8 @@ class contentHead(QWidget):
     def settingsWindow(self):
         # Doesn't work yet: when opened, change appearance of the pushButton
         self.btn.setProperty("opened", True)
-        self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.cellColor, self.textColor, self.iconPath)
+        self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.cellColor, self.textColor, self.iconPath, self)
         self.window.apply.connect(self.updateData)
-        self.window.delButton.clicked.connect(self.delData)
         self.window.show()
 
     def setIcon(self):
@@ -182,6 +181,7 @@ class contentHead(QWidget):
         """Delete the instance"""
         if self.parent is not None:
             self.parent.deleteHead(self.index)
-            os.remove(self.settingName)
+            self.parent.renameHeads(self.index)
+            self.window.close()
         else:
             print("Parent is None")

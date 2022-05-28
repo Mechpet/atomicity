@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QColorDialog, QFileDialog
+from PyQt6.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QColorDialog, QFileDialog, QHBoxLayout
 from PyQt6.QtCore import Qt, pyqtSignal, QFile
 from PyQt6.QtGui import QColor, QIcon
 import os
@@ -18,11 +18,13 @@ acceptedExtensions = (
 class contentHeadSettingsWindow(Window):
     """A pop-up window that allows users to adjust the settings of contentHeads."""
     apply = pyqtSignal(str, QColor, QColor, str)
+    delete = pyqtSignal()
     removeIconSignal = pyqtSignal()
-    def __init__(self, x, y, w, h, name, cellColor, textColor, iconPath):
+    def __init__(self, x, y, w, h, name, cellColor, textColor, iconPath, instance):
         super().__init__(SETTINGS_WINDOW_NAME, x, y, w, h)
 
         self.dialog = None
+        self.instance = instance
 
         self.initUI(SETTINGS_WINDOW_NAME, x, y, w, h)
         
@@ -77,6 +79,7 @@ class contentHeadSettingsWindow(Window):
 
         # PushButton on the bottom-left corner to delete the contentHead and all of its associated data
         self.delButton = QPushButton("Delete", self)
+        self.delButton.clicked.connect(self.openConfirmDialog)
 
         # PushButton on the bottom-right corner that allows applying the settings
         self.applyButton = QPushButton("Apply", self)
@@ -148,6 +151,19 @@ class contentHeadSettingsWindow(Window):
 
         self.dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.dialog.fileSelected.connect(self.setIconPath)
+        self.dialog.show()
+
+    def openConfirmDialog(self):
+        self.dialog = Window("Confirmation", 500, 500, 150, 150)
+        layout = QHBoxLayout()
+        confirmBtn = QPushButton("Confirm")
+        confirmBtn.clicked.connect(self.instance.delData)
+        cancelBtn = QPushButton("Cancel")
+        cancelBtn.clicked.connect(self.dialog.close)
+        layout.addWidget(confirmBtn)
+        layout.addWidget(cancelBtn)
+        self.dialog.setLayout(layout)
+        self.dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.dialog.show()
 
     def verifyFile(self, fileName):

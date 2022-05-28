@@ -1,6 +1,8 @@
 from PyQt6.QtWidgets import QHBoxLayout, QWidget
 from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData, QPoint
 from PyQt6.QtGui import QDrag
+import os
+
 from contentHead import contentHead
 
 # Layout of contentHeaders in a horizontal row
@@ -81,6 +83,13 @@ class contentRow(QWidget):
         # Delete all references to the widget
         self.layout.removeWidget(self.list[index])
         del self.list[index]
+        self.settings.setValue("num", len(self.list))
+
+    def renameHeads(self, index):
+        filePrefix = "contentHead"
+        os.remove(f"{filePrefix}{str(index)}.ini")
+        for i in range(index + 1, len(self.list) + 1):
+            os.rename(f"{filePrefix}{str(i)}.ini", f"{filePrefix}{str(i - 1)}.ini")
 
     def showAllGeometries(self):
         for item in self.list:
