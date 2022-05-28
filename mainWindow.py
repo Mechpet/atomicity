@@ -99,8 +99,6 @@ def main():
     settings = QSettings("Mechpet", "Atomicity")
     settings.beginGroup("contentRow")
 
-    settings.setValue("num", 0)
-
     window = mainWrapper()
 
     sys.exit(app.exec())

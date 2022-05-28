@@ -2,6 +2,8 @@
 from PyQt6.QtWidgets import QWidget, QPushButton, QDialog, QGridLayout, QVBoxLayout, QLabel, QSpacerItem
 from PyQt6.QtGui import QPainter, QPainterPath, QBrush, QPen, QColor, QTextOption, QCursor, QIcon
 from PyQt6.QtCore import Qt, QRectF, QSettings, QSize, QFile
+import os
+
 from settingsWindow import contentHeadSettingsWindow
 
 # # # Attributes:
@@ -11,25 +13,22 @@ from settingsWindow import contentHeadSettingsWindow
 # `index` = Position in the contentRow (negative implies that the contentHead is newly constructed) {int}.
 class contentHead(QWidget):
     """A block that acts as the head of the list of contentCells."""
-    def __init__(self, index):
-        super().__init__()
+    def __init__(self, index, parent = None):
+        super().__init__(parent)
 
         self.index = index
+        self.parent = parent
 
         self.initUI()
 
     def initUI(self):
         self.size = 200
         self.setFixedSize(self.size, self.size)
-        if self.index >= 0:
-            # Open the correct settings file
-            self.initSettings()
+        if self.initSettings():
+            # Settings exist already; just fetch the data
             self.fetch()
         else:
-            # Default settings
-            self.index = abs(self.index + 1)
-            # Open the correct settings file
-            self.initSettings()
+            # Settings don't exist already; default the data
             self.default()
 
         self.layout = QGridLayout()
@@ -82,12 +81,7 @@ class contentHead(QWidget):
         for i in range(10):
             self.layout.setColumnStretch(i, 1)
         self.layout.addWidget(self.iconBtn, 0, 0, 3, 3)
-        for i in range(10):
-            print(f"Column {i} stretch: {self.layout.columnStretch(i)}")
-            print(f"Column {i} minWidth: {self.layout.columnMinimumWidth(i)}")
         self.layout.addWidget(self.btn, 0, 9, 1, 1)
-        print(f"Num columns = {self.layout.columnCount()}")
-        print(f"Num rows = {self.layout.rowCount()}")
         self.setLayout(self.layout)
         
     def paintEvent(self, e):
@@ -125,6 +119,7 @@ class contentHead(QWidget):
         self.btn.setProperty("opened", True)
         self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.cellColor, self.textColor, self.iconPath)
         self.window.apply.connect(self.updateData)
+        self.window.delButton.clicked.connect(self.delData)
         self.window.show()
 
     def setIcon(self):
@@ -136,6 +131,7 @@ class contentHead(QWidget):
     def initSettings(self):
         self.settingName = f"contentHead{self.index}.ini"
         self.settings = QSettings(self.settingName, QSettings.Format.IniFormat)
+        return QFile.exists(self.settingName)
 
     def updateData(self, newName, newCellColor, newTextColor, newIconPath):
         """[Slot] Update the contentHead's text"""
@@ -181,3 +177,11 @@ class contentHead(QWidget):
         self.iconPath = None
 
         self.synchronize()
+    
+    def delData(self):
+        """Delete the instance"""
+        if self.parent is not None:
+            self.parent.deleteHead(self.index)
+            os.remove(self.settingName)
+        else:
+            print("Parent is None")

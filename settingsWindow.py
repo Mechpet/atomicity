@@ -75,6 +75,9 @@ class contentHeadSettingsWindow(Window):
         self.iconEdit = QPushButton(icon, "Edit icon", self)
         self.iconEdit.clicked.connect(self.openFileDialog)
 
+        # PushButton on the bottom-left corner to delete the contentHead and all of its associated data
+        self.delButton = QPushButton("Delete", self)
+
         # PushButton on the bottom-right corner that allows applying the settings
         self.applyButton = QPushButton("Apply", self)
         self.applyButton.clicked.connect(self.sendData)
@@ -92,6 +95,7 @@ class contentHeadSettingsWindow(Window):
         grid.addWidget(self.textColorEdit, 3, 1, 1, 1)
         grid.addWidget(self.iconLine, 4, 0, 1, 3)
         grid.addWidget(self.iconEdit, 4, 3)
+        grid.addWidget(self.delButton, 5, 0, 1, 1)
         grid.addWidget(self.applyButton, 5, 2, 1, 1)
         grid.addWidget(self.cancelButton, 5, 3, 1, 1)
 
@@ -155,3 +159,4 @@ class contentHeadSettingsWindow(Window):
     def setIconPath(self):
         """Set the textEdit to the icon path selected in the fileDialog"""
         self.iconLine.setText(self.dialog.selectedFiles()[0])
+

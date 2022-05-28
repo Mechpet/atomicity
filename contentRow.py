@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QHBoxLayout, QWidget
-from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData
-from PyQt6.QtGui import QDrag, QPixmap, QImage
+from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData, QPoint
+from PyQt6.QtGui import QDrag
 from contentHead import contentHead
 
 # Layout of contentHeaders in a horizontal row
@@ -19,7 +19,7 @@ class contentRow(QWidget):
 
         if self.settings.value("num"):
             for i in range(int(self.settings.value("num"))):
-                self.list.append(contentHead(i))
+                self.list.append(contentHead(i, self))
                 self.layout.addWidget(self.list[-1])
         else:
             # The key "num" is not a QString of an integer
@@ -29,11 +29,10 @@ class contentRow(QWidget):
 
     def addHeader(self):
         # Create a new contentHead devoid of settings
-        self.list.append(contentHead(-(len(self.list) + 1)))
+        self.list.append(contentHead(len(self.list), self))
         # Set the index of the contentHead to be at the end of the row
         self.layout.addWidget(self.list[-1])
         self.settings.setValue("num", len(self.list))
-        print(self.settings.value("num"))
 
         self.setLayout(self.layout)
 
@@ -60,6 +59,9 @@ class contentRow(QWidget):
             pixmap = self.selected.grab()
             mimedata = QMimeData()
             mimedata.setImageData(pixmap)
+            dragged.setHotSpot(QPoint(0, 0))
+            print(f"Position = {self.selected.pos().x()}, {self.selected.pos().y()}")
+            print(f"Hot spot = {dragged.hotSpot().x()}, {dragged.hotSpot().y()}")
             dragged.setMimeData(mimedata)
             dragged.setPixmap(pixmap)
             dragged.setHotSpot(event.pos())
