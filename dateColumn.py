@@ -65,7 +65,7 @@ class dateColumn(QWidget):
             self.dayLabels[i].setText(dayNames[self.dates[-1].dayOfWeek()])
             self.dates.append(self.dates[-1].addDays(-1))
 
-        if self.dialog:
+        if self.dialog is not None:
             self.dialog.close()
 
     def setDate(self):
