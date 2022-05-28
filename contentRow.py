@@ -57,12 +57,11 @@ class contentRow(QWidget):
         """When the mouse moves and has selected a widget, enable dragging and dropping of the widget"""
         if event.buttons() & Qt.MouseButton.LeftButton and self.selected is not None:
             dragged = QDrag(self.selected)
-            pix = QImage()
-            self.selected.render(pix)
+            pixmap = self.selected.grab()
             mimedata = QMimeData()
-            mimedata.setImageData(pix)
+            mimedata.setImageData(pixmap)
             dragged.setMimeData(mimedata)
-            dragged.setPixmap(QPixmap.fromImage(pix))
+            dragged.setPixmap(pixmap)
             dragged.setHotSpot(event.pos())
             dragged.exec()
 
