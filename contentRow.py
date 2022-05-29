@@ -30,6 +30,7 @@ class contentRow(QWidget):
         self.setLayout(self.layout)
 
     def addHeader(self):
+        """Append a new contentHead to the list"""
         # Create a new contentHead devoid of settings
         self.list.append(contentHead(len(self.list), self))
         # Set the index of the contentHead to be at the end of the row
@@ -61,12 +62,11 @@ class contentRow(QWidget):
             pixmap = self.selected.grab()
             mimedata = QMimeData()
             mimedata.setImageData(pixmap)
-            dragged.setHotSpot(QPoint(0, 0))
             print(f"Position = {self.selected.pos().x()}, {self.selected.pos().y()}")
             print(f"Hot spot = {dragged.hotSpot().x()}, {dragged.hotSpot().y()}")
             dragged.setMimeData(mimedata)
             dragged.setPixmap(pixmap)
-            dragged.setHotSpot(event.pos())
+            dragged.setHotSpot(event.pos() - self.selected.pos())
             dragged.exec()
 
 
@@ -86,6 +86,7 @@ class contentRow(QWidget):
         self.settings.setValue("num", len(self.list))
 
     def renameHeads(self, index):
+        """Rename all the contentHead ini files starting from the given index"""
         filePrefix = "contentHead"
         os.remove(f"{filePrefix}{str(index)}.ini")
         for i in range(index + 1, len(self.list) + 1):

@@ -85,6 +85,7 @@ class contentHead(QWidget):
         self.setLayout(self.layout)
         
     def paintEvent(self, e):
+        """Paint the rounded rectangular shape of the contentHead based on the selected color"""
         qp = QPainter(self)
 
         # Initialize a pen color
@@ -115,19 +116,21 @@ class contentHead(QWidget):
         qp.end()
 
     def settingsWindow(self):
-        # Doesn't work yet: when opened, change appearance of the pushButton
+        """Open a new window that takes priority over the main application"""
         self.btn.setProperty("opened", True)
         self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.cellColor, self.textColor, self.iconPath, self)
         self.window.apply.connect(self.updateData)
         self.window.show()
 
     def setIcon(self):
+        """Set the icon of the contentHead quickly"""
         self.settingsWindow()
         self.window.openFileDialog()
         if QFile.exists(self.iconPath):
             self.alert.close()
 
     def initSettings(self):
+        """Initialize the settings attribute to what it *should* be"""
         self.settingName = f"contentHead{self.index}.ini"
         self.settings = QSettings(self.settingName, QSettings.Format.IniFormat)
         return QFile.exists(self.settingName)
@@ -180,8 +183,10 @@ class contentHead(QWidget):
     def delData(self):
         """Delete the instance"""
         if self.parent is not None:
+            self.window.instance = None
+            self.window.dialog.close()
+            self.window.close()
             self.parent.deleteHead(self.index)
             self.parent.renameHeads(self.index)
-            self.window.close()
         else:
             print("Parent is None")

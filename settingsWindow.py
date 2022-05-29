@@ -33,6 +33,7 @@ class contentHeadSettingsWindow(Window):
         self.initLayout(name, cellColor, textColor, iconPath)
 
     def initLayout(self, name, initCellColor, initTextColor, iconPath):
+        """Initialize the variable types of the window based on the appearance of the instance"""
         grid = QGridLayout()
 
         # Label that says 'Name:'
@@ -154,14 +155,20 @@ class contentHeadSettingsWindow(Window):
         self.dialog.show()
 
     def openConfirmDialog(self):
-        self.dialog = Window("Confirmation", 500, 500, 150, 150)
-        layout = QHBoxLayout()
+        """Opens a confirmation window that asks for the user to confirm deletion"""
+        self.dialog = Window("Confirmation", 500, 500, 300, 300)
+
+        queryLabel = QLabel("Are you sure you want to delete this habit?")
         confirmBtn = QPushButton("Confirm")
         confirmBtn.clicked.connect(self.instance.delData)
         cancelBtn = QPushButton("Cancel")
         cancelBtn.clicked.connect(self.dialog.close)
-        layout.addWidget(confirmBtn)
-        layout.addWidget(cancelBtn)
+
+        layout = QGridLayout()
+        layout.addWidget(queryLabel, 0, 0, 3, 1)
+        layout.addWidget(confirmBtn, 1, 0, 1, 1)
+        layout.addWidget(cancelBtn, 1, 2, 1, 1)
+
         self.dialog.setLayout(layout)
         self.dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.dialog.show()

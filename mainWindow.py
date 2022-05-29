@@ -5,9 +5,8 @@ import ctypes
 from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QSizePolicy, QPushButton, QFrame, QLabel, QVBoxLayout
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt, QSettings, QDate
-from contentColumn import contentColumn
 from contentRow import contentRow
-from window import Window, APP_ID
+from window import APP_ID
 from dateColumn import dateColumn
 from contentAdder import contentAdder
 from contentCell import cellType
@@ -88,9 +87,6 @@ class mainWrapper(QWidget):
 
         self.setGeometry(300, 300, 650, 550)
         self.show()
-
-    
-        
 
 def main():
     app = QApplication(sys.argv)

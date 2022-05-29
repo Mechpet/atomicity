@@ -1,8 +1,6 @@
-from PyQt6.QtWidgets import QWidget, QPushButton, QVBoxLayout
+from PyQt6.QtWidgets import QWidget, QPushButton
 from PyQt6.QtGui import QIcon, QCursor
 from PyQt6.QtCore import QSize, Qt, pyqtSignal
-from addWindow import addWindow
-
 
 class contentAdder(QWidget):
     """Fixed cell that allows adding new contentHeaders"""
