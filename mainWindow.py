@@ -91,7 +91,6 @@ class mainWrapper(QWidget):
 def main():
     app = QApplication(sys.argv)
 
-    
     settings = QSettings("Mechpet", "Atomicity")
     settings.beginGroup("contentRow")
 

@@ -10,7 +10,11 @@ class contentRow(QWidget):
     """A row of contentHeads."""
     def __init__(self):
         super().__init__()
-        self.installEventFilter(self)
+        # Install continuous mouse tracking
+        self.dragged = None
+        self.setMouseTracking(True)
+        #self.installEventFilter(self)
+
         self.settings = QSettings("Mechpet", "Atomicity")
         self.settings.beginGroup("contentRow")
 
@@ -43,32 +47,39 @@ class contentRow(QWidget):
 
     def eventFilter(self, object, event):
         """Filter mouse events"""
+        print("Result is false")
+        res = False
         if event.type() == QEvent.Type.MouseButtonPress:
             self.mousePressEvent(event)
         elif event.type() == QEvent.Type.MouseMove:
             self.mouseMoveEvent(event)
-        return super().eventFilter(object, event)
+        return res
     
     def mousePressEvent(self, event):
         """When the mouse left-clicks on a contentHead, store information about the item being moved"""
         if event.button() == Qt.MouseButton.LeftButton:
             #self.showAllGeometries()
+            print("Sup")
             self.getSelected(event.position().x(), event.position().y())
     
     def mouseMoveEvent(self, event):
         """When the mouse moves and has selected a widget, enable dragging and dropping of the widget"""
-        if event.buttons() & Qt.MouseButton.LeftButton and self.selected is not None:
-            dragged = QDrag(self.selected)
+        if self.dragged is not None:
+            print("MOVING NOW")
+        # If the user just selected a widget: (must initialize the drag instance)
+        elif event.buttons() & Qt.MouseButton.LeftButton and self.selected is not None:
+            print("CREATING DRAG")
+            # Set the dragged image to the selected widget
+            self.dragged = QDrag(self.selected)
             pixmap = self.selected.grab()
             mimedata = QMimeData()
             mimedata.setImageData(pixmap)
-            print(f"Position = {self.selected.pos().x()}, {self.selected.pos().y()}")
-            print(f"Hot spot = {dragged.hotSpot().x()}, {dragged.hotSpot().y()}")
-            dragged.setMimeData(mimedata)
-            dragged.setPixmap(pixmap)
-            dragged.setHotSpot(event.pos() - self.selected.pos())
-            dragged.exec()
-
+            self.dragged.setMimeData(mimedata)
+            self.dragged.setPixmap(pixmap)
+            # Set the drag image at the cursor location
+            self.dragged.setHotSpot(event.pos() - self.selected.pos())
+            self.dragged.exec()
+            self.dragged = None
 
     def getSelected(self, x, y):
         """Get the item index of the content"""
