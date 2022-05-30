@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QHBoxLayout, QWidget
-from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData, QPoint
+from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData, QThreadPool, QRunnable
 from PyQt6.QtGui import QDrag
 import os
 
@@ -10,6 +10,8 @@ class contentRow(QWidget):
     """A row of contentHeads."""
     def __init__(self):
         super().__init__()
+
+        self.threadpool = QThreadPool()
         # Install continuous mouse tracking
         self.dragged = None
         self.setMouseTracking(True)
@@ -64,6 +66,7 @@ class contentRow(QWidget):
     
     def mouseMoveEvent(self, event):
         """When the mouse moves and has selected a widget, enable dragging and dropping of the widget"""
+        print("Entering mouse move handler")
         if self.dragged is not None:
             print("MOVING NOW")
         # If the user just selected a widget: (must initialize the drag instance)
@@ -78,6 +81,7 @@ class contentRow(QWidget):
             self.dragged.setPixmap(pixmap)
             # Set the drag image at the cursor location
             self.dragged.setHotSpot(event.pos() - self.selected.pos())
+            self.threadpool.start(previewWorker(self.dragged, self))
             self.dragged.exec()
             self.dragged = None
 
@@ -106,3 +110,15 @@ class contentRow(QWidget):
     def showAllGeometries(self):
         for item in self.list:
             print(f"Geometry = {item.geometry()}")
+
+class previewWorker(QRunnable):
+    def __init__(self, dragObject, instance):
+        super().__init__()
+        self.dragObject = dragObject
+        self.instance = instance
+
+    def run(self):
+        print("Thread start")
+        while self.dragObject:
+            self.instance.showAllGeometries()
+        print("Thread complete")
