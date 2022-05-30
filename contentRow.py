@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QHBoxLayout, QWidget
-from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData, QThreadPool, QRunnable
+from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData
 from PyQt6.QtGui import QDrag
 import os
 
@@ -11,11 +11,11 @@ class contentRow(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.threadpool = QThreadPool()
         # Install continuous mouse tracking
         self.dragged = None
+        self.setAcceptDrops(True)
         self.setMouseTracking(True)
-        #self.installEventFilter(self)
+        self.installEventFilter(self)
 
         self.settings = QSettings("Mechpet", "Atomicity")
         self.settings.beginGroup("contentRow")
@@ -35,6 +35,14 @@ class contentRow(QWidget):
 
         self.setLayout(self.layout)
 
+    def dragEnterEvent(self, e):
+        """Display the cursor as accepting drag-and-drop events"""
+        e.accept()
+
+    def dragMoveEvent(self, e):
+        """As the dragged widget moves, show the preview of the contentRow"""
+        print("Drag move")
+        
     def addHeader(self):
         """Append a new contentHead to the list"""
         # Create a new contentHead devoid of settings
@@ -49,49 +57,52 @@ class contentRow(QWidget):
 
     def eventFilter(self, object, event):
         """Filter mouse events"""
-        print("Result is false")
         res = False
-        if event.type() == QEvent.Type.MouseButtonPress:
-            self.mousePressEvent(event)
-        elif event.type() == QEvent.Type.MouseMove:
-            self.mouseMoveEvent(event)
+        if object is self:
+            if event.type() == QEvent.Type.MouseButtonPress:
+                self.mousePressEvent(event)
+            elif event.type() == QEvent.Type.MouseMove:
+                self.mouseMoveEvent(event)
         return res
-    
+
     def mousePressEvent(self, event):
         """When the mouse left-clicks on a contentHead, store information about the item being moved"""
         if event.button() == Qt.MouseButton.LeftButton:
-            #self.showAllGeometries()
-            print("Sup")
             self.getSelected(event.position().x(), event.position().y())
     
     def mouseMoveEvent(self, event):
         """When the mouse moves and has selected a widget, enable dragging and dropping of the widget"""
-        print("Entering mouse move handler")
-        if self.dragged is not None:
-            print("MOVING NOW")
         # If the user just selected a widget: (must initialize the drag instance)
-        elif event.buttons() & Qt.MouseButton.LeftButton and self.selected is not None:
-            print("CREATING DRAG")
+        if event.buttons() & Qt.MouseButton.LeftButton and self.selected is not None:
             # Set the dragged image to the selected widget
-            self.dragged = QDrag(self.selected)
             pixmap = self.selected.grab()
             mimedata = QMimeData()
             mimedata.setImageData(pixmap)
+
+            self.dragged = QDrag(self.selected)
             self.dragged.setMimeData(mimedata)
             self.dragged.setPixmap(pixmap)
+
             # Set the drag image at the cursor location
             self.dragged.setHotSpot(event.pos() - self.selected.pos())
-            self.threadpool.start(previewWorker(self.dragged, self))
             self.dragged.exec()
+
+            # Clear the instances
             self.dragged = None
+            self.selected = None
 
     def getSelected(self, x, y):
-        """Get the item index of the content"""
+        """Get the item index of the content using linear search"""
         for widget in self.list:
             # Iterate through list of contentHeads, looking for the one that the user selected
             if widget.geometry().contains(x, y):
-                # Found the contentHead that the user clicked on
+                # Found the contentHead that the user clicked on; end method
                 self.selected = widget
+                return
+
+    def getSelectedBinary(self, x, y):
+        """Get the item index of the content using binary search"""
+        return 
 
     def deleteHead(self, index):
         """Deletes a contentHead from the row; assumes that the contentHead exists"""
@@ -110,15 +121,3 @@ class contentRow(QWidget):
     def showAllGeometries(self):
         for item in self.list:
             print(f"Geometry = {item.geometry()}")
-
-class previewWorker(QRunnable):
-    def __init__(self, dragObject, instance):
-        super().__init__()
-        self.dragObject = dragObject
-        self.instance = instance
-
-    def run(self):
-        print("Thread start")
-        while self.dragObject:
-            self.instance.showAllGeometries()
-        print("Thread complete")
