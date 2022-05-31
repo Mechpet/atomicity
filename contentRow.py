@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QHBoxLayout, QWidget
 from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData
 from PyQt6.QtGui import QDrag
+from math import floor
 import os
 
 from contentHead import contentHead
@@ -68,7 +69,7 @@ class contentRow(QWidget):
     def mousePressEvent(self, event):
         """When the mouse left-clicks on a contentHead, store information about the item being moved"""
         if event.button() == Qt.MouseButton.LeftButton:
-            self.getSelected(event.position().x(), event.position().y())
+            self.getSelectedBinary(event.position().x(), event.position().y())
     
     def mouseMoveEvent(self, event):
         """When the mouse moves and has selected a widget, enable dragging and dropping of the widget"""
@@ -102,6 +103,22 @@ class contentRow(QWidget):
 
     def getSelectedBinary(self, x, y):
         """Get the item index of the content using binary search"""
+        low = 0
+        high = len(self.list) - 1
+
+        while low <= high:
+            mid = floor((high + low) / 2)
+        
+            if self.list[mid].geometry().contains(x, y):
+                self.selected = self.list[mid]
+                return 
+            elif self.list[mid].geometry().x() < x:
+                low = mid + 1
+            elif self.list[mid].geometry().x() > x:
+                high = mid - 1
+
+
+
         return 
 
     def deleteHead(self, index):
