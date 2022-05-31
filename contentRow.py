@@ -1,6 +1,6 @@
-from PyQt6.QtWidgets import QHBoxLayout, QWidget
+from PyQt6.QtWidgets import QHBoxLayout, QWidget, QStackedLayout
 from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData
-from PyQt6.QtGui import QDrag
+from PyQt6.QtGui import QDrag, QPixmap
 from math import floor
 import os
 
@@ -42,7 +42,7 @@ class contentRow(QWidget):
 
     def dragMoveEvent(self, e):
         """As the dragged widget moves, show the preview of the contentRow"""
-        print("Drag move")
+        print(f"Event position = ({e.position().x()}, {e.position().y()})")
         
     def addHeader(self):
         """Append a new contentHead to the list"""
@@ -76,7 +76,9 @@ class contentRow(QWidget):
         # If the user just selected a widget: (must initialize the drag instance)
         if event.buttons() & Qt.MouseButton.LeftButton and self.selected is not None:
             # Set the dragged image to the selected widget
-            pixmap = self.selected.grab()
+            pixmap = QPixmap(self.selected.size().width(), self.selected.size().height())
+            pixmap.fill(Qt.GlobalColor.white)
+            pixmapOld = self.selected.grab()
             mimedata = QMimeData()
             mimedata.setImageData(pixmap)
 
@@ -92,7 +94,7 @@ class contentRow(QWidget):
             self.dragged = None
             self.selected = None
 
-    def getSelected(self, x, y):
+    def getSelectedLinear(self, x, y):
         """Get the item index of the content using linear search"""
         for widget in self.list:
             # Iterate through list of contentHeads, looking for the one that the user selected
@@ -116,9 +118,6 @@ class contentRow(QWidget):
                 low = mid + 1
             elif self.list[mid].geometry().x() > x:
                 high = mid - 1
-
-
-
         return 
 
     def deleteHead(self, index):
