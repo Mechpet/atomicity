@@ -6,6 +6,9 @@ import os
 
 from settingsWindow import contentHeadSettingsWindow
 
+contentHeadRect = QRectF(0, 0, 200, 200)
+contentHeadRect.adjust(0.0, 0.0, 1, 1)
+
 # # # Attributes:
 # `size` = Width and height of the contentHead widget (box-shaped, user-customizable) {int}.
 # `text` = Main description of the contentHead widget (to be displayed in the center; adjustable via `settingsWindow`) {str}.
@@ -102,9 +105,7 @@ class contentHead(QWidget):
         brush = QBrush(self.cellColor)
         qp.setBrush(brush)
 
-        rect = QRectF(0, 0, 200, 200)
-        rect.adjust(0.0, 0.0, 1, 1)
-        path.addRoundedRect(rect, 10, 10)
+        path.addRoundedRect(contentHeadRect, 10, 10)
         qp.setClipPath(path)
         qp.fillPath(path, qp.brush())
         qp.strokePath(path, qp.pen())
@@ -112,7 +113,7 @@ class contentHead(QWidget):
         # Set the text color
         textPen = QPen(self.textColor, 0.5)
         qp.setPen(textPen)
-        qp.drawText(rect, self.text, QTextOption(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop))
+        qp.drawText(contentHeadRect, self.text, QTextOption(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop))
 
         qp.end()
 

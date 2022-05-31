@@ -29,6 +29,15 @@ class mainWrapper(QWidget):
         self.adder = contentAdder()
 
         self.contentRow = contentRow()
+        self.contentRowScroll = QScrollArea()
+        self.contentRowScroll.setWidgetResizable(True)
+        self.contentRowScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.contentRowScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.contentRowScroll.verticalScrollBar().setDisabled(True)
+        self.contentRowScroll.setWidget(self.contentRow)
+        self.contentRowScroll.setMaximumSize(self.contentRow.width(), self.contentRow.height())
+        self.contentRowScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.contentRowScroll.setFrameShape(QFrame.Shape.NoFrame)
 
         self.dateColumn = dateColumn()
         self.dateScroll = QScrollArea()
@@ -56,22 +65,12 @@ class mainWrapper(QWidget):
         self.layout = QGridLayout()
         
         self.layout.addWidget(self.adder, 0, 0, 1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        self.layout.addWidget(self.contentRow, 0, 1, 1, 3)
+        self.layout.addWidget(self.contentRowScroll, 0, 1, 1, 5)
         self.layout.addLayout(vbox, 1, 0, -1, 1)
         self.layout.addWidget(QLabel("Copyright", self), 6, 7, 1, 1)
 
-        # Filler:
-        dateColumn2 = dateColumn(QDate(2020, 3, 20))
-        scroll2 = QScrollArea()
-        scroll2.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll2.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll2.horizontalScrollBar().setDisabled(True)
-        scroll2.setWidget(dateColumn2)
-        scroll2.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        self.layout.addWidget(scroll2, 1, 1, -1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-
-        self.dateScroll.verticalScrollBar().valueChanged.connect(scroll2.verticalScrollBar().setValue)
-        scroll2.verticalScrollBar().valueChanged.connect(self.dateScroll.verticalScrollBar().setValue)
+        self.dateScroll.verticalScrollBar().valueChanged.connect(self.contentRowScroll.horizontalScrollBar().setValue)
+        self.contentRowScroll.horizontalScrollBar().valueChanged.connect(self.dateScroll.verticalScrollBar().setValue)
 
         self.setLayout(self.layout)
 

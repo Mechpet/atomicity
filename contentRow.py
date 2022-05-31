@@ -1,10 +1,10 @@
 from PyQt6.QtWidgets import QHBoxLayout, QWidget, QStackedLayout
 from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData
-from PyQt6.QtGui import QDrag, QPixmap
+from PyQt6.QtGui import QDrag, QPixmap, QPainter
 from math import floor
 import os
 
-from contentHead import contentHead
+from contentHead import contentHead, contentHeadRect
 
 # Layout of contentHeaders in a horizontal row
 class contentRow(QWidget):
@@ -75,10 +75,19 @@ class contentRow(QWidget):
         """When the mouse moves and has selected a widget, enable dragging and dropping of the widget"""
         # If the user just selected a widget: (must initialize the drag instance)
         if event.buttons() & Qt.MouseButton.LeftButton and self.selected is not None:
-            # Set the dragged image to the selected widget
-            pixmap = QPixmap(self.selected.size().width(), self.selected.size().height())
-            pixmap.fill(Qt.GlobalColor.white)
-            pixmapOld = self.selected.grab()
+            # Grab a pixmap of the full widget
+            pixmapOpaque = self.selected.grab()
+
+            # Create an empty transparent pixmap to paint on
+            pixmap = QPixmap(self.selected.geometry().width(), self.selected.geometry().height())
+            pixmap.fill(Qt.GlobalColor.transparent)
+
+            # Paint in a transparent version of the widget to be dragged
+            painter = QPainter(pixmap)
+            painter.setOpacity(0.33)
+            painter.drawPixmap(0, 0, pixmapOpaque)
+            painter.end()
+
             mimedata = QMimeData()
             mimedata.setImageData(pixmap)
 
@@ -90,7 +99,7 @@ class contentRow(QWidget):
             self.dragged.setHotSpot(event.pos() - self.selected.pos())
             self.dragged.exec()
 
-            # Clear the instances
+            # Clear the instances after execution is over
             self.dragged = None
             self.selected = None
 
