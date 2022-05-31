@@ -21,15 +21,13 @@ class contentRow(QWidget):
         self.settings = QSettings("Mechpet", "Atomicity")
         self.settings.beginGroup("contentRow")
 
-        self.list = []
         self.selected = None
 
         self.layout = QHBoxLayout()
 
         if self.settings.value("num"):
             for i in range(int(self.settings.value("num"))):
-                self.list.append(contentHead(i, self))
-                self.layout.addWidget(self.list[-1])
+                self.layout.addWidget(contentHead(i, self))
         else:
             # The key "num" is not a QString of an integer
             self.settings.setValue("num", 0)
@@ -40,21 +38,27 @@ class contentRow(QWidget):
         """Display the cursor as accepting drag-and-drop events"""
         e.accept()
 
-    def dragMoveEvent(self, e):
+    def dragMoveEvent(self, event):
         """As the dragged widget moves, show the preview of the contentRow"""
-        print(f"Event position = ({e.position().x()}, {e.position().y()})")
+        hovering = self.getSelectedBinary(event.position().x(), event.position().y())
+        if hovering is not None and hovering is not self.selected:
+            # Re-arrange the layout:
+            self.rearrange(hovering.index)
+
+    def rearrange(self, index):
+        if self.selected is not None:
+            self.layout.removeWidget(self.selected)
+            self.layout.insertWidget(index, self.selected)
         
     def addHeader(self):
         """Append a new contentHead to the list"""
         # Create a new contentHead devoid of settings
-        self.list.append(contentHead(len(self.list), self))
-        # Set the index of the contentHead to be at the end of the row
-        self.layout.addWidget(self.list[-1])
-        self.settings.setValue("num", len(self.list))
+        self.layout.addWidget(contentHead(self.layout.count()), self)
+        self.settings.setValue("num", self.layout.count())
 
         self.setLayout(self.layout)
 
-        self.list[-1].settingsWindow()
+        self.layout.itemAt(-1).settingsWindow()
 
     def eventFilter(self, object, event):
         """Filter mouse events"""
@@ -69,7 +73,7 @@ class contentRow(QWidget):
     def mousePressEvent(self, event):
         """When the mouse left-clicks on a contentHead, store information about the item being moved"""
         if event.button() == Qt.MouseButton.LeftButton:
-            self.getSelectedBinary(event.position().x(), event.position().y())
+            self.selected = self.getSelectedBinary(event.position().x(), event.position().y())
     
     def mouseMoveEvent(self, event):
         """When the mouse moves and has selected a widget, enable dragging and dropping of the widget"""
@@ -103,46 +107,31 @@ class contentRow(QWidget):
             self.dragged = None
             self.selected = None
 
-    def getSelectedLinear(self, x, y):
-        """Get the item index of the content using linear search"""
-        for widget in self.list:
-            # Iterate through list of contentHeads, looking for the one that the user selected
-            if widget.geometry().contains(x, y):
-                # Found the contentHead that the user clicked on; end method
-                self.selected = widget
-                return
-
     def getSelectedBinary(self, x, y):
         """Get the item index of the content using binary search"""
         low = 0
-        high = len(self.list) - 1
+        high = self.layout.count() - 1
 
         while low <= high:
             mid = floor((high + low) / 2)
         
-            if self.list[mid].geometry().contains(x, y):
-                self.selected = self.list[mid]
-                return 
-            elif self.list[mid].geometry().x() < x:
+            if self.layout.itemAt(mid).geometry().contains(x, y):
+                return self.layout.itemAt(mid).widget()
+            elif self.layout.itemAt(mid).geometry().x() < x:
                 low = mid + 1
-            elif self.list[mid].geometry().x() > x:
+            elif self.layout.itemAt(mid).geometry().x() > x:
                 high = mid - 1
-        return 
+        return None
 
     def deleteHead(self, index):
         """Deletes a contentHead from the row; assumes that the contentHead exists"""
         # Delete all references to the widget
-        self.layout.removeWidget(self.list[index])
-        del self.list[index]
-        self.settings.setValue("num", len(self.list))
+        self.layout.removeWidget(self.layout.itemAt(index))
+        self.settings.setValue("num", self.layout.count())
 
     def renameHeads(self, index):
         """Rename all the contentHead ini files starting from the given index"""
         filePrefix = "contentHead"
         os.remove(f"{filePrefix}{str(index)}.ini")
-        for i in range(index + 1, len(self.list) + 1):
+        for i in range(index + 1, self.layout.count() + 1):
             os.rename(f"{filePrefix}{str(i)}.ini", f"{filePrefix}{str(i - 1)}.ini")
-
-    def showAllGeometries(self):
-        for item in self.list:
-            print(f"Geometry = {item.geometry()}")
