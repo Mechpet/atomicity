@@ -22,6 +22,7 @@ class contentRow(QWidget):
         self.settings.beginGroup("contentRow")
 
         self.selected = None
+        self.change = False
 
         self.layout = QHBoxLayout()
 
@@ -36,19 +37,30 @@ class contentRow(QWidget):
 
     def dragEnterEvent(self, e):
         """Display the cursor as accepting drag-and-drop events"""
+        self.change = False
         e.accept()
 
     def dragMoveEvent(self, event):
         """As the dragged widget moves, show the preview of the contentRow"""
         hovering = self.getSelectedBinary(event.position().x(), event.position().y())
-        if hovering is not None and hovering is not self.selected:
+        if hovering is not None and self.selected is not None and hovering is not self.selected:
             # Re-arrange the layout:
-            self.rearrange(hovering.index)
+            self.rearrange(self.layout.indexOf(hovering))
+            self.change = True
+    
+    def dragLeaveEvent(self, event):
+        """After the drag completes, save the settings"""
+        if self.change:
+            # Rename the dragged widget's settings to a temporary file
+            os.rename(f"contentHead{self.selected.index}.ini", "temp.ini")
+            # Rename all the involved files
+
+            # Finalize the dragged widget's setting file name
+
 
     def rearrange(self, index):
-        if self.selected is not None:
-            self.layout.removeWidget(self.selected)
-            self.layout.insertWidget(index, self.selected)
+        self.layout.removeWidget(self.selected)
+        self.layout.insertWidget(index, self.selected)
         
     def addHeader(self):
         """Append a new contentHead to the list"""
@@ -129,9 +141,15 @@ class contentRow(QWidget):
         self.layout.removeWidget(self.layout.itemAt(index))
         self.settings.setValue("num", self.layout.count())
 
-    def renameHeads(self, index):
-        """Rename all the contentHead ini files starting from the given index"""
+    def renameHeads(self, start, end):
+        """Rename all the contentHead ini files starting from the given index backward (minus 1)"""
         filePrefix = "contentHead"
-        os.remove(f"{filePrefix}{str(index)}.ini")
-        for i in range(index + 1, self.layout.count() + 1):
-            os.rename(f"{filePrefix}{str(i)}.ini", f"{filePrefix}{str(i - 1)}.ini")
+        if end < 0:
+            # Signals to rename to the end
+            end = self.layout.count() + 1
+        if start >= end:
+            step = 1
+        else:
+            step = -1
+        for i in range(start, end, step):
+            os.rename(f"{filePrefix}{str(i)}.ini", f"{filePrefix}{str(i + step)}.ini")
