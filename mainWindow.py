@@ -1,4 +1,5 @@
 # The main window of the application 
+from cgitb import reset
 import sys
 import ctypes
 
@@ -65,7 +66,7 @@ class mainWrapper(QWidget):
         self.layout = QGridLayout()
         
         self.layout.addWidget(self.adder, 0, 0, 1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        self.layout.addWidget(self.contentRowScroll, 0, 1, 1, 5)
+        self.layout.addWidget(self.contentRowScroll, 0, 1, 1, 10)
         self.layout.addLayout(vbox, 1, 0, -1, 1)
         self.layout.addWidget(QLabel("Copyright", self), 6, 7, 1, 1)
 
@@ -90,12 +91,17 @@ class mainWrapper(QWidget):
 def main():
     app = QApplication(sys.argv)
 
+    window = mainWrapper()
+    #resetContentHeads()
+
+    sys.exit(app.exec())
+
+def resetContentHeads():
     settings = QSettings("Mechpet", "Atomicity")
     settings.beginGroup("contentRow")
 
-    window = mainWrapper()
-
-    sys.exit(app.exec())
+    settings.setValue("num", 0)
+    quit()
 
 if __name__ == "__main__":
     main()

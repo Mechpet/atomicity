@@ -35,10 +35,10 @@ class contentRow(QWidget):
 
         self.setLayout(self.layout)
 
-    def dragEnterEvent(self, e):
+    def dragEnterEvent(self, event):
         """Display the cursor as accepting drag-and-drop events"""
         self.change = False
-        e.accept()
+        event.accept()
 
     def dragMoveEvent(self, event):
         """As the dragged widget moves, show the preview of the contentRow"""
@@ -48,39 +48,45 @@ class contentRow(QWidget):
             self.rearrange(self.layout.indexOf(hovering))
             self.change = True
     
-    def dragLeaveEvent(self, event):
+    def mouseReleaseEvent(self, event):
         """After the drag completes, save the settings"""
+        # If there may have been a change to the layout, rewrite the settings
+        print("Leave event!")
         if self.change:
+            print("Change detected!")
             # Rename the dragged widget's settings to a temporary file
             os.rename(f"contentHead{self.selected.index}.ini", "temp.ini")
             # Rename all the involved files
-
+            self.renameHeads(self.selected.index, self.layout.indexOf(self.selected))
             # Finalize the dragged widget's setting file name
-
+            os.rename("temp.ini", f"contentHead{self.layout.indexOf(self.selected)}.ini")
 
     def rearrange(self, index):
+        """Remove the selected widget and re-insert it back to a specified index"""
         self.layout.removeWidget(self.selected)
         self.layout.insertWidget(index, self.selected)
         
     def addHeader(self):
         """Append a new contentHead to the list"""
         # Create a new contentHead devoid of settings
-        self.layout.addWidget(contentHead(self.layout.count()), self)
+        self.layout.addWidget(contentHead(self.layout.count(), self))
         self.settings.setValue("num", self.layout.count())
 
         self.setLayout(self.layout)
 
-        self.layout.itemAt(-1).settingsWindow()
+        self.layout.itemAt(self.layout.count() - 1).widget().settingsWindow()
 
     def eventFilter(self, object, event):
         """Filter mouse events"""
-        res = False
+        result = False
         if object is self:
             if event.type() == QEvent.Type.MouseButtonPress:
                 self.mousePressEvent(event)
             elif event.type() == QEvent.Type.MouseMove:
                 self.mouseMoveEvent(event)
-        return res
+            elif event.type() == QEvent.Type.MouseButtonRelease:
+                self.mouseReleaseEvent(event)
+        return result
 
     def mousePressEvent(self, event):
         """When the mouse left-clicks on a contentHead, store information about the item being moved"""
@@ -138,18 +144,19 @@ class contentRow(QWidget):
     def deleteHead(self, index):
         """Deletes a contentHead from the row; assumes that the contentHead exists"""
         # Delete all references to the widget
-        self.layout.removeWidget(self.layout.itemAt(index))
+        self.layout.removeWidget(self.layout.itemAt(index).widget())
         self.settings.setValue("num", self.layout.count())
 
     def renameHeads(self, start, end):
-        """Rename all the contentHead ini files starting from the given index backward (minus 1)"""
+        """Rename all the contentHead ini files starting from the given index assuming the given setting file is neglible"""
         filePrefix = "contentHead"
         if end < 0:
             # Signals to rename to the end
             end = self.layout.count() + 1
         if start >= end:
-            step = 1
-        else:
             step = -1
-        for i in range(start, end, step):
-            os.rename(f"{filePrefix}{str(i)}.ini", f"{filePrefix}{str(i + step)}.ini")
+        else:
+            step = 1
+        # Shift the start position by 1 widget (rightward if moving right, leftward if moving left) 
+        for i in range(start + step, end, step):
+            os.rename(f"{filePrefix}{str(i)}.ini", f"{filePrefix}{str(i - step)}.ini")

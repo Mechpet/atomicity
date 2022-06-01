@@ -190,6 +190,6 @@ class contentHead(QWidget):
             self.window.close()
             self.parent.deleteHead(self.index)
             os.remove(f"contentHead{str(self.index)}.ini")
-            self.parent.renameHeads(self.index + 1, -1)
+            self.parent.renameHeads(self.index, -1)
         else:
             print("Parent is None")
