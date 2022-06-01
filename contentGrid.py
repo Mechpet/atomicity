@@ -1,4 +1,3 @@
-from unittest.mock import DEFAULT
 from PyQt6.QtWidgets import QHBoxLayout, QWidget
 from contentCell import cellType
 from contentColumn import contentColumn

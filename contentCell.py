@@ -27,10 +27,8 @@ class contentCell(QWidget):
 
     def initUI(self):
         """Initialize the appearance of the widgets (for now, only accepts binary-type)"""
-        self.minSize = 100
-        self.maxSize = 200
-        self.setMinimumSize(self.minSize, self.minSize / 2)
-        self.setMaximumSize(self.maxSize, self.maxSize / 2)
+        self.size = 200
+        self.setFixedSize(self.size, self.size)
 
         self.value = None
 

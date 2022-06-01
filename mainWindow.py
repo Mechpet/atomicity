@@ -11,6 +11,8 @@ from window import APP_ID
 from dateColumn import dateColumn
 from contentAdder import contentAdder
 from contentCell import cellType
+from binaryCell import binaryCell
+from contentColumn import contentColumn
 from contentGrid import contentGrid
 
 class mainWrapper(QWidget):
@@ -52,7 +54,7 @@ class mainWrapper(QWidget):
 
         self.dateEdit = QPushButton("Jump to date", self)
 
-        self.contentGrid = contentGrid(cellType.binary)
+        self.contentCol = contentColumn(cellType.binary)
 
         # Connect widgets
         self.adder.added.connect(self.contentRow.addHeader)
@@ -63,12 +65,22 @@ class mainWrapper(QWidget):
         vbox.addWidget(self.dateEdit)
         vbox.addWidget(self.dateScroll)
 
+        self.contentGridScroll = QScrollArea()
+        self.contentGridScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.contentGridScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.contentGridScroll.horizontalScrollBar().setDisabled(True)
+        self.contentGridScroll.setWidget(self.contentCol)
+        self.contentGridScroll.setMaximumSize(self.contentCol.width(), self.contentCol.height())
+        self.contentGridScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.contentGridScroll.setFrameShape(QFrame.Shape.NoFrame)
+
         self.layout = QGridLayout()
         
         self.layout.addWidget(self.adder, 0, 0, 1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
         self.layout.addWidget(self.contentRowScroll, 0, 1, 1, 10)
         self.layout.addLayout(vbox, 1, 0, -1, 1)
-        self.layout.addWidget(QLabel("Copyright", self), 6, 7, 1, 1)
+        self.layout.addWidget(self.contentGridScroll, 1, 1, 8, 1)
+        self.layout.addWidget(QLabel("COPYRIGHT", self), 8, 9, 1, 1)
 
         self.dateScroll.verticalScrollBar().valueChanged.connect(self.contentRowScroll.horizontalScrollBar().setValue)
         self.contentRowScroll.horizontalScrollBar().valueChanged.connect(self.dateScroll.verticalScrollBar().setValue)

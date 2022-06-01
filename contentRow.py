@@ -1,6 +1,6 @@
-from PyQt6.QtWidgets import QHBoxLayout, QWidget, QStackedLayout
+from PyQt6.QtWidgets import QHBoxLayout, QWidget
 from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData
-from PyQt6.QtGui import QDrag, QPixmap, QPainter
+from PyQt6.QtGui import QDrag, QPixmap, QPainter, QCursor
 from math import floor
 import os
 
@@ -16,7 +16,7 @@ class contentRow(QWidget):
         self.dragged = None
         self.setAcceptDrops(True)
         self.setMouseTracking(True)
-        self.installEventFilter(self)
+        #self.installEventFilter(self)
 
         self.settings = QSettings("Mechpet", "Atomicity")
         self.settings.beginGroup("contentRow")
@@ -48,7 +48,7 @@ class contentRow(QWidget):
             self.rearrange(self.layout.indexOf(hovering))
             self.change = True
     
-    def mouseReleaseEvent(self, event):
+    def dropEvent(self, event):
         """After the drag completes, save the settings"""
         # If there may have been a change to the layout, rewrite the settings
         print("Leave event!")
@@ -90,6 +90,7 @@ class contentRow(QWidget):
 
     def mousePressEvent(self, event):
         """When the mouse left-clicks on a contentHead, store information about the item being moved"""
+        print("Mouse pressed")
         if event.button() == Qt.MouseButton.LeftButton:
             self.selected = self.getSelectedBinary(event.position().x(), event.position().y())
     
@@ -116,6 +117,7 @@ class contentRow(QWidget):
             self.dragged = QDrag(self.selected)
             self.dragged.setMimeData(mimedata)
             self.dragged.setPixmap(pixmap)
+            self.dragged.setDragCursor(QCursor(Qt.CursorShape.ClosedHandCursor).pixmap(), Qt.DropAction.MoveAction | Qt.DropAction.CopyAction | Qt.DropAction.LinkAction | Qt.DropAction.TargetMoveAction | Qt.DropAction.ActionMask | Qt.DropAction.IgnoreAction)
 
             # Set the drag image at the cursor location
             self.dragged.setHotSpot(event.pos() - self.selected.pos())
@@ -152,11 +154,11 @@ class contentRow(QWidget):
         filePrefix = "contentHead"
         if end < 0:
             # Signals to rename to the end
-            end = self.layout.count() + 1
+            end = self.layout.count()
         if start >= end:
             step = -1
         else:
             step = 1
         # Shift the start position by 1 widget (rightward if moving right, leftward if moving left) 
-        for i in range(start + step, end, step):
+        for i in range(start + step, end + step, step):
             os.rename(f"{filePrefix}{str(i)}.ini", f"{filePrefix}{str(i - step)}.ini")
