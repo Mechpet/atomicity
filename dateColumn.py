@@ -36,24 +36,15 @@ class dateColumn(QWidget):
 
         self.topDate = firstDay
         self.dates = [self.topDate]
-        self.dateLabels = []
-        self.dayLabels = []
-        for i in range(self.numDays):
+        self.dayDates = []
+        for i in range(self.numDays - 1):
             self.dates.append(self.dates[-1].addDays(-1))
         self.layout = QVBoxLayout(self)
 
         for date in self.dates:
-            dateLabel = QLabel(date.toString(Qt.DateFormat.RFC2822Date), self)
-            dateLabel.setObjectName("dateLabel")
-            dateLabel.setWordWrap(True)
-            dayLabel = QLabel(dayNames[date.dayOfWeek()], self)
-            dayLabel.setWordWrap(True)
-            dayLabel.setObjectName("dayLabel")
-            self.dateLabels.append(dateLabel)
-            self.dayLabels.append(dayLabel)
-            self.layout.addWidget(dateLabel)
-            self.layout.addWidget(dayLabel, 0, Qt.AlignmentFlag.AlignHCenter)
-            self.layout.addSpacing(50)
+            newDayDate = dayDate(date)
+            self.dayDates.append(newDayDate)
+            self.layout.addWidget(newDayDate)
         
         self.setLayout(self.layout)
     
@@ -61,8 +52,7 @@ class dateColumn(QWidget):
         self.topDate = topDate
         self.dates = [self.topDate]
         for i in range(self.numDays):
-            self.dateLabels[i].setText(self.dates[-1].toString(Qt.DateFormat.RFC2822Date))
-            self.dayLabels[i].setText(dayNames[self.dates[-1].dayOfWeek()])
+            self.dayDates[i].updateDate(self.dates[-1])
             self.dates.append(self.dates[-1].addDays(-1))
 
         if self.dialog is not None:
@@ -72,3 +62,26 @@ class dateColumn(QWidget):
         self.dialog = calendarWindow(200, 200, 500, 500, self.topDate)
         self.dialog.apply.connect(self.updateDate)
         self.dialog.show()
+
+class dayDate(QWidget):
+    def __init__(self, date):
+        super().__init__()
+
+        self.initUI(date)
+    
+    def initUI(self, date):
+        self.setFixedSize(200, 100)
+        self.dateLabel = QLabel(date.toString(Qt.DateFormat.RFC2822Date), self)
+        self.dateLabel.setObjectName("dateLabel")
+        self.dateLabel.setWordWrap(True)
+        self.dayLabel = QLabel(dayNames[date.dayOfWeek()], self)
+        self.dayLabel.setWordWrap(True)
+        self.dayLabel.setObjectName("dayLabel")
+
+        self.layout = QVBoxLayout(self)
+        self.layout.addWidget(self.dateLabel)
+        self.layout.addWidget(self.dayLabel, 0, Qt.AlignmentFlag.AlignHCenter)
+    
+    def updateDate(self, newDate):
+        self.dateLabel.setText(newDate.toString(Qt.DateFormat.RFC2822Date))
+        self.dayLabel.setText(dayNames[newDate.dayOfWeek()])

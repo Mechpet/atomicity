@@ -53,6 +53,7 @@ class mainWrapper(QWidget):
         self.dateScroll.setFrameShape(QFrame.Shape.NoFrame)
 
         self.dateEdit = QPushButton("Jump to date", self)
+        print(f"Height of dateEdit = {self.dateEdit.height()}")
 
         self.contentCol = contentColumn(cellType.binary)
 
@@ -82,8 +83,8 @@ class mainWrapper(QWidget):
         self.layout.addWidget(self.contentGridScroll, 1, 1, 8, 1)
         self.layout.addWidget(QLabel("COPYRIGHT", self), 8, 9, 1, 1)
 
-        self.dateScroll.verticalScrollBar().valueChanged.connect(self.contentRowScroll.horizontalScrollBar().setValue)
-        self.contentRowScroll.horizontalScrollBar().valueChanged.connect(self.dateScroll.verticalScrollBar().setValue)
+        self.dateScroll.verticalScrollBar().valueChanged.connect(self.contentGridScroll.verticalScrollBar().setValue)
+        self.contentGridScroll.verticalScrollBar().valueChanged.connect(self.dateScroll.verticalScrollBar().setValue)
 
         self.setLayout(self.layout)
 

@@ -3,7 +3,7 @@ from contentCell import cellType
 from binaryCell import binaryCell
 from benchmarkCell import benchmarkCell
 
-DEFAULT_NUM_IN_COLUMN = 30
+DEFAULT_NUM_IN_COLUMN = 14
 
 # Layout of contentCells in a vertical column
 class contentColumn(QWidget):
@@ -12,6 +12,7 @@ class contentColumn(QWidget):
         super().__init__()
 
         layout = QVBoxLayout()
+        layout.addSpacing(30)
         if type == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):
                 layout.addWidget(binaryCell())
