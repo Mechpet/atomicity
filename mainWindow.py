@@ -4,8 +4,8 @@ import sys
 import ctypes
 
 from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QSizePolicy, QPushButton, QFrame, QLabel, QVBoxLayout
-from PyQt6.QtGui import QIcon
-from PyQt6.QtCore import Qt, QSettings, QDate
+from PyQt6.QtGui import QIcon, QCursor
+from PyQt6.QtCore import Qt, QSettings
 from contentRow import contentRow
 from window import APP_ID
 from dateColumn import dateColumn
@@ -14,6 +14,9 @@ from contentCell import cellType
 from binaryCell import binaryCell
 from contentColumn import contentColumn
 from contentGrid import contentGrid
+
+
+app = QApplication(sys.argv)
 
 class mainWrapper(QWidget):
     def __init__(self):
@@ -32,6 +35,7 @@ class mainWrapper(QWidget):
         self.adder = contentAdder()
 
         self.contentRow = contentRow()
+        self.contentRow.horScroll.connect(setHorScroll)
         self.contentRowScroll = QScrollArea()
         self.contentRowScroll.setWidgetResizable(True)
         self.contentRowScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -102,8 +106,6 @@ class mainWrapper(QWidget):
         self.show()
 
 def main():
-    app = QApplication(sys.argv)
-
     window = mainWrapper()
     #resetContentHeads()
 
@@ -115,6 +117,9 @@ def resetContentHeads():
 
     settings.setValue("num", 0)
     quit()
+
+def setHorScroll():
+    app.setOverrideCursor(QCursor(Qt.CursorShape.SizeHorCursor))
 
 if __name__ == "__main__":
     main()

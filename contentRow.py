@@ -1,5 +1,6 @@
+from xmlrpc.client import Boolean
 from PyQt6.QtWidgets import QHBoxLayout, QWidget
-from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData
+from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData, pyqtSignal
 from PyQt6.QtGui import QDrag, QPixmap, QPainter, QCursor
 from math import floor
 import os
@@ -9,6 +10,7 @@ from contentHead import contentHead
 # Layout of contentHeaders in a horizontal row
 class contentRow(QWidget):
     """A row of contentHeads."""
+    horScroll = pyqtSignal(Boolean)
     def __init__(self):
         super().__init__()
 
@@ -94,6 +96,7 @@ class contentRow(QWidget):
         if event.button() == Qt.MouseButton.LeftButton:
             self.selected = self.getSelectedBinary(event.position().x(), event.position().y())
         elif event.button() == Qt.MouseButton.MiddleButton:
+            self.horScroll.emit(True)
             self.setCursor(QCursor(QCursor(Qt.CursorShape.SizeHorCursor)))
     
     def mouseMoveEvent(self, event):
