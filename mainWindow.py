@@ -49,7 +49,7 @@ class mainWrapper(QWidget):
         self.dateScroll.horizontalScrollBar().setDisabled(True)
         self.dateScroll.setWidget(self.dateColumn)
         self.dateScroll.setMaximumSize(self.dateColumn.width(), self.dateColumn.height())
-        self.dateScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.dateScroll.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
         self.dateScroll.setFrameShape(QFrame.Shape.NoFrame)
 
         self.dateEdit = QPushButton("Jump to date", self)
@@ -61,7 +61,7 @@ class mainWrapper(QWidget):
         self.contentGridScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.contentGridScroll.setWidget(self.contentGrid)
         self.contentGridScroll.setMaximumSize(self.contentGrid.width(), self.contentGrid.height())
-        self.contentGridScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.contentGridScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.contentGridScroll.setFrameShape(QFrame.Shape.NoFrame)
 
         emptyBtn = QPushButton("", self)
@@ -90,8 +90,8 @@ class mainWrapper(QWidget):
         self.layout.addWidget(self.adder, 0, 0, 1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
         self.layout.addWidget(self.contentRowScroll, 0, 1, 1, 10)
         self.layout.addLayout(dateVbox, 1, 0, -1, 1)
-        self.layout.addLayout(colVbox, 1, 1, -1, 10, Qt.AlignmentFlag.AlignLeft)
-        self.layout.addWidget(QLabel("COPYRIGHT", self), 8, 9, 1, 1)
+        self.layout.addLayout(colVbox, 1, 1, -1, 10)
+        #self.layout.addWidget(QLabel("COPYRIGHT", self), 8, 9, 1, 1)
 
         self.dateScroll.verticalScrollBar().valueChanged.connect(self.contentGridScroll.verticalScrollBar().setValue)
         self.contentGridScroll.verticalScrollBar().valueChanged.connect(self.dateScroll.verticalScrollBar().setValue)

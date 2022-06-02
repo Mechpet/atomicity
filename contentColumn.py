@@ -11,6 +11,8 @@ class contentColumn(QWidget):
     def __init__(self, type):
         super().__init__()
 
+        self.setFixedWidth(200)
+
         layout = QVBoxLayout()
         if type == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):
@@ -21,4 +23,5 @@ class contentColumn(QWidget):
         else:
             print(f"EXCEPTION: {type} not in cellType enum.")
 
+        layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)

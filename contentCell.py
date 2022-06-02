@@ -47,8 +47,7 @@ class contentCell(QWidget):
         brush = QBrush(self.color)
         qp.setBrush(brush)
 
-        #rect = QRectF(e.rect())
-        rect = QRectF(0, 0, self.frameGeometry().width(), self.frameGeometry().width() / 2)
+        rect = QRectF(0, 0, self.frameGeometry().width(), self.frameGeometry().height())
         rect.adjust(0.0, 0.0, 1, 1)
         path.addRoundedRect(rect, 10, 10)
         qp.setClipPath(path)
