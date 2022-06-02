@@ -12,7 +12,6 @@ class contentColumn(QWidget):
         super().__init__()
 
         layout = QVBoxLayout()
-        layout.addSpacing(30)
         if type == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):
                 layout.addWidget(binaryCell())

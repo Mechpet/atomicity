@@ -93,6 +93,8 @@ class contentRow(QWidget):
         print("Mouse pressed")
         if event.button() == Qt.MouseButton.LeftButton:
             self.selected = self.getSelectedBinary(event.position().x(), event.position().y())
+        elif event.button() == Qt.MouseButton.MiddleButton:
+            self.setCursor(QCursor(QCursor(Qt.CursorShape.SizeHorCursor)))
     
     def mouseMoveEvent(self, event):
         """When the mouse moves and has selected a widget, enable dragging and dropping of the widget"""
@@ -117,7 +119,6 @@ class contentRow(QWidget):
             self.dragged = QDrag(self.selected)
             self.dragged.setMimeData(mimedata)
             self.dragged.setPixmap(pixmap)
-            self.dragged.setDragCursor(QCursor(Qt.CursorShape.ClosedHandCursor).pixmap(), Qt.DropAction.MoveAction | Qt.DropAction.CopyAction | Qt.DropAction.LinkAction | Qt.DropAction.TargetMoveAction | Qt.DropAction.ActionMask | Qt.DropAction.IgnoreAction)
 
             # Set the drag image at the cursor location
             self.dragged.setHotSpot(event.pos() - self.selected.pos())

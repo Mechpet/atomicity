@@ -57,15 +57,6 @@ class mainWrapper(QWidget):
 
         self.contentCol = contentColumn(cellType.binary)
 
-        # Connect widgets
-        self.adder.added.connect(self.contentRow.addHeader)
-        self.dateEdit.clicked.connect(self.dateColumn.setDate)
-
-        # Layout the widgets
-        vbox = QVBoxLayout()
-        vbox.addWidget(self.dateEdit)
-        vbox.addWidget(self.dateScroll)
-
         self.contentGridScroll = QScrollArea()
         self.contentGridScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.contentGridScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -75,12 +66,33 @@ class mainWrapper(QWidget):
         self.contentGridScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.contentGridScroll.setFrameShape(QFrame.Shape.NoFrame)
 
+        emptyBtn = QPushButton("", self)
+        emptyBtn.setStyleSheet("""
+            QPushButton {
+                border: 0px;
+                background: transparent;
+            }
+        """)
+
+        # Connect widgets
+        self.adder.added.connect(self.contentRow.addHeader)
+        self.dateEdit.clicked.connect(self.dateColumn.setDate)
+
+        # Layout the widgets
+        dateVbox = QVBoxLayout()
+        dateVbox.addWidget(self.dateEdit)
+        dateVbox.addWidget(self.dateScroll)
+
+        colVbox = QVBoxLayout()
+        colVbox.addWidget(emptyBtn)
+        colVbox.addWidget(self.contentGridScroll)
+
         self.layout = QGridLayout()
         
         self.layout.addWidget(self.adder, 0, 0, 1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
         self.layout.addWidget(self.contentRowScroll, 0, 1, 1, 10)
-        self.layout.addLayout(vbox, 1, 0, -1, 1)
-        self.layout.addWidget(self.contentGridScroll, 1, 1, 8, 1)
+        self.layout.addLayout(dateVbox, 1, 0, -1, 1)
+        self.layout.addLayout(colVbox, 1, 1, -1, 1)
         self.layout.addWidget(QLabel("COPYRIGHT", self), 8, 9, 1, 1)
 
         self.dateScroll.verticalScrollBar().valueChanged.connect(self.contentGridScroll.verticalScrollBar().setValue)
