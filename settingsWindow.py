@@ -1,8 +1,9 @@
-from PyQt6.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QColorDialog, QFileDialog, QHBoxLayout
+from PyQt6.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QColorDialog, QFileDialog, QRadioButton
 from PyQt6.QtCore import Qt, pyqtSignal, QFile
 from PyQt6.QtGui import QColor, QIcon
 import os
 from window import Window
+from contentCell import cellType
 
 SETTINGS_WINDOW_NAME = "Settings"
 # Accepted file extensions for the icon image file:
@@ -78,6 +79,12 @@ class contentHeadSettingsWindow(Window):
         self.iconEdit = QPushButton(icon, "Edit icon", self)
         self.iconEdit.clicked.connect(self.openFileDialog)
 
+        self.typeLabel = QLabel("Type of habit:", self)
+
+        # RadioButtons that allow changing what type of habit it is (binary or benchmark)
+        self.binary = QRadioButton("Binary", self)
+        self.benchmark = QRadioButton("Benchmark", self)
+
         # PushButton on the bottom-left corner to delete the contentHead and all of its associated data
         self.delButton = QPushButton("Delete", self)
         self.delButton.clicked.connect(self.openConfirmDialog)
@@ -99,9 +106,12 @@ class contentHeadSettingsWindow(Window):
         grid.addWidget(self.textColorEdit, 3, 1, 1, 1)
         grid.addWidget(self.iconLine, 4, 0, 1, 3)
         grid.addWidget(self.iconEdit, 4, 3)
-        grid.addWidget(self.delButton, 5, 0, 1, 1)
-        grid.addWidget(self.applyButton, 5, 2, 1, 1)
-        grid.addWidget(self.cancelButton, 5, 3, 1, 1)
+        grid.addWidget(self.typeLabel, 5, 0, 1, 1)
+        grid.addWidget(self.binary, 5, 2, 1, 1)
+        grid.addWidget(self.benchmark, 5, 3, 1, 1)
+        grid.addWidget(self.delButton, 7, 0, 1, 1)
+        grid.addWidget(self.applyButton, 7, 2, 1, 1)
+        grid.addWidget(self.cancelButton, 7, 3, 1, 1)
 
         self.setLayout(grid)
 

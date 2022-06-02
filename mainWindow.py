@@ -53,16 +53,14 @@ class mainWrapper(QWidget):
         self.dateScroll.setFrameShape(QFrame.Shape.NoFrame)
 
         self.dateEdit = QPushButton("Jump to date", self)
-        print(f"Height of dateEdit = {self.dateEdit.height()}")
 
-        self.contentCol = contentColumn(cellType.binary)
+        self.contentGrid = contentGrid()
 
         self.contentGridScroll = QScrollArea()
         self.contentGridScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.contentGridScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.contentGridScroll.horizontalScrollBar().setDisabled(True)
-        self.contentGridScroll.setWidget(self.contentCol)
-        self.contentGridScroll.setMaximumSize(self.contentCol.width(), self.contentCol.height())
+        self.contentGridScroll.setWidget(self.contentGrid)
+        self.contentGridScroll.setMaximumSize(self.contentGrid.width(), self.contentGrid.height())
         self.contentGridScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.contentGridScroll.setFrameShape(QFrame.Shape.NoFrame)
 
@@ -92,23 +90,13 @@ class mainWrapper(QWidget):
         self.layout.addWidget(self.adder, 0, 0, 1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
         self.layout.addWidget(self.contentRowScroll, 0, 1, 1, 10)
         self.layout.addLayout(dateVbox, 1, 0, -1, 1)
-        self.layout.addLayout(colVbox, 1, 1, -1, 1)
+        self.layout.addLayout(colVbox, 1, 1, -1, 10, Qt.AlignmentFlag.AlignLeft)
         self.layout.addWidget(QLabel("COPYRIGHT", self), 8, 9, 1, 1)
 
         self.dateScroll.verticalScrollBar().valueChanged.connect(self.contentGridScroll.verticalScrollBar().setValue)
         self.contentGridScroll.verticalScrollBar().valueChanged.connect(self.dateScroll.verticalScrollBar().setValue)
 
         self.setLayout(self.layout)
-
-        # Useful scroll methods:
-        #scroll = QScrollArea()
-        #scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        #scroll.verticalScrollBar().setDisabled(True)
-        #scroll.setStyleSheet("""
-        #    QScrollBar:horizontal {
-        #        background: blue;
-        #    }
-        #""")
 
         self.setGeometry(300, 300, 650, 550)
         self.show()

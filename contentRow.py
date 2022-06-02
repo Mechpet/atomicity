@@ -4,7 +4,7 @@ from PyQt6.QtGui import QDrag, QPixmap, QPainter, QCursor
 from math import floor
 import os
 
-from contentHead import contentHead, contentHeadRect
+from contentHead import contentHead
 
 # Layout of contentHeaders in a horizontal row
 class contentRow(QWidget):
