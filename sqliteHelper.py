@@ -35,13 +35,16 @@ def createContentColumnTable(connection, tableName = generateName()):
         print(f"EXCEPTION: {e} while creating table")
         return False
 
-def insertDay(connection, tableName, date, value):
+def upsertDay(connection, tableName, date, value, cumulative):
     """Write to the database to the appropriate table with the given values"""
     insertCmd = f"""
         INSERT INTO {tableName} 
         (date, value, cumulative)
-        VALUES(?, ?, ?)"""
-    insertValues = (date, value, 0)
+        VALUES(?, ?, ?)
+        ON CONFLICT(date)
+        DO UPDATE SET value = excluded.value, cumulative = excluded.cumulative
+    """
+    insertValues = (date, value, cumulative)
 
     cursor = connection.cursor()
     cursor.execute(insertCmd, insertValues)
@@ -54,7 +57,10 @@ def main():
     if myConnection is not None:
         print(f"Successfully connected to {dbName}")
         createContentColumnTable(myConnection, tblName)
-        #insertDay(myConnection, tblName, "2-June-2022", 1)
+        upsertDay(myConnection, tblName, "1-January-2024", 0, 1)
+        upsertDay(myConnection, tblName, "5-August-2021", 1, 0)
+        upsertDay(myConnection, tblName, "2-June-2022", 2, 5)
+        upsertDay(myConnection, tblName, "10-February-2020", 0, 1)
 
     myConnection.close()
 
