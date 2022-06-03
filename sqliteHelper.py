@@ -1,7 +1,8 @@
 import sqlite3
+import random
 import secrets
+from PyQt6.QtCore import Qt, QDate
 from sqlite3 import Error
-from venv import create
 
 def generateName():
     """Generate a pseudo-random name that has no defining properties"""
@@ -50,17 +51,45 @@ def upsertDay(connection, tableName, date, value, cumulative):
     cursor.execute(insertCmd, insertValues)
     connection.commit()
 
+def dropTable(connection, tableName):
+    """Delete an entire table"""
+    deleteCmd = f"""
+        DROP TABLE {tableName}
+    """
+    
+    cursor = connection.cursor()
+    cursor.execute(deleteCmd)
+    connection.commit()
+
+def fetchEntry(connection, tableName, date):
+    """Fetch a single entry with the given date"""
+    fetchCmd = f"""
+        SELECT date, value, cumulative FROM {tableName} WHERE date = '{date}';
+    """
+
+    return
+
+
+sampleNumDays = 30
+
 def main():
+    currentDate = QDate.currentDate()
+    days = [currentDate]
+    dayStrings = [currentDate.toString(Qt.DateFormat.ISODate)]
+    for i in range(sampleNumDays):
+        days.append(days[-1].addDays(-1))
+        dayStrings.append(days[-1].toString(Qt.DateFormat.ISODate))
+
     dbName = "testing.db"
     tblName = "normalTbl"
     myConnection = createConnection(dbName)
     if myConnection is not None:
         print(f"Successfully connected to {dbName}")
         createContentColumnTable(myConnection, tblName)
-        upsertDay(myConnection, tblName, "1-January-2024", 0, 1)
-        upsertDay(myConnection, tblName, "5-August-2021", 1, 0)
-        upsertDay(myConnection, tblName, "2-June-2022", 2, 5)
-        upsertDay(myConnection, tblName, "10-February-2020", 0, 1)
+        for i in range(sampleNumDays):
+            upsertDay(myConnection, tblName, dayStrings[i], random.randint(0, 1), random.randint(0, 100))
+
+        upsertDay(myConnection, tblName, dayStrings[1], 2, random.randint(0, 100))        
 
     myConnection.close()
 

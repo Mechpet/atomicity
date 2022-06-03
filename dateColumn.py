@@ -71,7 +71,7 @@ class dayDate(QWidget):
     
     def initUI(self, date):
         self.setFixedSize(200, 100)
-        self.dateLabel = QLabel(date.toString(Qt.DateFormat.RFC2822Date), self)
+        self.dateLabel = QLabel(date.toString(Qt.DateFormat.ISODate), self)
         self.dateLabel.setObjectName("dateLabel")
         self.dateLabel.setWordWrap(True)
         self.dayLabel = QLabel(dayNames[date.dayOfWeek()], self)
@@ -83,5 +83,5 @@ class dayDate(QWidget):
         self.layout.addWidget(self.dayLabel, 0, Qt.AlignmentFlag.AlignHCenter)
     
     def updateDate(self, newDate):
-        self.dateLabel.setText(newDate.toString(Qt.DateFormat.RFC2822Date))
+        self.dateLabel.setText(newDate.toString(Qt.DateFormat.ISODate))
         self.dayLabel.setText(dayNames[newDate.dayOfWeek()])
