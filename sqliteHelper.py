@@ -79,4 +79,13 @@ def fetchEntry(connection, tableName, date):
 
     return cursor.fetchone()
 
+def initTable(connection, tableName, startDate):
+    """Initialize a table with empty entries"""
+    days = [startDate]
+    for i in range(startDate.daysTo(QDate.currentDate())):
+        days.append(days[i].addDays(1))
+    
+    for day in days:
+        upsertDay(connection, tableName, day.toString(Qt.DateFormat.ISODate), None, 1.00)
+    
 connection = createConnection(r"database\info.db")

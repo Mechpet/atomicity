@@ -153,6 +153,7 @@ class contentRow(QWidget):
         """Deletes a contentHead from the row; assumes that the contentHead exists"""
         # Delete all references to the widget
         self.layout.removeWidget(self.layout.itemAt(index).widget())
+        self.layout.removeItem(self.layout.itemAt(index))
         self.settings.setValue("num", self.layout.count())
 
     def renameHeads(self, start, end):

@@ -1,7 +1,7 @@
 # Header of each column (topmost block of data that is static to vertical scrolling)
-from PyQt6.QtWidgets import QWidget, QPushButton, QDialog, QGridLayout, QVBoxLayout, QLabel, QSpacerItem
+from PyQt6.QtWidgets import QWidget, QPushButton, QDialog, QGridLayout, QLabel
 from PyQt6.QtGui import QPainter, QPainterPath, QBrush, QPen, QColor, QTextOption, QCursor, QIcon
-from PyQt6.QtCore import Qt, QRectF, QSettings, QSize, QFile
+from PyQt6.QtCore import Qt, QRectF, QSettings, QSize, QFile, QDate
 import os
 
 from settingsWindow import contentHeadSettingsWindow
@@ -181,23 +181,25 @@ class contentHead(QWidget):
         self.cellColor = QColor(55, 55, 55)
         self.textColor = QColor(0, 0, 0)
         self.iconPath = None
+
         # Create a new unique table
         tableName = sql.generateName()
         while sql.createContentColumnTable(sql.connection, tableName) is False:
             tableName = sql.generateName()
 
         self.settings.setValue("table", tableName)
+        sql.initTable(sql.connection, tableName, QDate(2022, 5, 16))
 
         self.synchronize()
     
     def delData(self):
         """Delete the instance"""
         if self.parent is not None:
-            self.window.instance = None
-            self.window.dialog.close()
-            self.window.close()
             self.parent.deleteHead(self.index)
             os.remove(f"contentHead{str(self.index)}.ini")
             self.parent.renameHeads(self.index, -1)
+            self.window.instance = None
+            self.window.dialog.close()
+            self.window.close()
         else:
             print("Parent is None")
