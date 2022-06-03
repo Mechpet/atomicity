@@ -1,8 +1,14 @@
 import sqlite3
-import random
 import secrets
+import enum
 from PyQt6.QtCore import Qt, QDate
 from sqlite3 import Error
+
+errorMsgsOn = False
+
+class tableType(enum.Enum):
+    """Determines the type of table (what behavior the habits follow)"""
+    onePercent = 1
 
 def generateName():
     """Generate a pseudo-random name that has no defining properties"""
@@ -19,10 +25,10 @@ def createConnection(dbFile):
         print(f"EXCEPTION: {e} while creating connection")
     return connection
 
-def createContentColumnTable(connection, tableName = generateName()):
+def createContentColumnTable(connection, tableType, tableName = generateName()):
     """Create a table in the connected database for a new column."""
     createCmd = f"""
-        CREATE TABLE IF NOT EXISTS {tableName} (
+        CREATE TABLE {tableName} (
         date text PRIMARY KEY NOT NULL,
         value integer,
         cumulative real
@@ -33,7 +39,8 @@ def createContentColumnTable(connection, tableName = generateName()):
         cursor.execute(createCmd)
         return True
     except Error as e:
-        print(f"EXCEPTION: {e} while creating table")
+        if errorMsgsOn:
+            print(f"EXCEPTION: {e} while creating table")
         return False
 
 def upsertDay(connection, tableName, date, value, cumulative):
@@ -64,11 +71,13 @@ def dropTable(connection, tableName):
 def fetchEntry(connection, tableName, date):
     """Fetch a single entry with the given date"""
     fetchCmd = f"""
-        SELECT date, value, cumulative FROM {tableName} WHERE date = '{date}';
+        SELECT date, value, cumulative FROM {tableName} WHERE date = '{date}'
     """
 
-    return
+    cursor = connection.cursor()
+    cursor.execute(fetchCmd)
 
+    return cursor.fetchone()
 
 sampleNumDays = 30
 
@@ -80,16 +89,17 @@ def main():
         days.append(days[-1].addDays(-1))
         dayStrings.append(days[-1].toString(Qt.DateFormat.ISODate))
 
+    lastDate = days[-1]
+    print(currentDate.daysTo(lastDate))
+
     dbName = "testing.db"
     tblName = "normalTbl"
     myConnection = createConnection(dbName)
     if myConnection is not None:
         print(f"Successfully connected to {dbName}")
         createContentColumnTable(myConnection, tblName)
-        for i in range(sampleNumDays):
-            upsertDay(myConnection, tblName, dayStrings[i], random.randint(0, 1), random.randint(0, 100))
+        print(fetchEntry(myConnection, tblName, "2022-05-06"))
 
-        upsertDay(myConnection, tblName, dayStrings[1], 2, random.randint(0, 100))        
 
     myConnection.close()
 
