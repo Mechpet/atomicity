@@ -11,6 +11,7 @@ from contentHead import contentHead
 class contentRow(QWidget):
     """A row of contentHeads."""
     horScroll = pyqtSignal(Boolean)
+    showColumn = pyqtSignal(int)
     def __init__(self):
         super().__init__()
 
@@ -31,6 +32,7 @@ class contentRow(QWidget):
         if self.settings.value("num"):
             for i in range(int(self.settings.value("num"))):
                 self.layout.addWidget(contentHead(i, self))
+                self.showColumn.emit(i)
         else:
             # The key "num" is not a QString of an integer
             self.settings.setValue("num", 0)

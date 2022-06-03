@@ -5,6 +5,7 @@ from PyQt6.QtCore import Qt, QRectF, QSettings, QSize, QFile
 import os
 
 from settingsWindow import contentHeadSettingsWindow
+import sqliteHelper as sql
 
 contentHeadRect = QRectF(0, 0, 200, 200)
 contentHeadRect.adjust(0.0, 0.0, 1, 1)
@@ -180,6 +181,12 @@ class contentHead(QWidget):
         self.cellColor = QColor(55, 55, 55)
         self.textColor = QColor(0, 0, 0)
         self.iconPath = None
+        # Create a new unique table
+        tableName = sql.generateName()
+        while sql.createContentColumnTable(sql.connection, tableName) is False:
+            tableName = sql.generateName()
+
+        self.settings.setValue("table", tableName)
 
         self.synchronize()
     

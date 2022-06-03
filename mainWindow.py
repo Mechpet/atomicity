@@ -79,6 +79,7 @@ class mainWrapper(QWidget):
         # Connect widgets
         self.adder.added.connect(self.contentRow.addHeader)
         self.dateEdit.clicked.connect(self.dateColumn.setDate)
+        self.contentRow.showColumn.connect(self.contentGrid.showColumn)
 
         # Layout the widgets
         dateVbox = QVBoxLayout()
@@ -92,10 +93,9 @@ class mainWrapper(QWidget):
         self.layout = QGridLayout()
         
         self.layout.addWidget(self.adder, 0, 0, 1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        self.layout.addWidget(self.contentRowScroll, 0, 1, 1, 10)
+        self.layout.addWidget(self.contentRowScroll, 0, 1, 1, 10, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
         self.layout.addLayout(dateVbox, 1, 0, -1, 1)
         self.layout.addLayout(colVbox, 1, 1, -1, 10)
-        #self.layout.addWidget(QLabel("COPYRIGHT", self), 8, 9, 1, 1)
 
         self.dateScroll.verticalScrollBar().valueChanged.connect(self.contentGridScroll.verticalScrollBar().setValue)
         self.contentGridScroll.verticalScrollBar().valueChanged.connect(self.dateScroll.verticalScrollBar().setValue)

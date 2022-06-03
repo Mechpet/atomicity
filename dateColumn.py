@@ -83,5 +83,7 @@ class dayDate(QWidget):
         self.layout.addWidget(self.dayLabel, 0, Qt.AlignmentFlag.AlignHCenter)
     
     def updateDate(self, newDate):
-        self.dateLabel.setText(newDate.toString(Qt.DateFormat.ISODate))
-        self.dayLabel.setText(dayNames[newDate.dayOfWeek()])
+        if newDate.daysTo(QDate.currentDate()) >= 0:
+            # Only update the date if it's not in the future
+            self.dateLabel.setText(newDate.toString(Qt.DateFormat.ISODate))
+            self.dayLabel.setText(dayNames[newDate.dayOfWeek()])

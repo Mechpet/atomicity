@@ -12,7 +12,7 @@ class tableType(enum.Enum):
 
 def generateName():
     """Generate a pseudo-random name that has no defining properties"""
-    name = secrets.token_hex(64)
+    name = secrets.token_hex(16)
     return name
 
 def createConnection(dbFile):
@@ -25,7 +25,7 @@ def createConnection(dbFile):
         print(f"EXCEPTION: {e} while creating connection")
     return connection
 
-def createContentColumnTable(connection, tableType, tableName = generateName()):
+def createContentColumnTable(connection, tableName = generateName()):
     """Create a table in the connected database for a new column."""
     createCmd = f"""
         CREATE TABLE {tableName} (
@@ -79,29 +79,4 @@ def fetchEntry(connection, tableName, date):
 
     return cursor.fetchone()
 
-sampleNumDays = 30
-
-def main():
-    currentDate = QDate.currentDate()
-    days = [currentDate]
-    dayStrings = [currentDate.toString(Qt.DateFormat.ISODate)]
-    for i in range(sampleNumDays):
-        days.append(days[-1].addDays(-1))
-        dayStrings.append(days[-1].toString(Qt.DateFormat.ISODate))
-
-    lastDate = days[-1]
-    print(currentDate.daysTo(lastDate))
-
-    dbName = "testing.db"
-    tblName = "normalTbl"
-    myConnection = createConnection(dbName)
-    if myConnection is not None:
-        print(f"Successfully connected to {dbName}")
-        createContentColumnTable(myConnection, tblName)
-        print(fetchEntry(myConnection, tblName, "2022-05-06"))
-
-
-    myConnection.close()
-
-if __name__ == '__main__':
-    main()
+connection = createConnection(r"database\info.db")
