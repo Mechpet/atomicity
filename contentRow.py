@@ -31,7 +31,7 @@ class contentRow(QWidget):
 
         if self.settings.value("num"):
             for i in range(int(self.settings.value("num"))):
-                self.layout.addWidget(contentHead(i, self))
+                self.layout.addWidget(contentHead(i, self), Qt.AlignmentFlag.AlignTop)
         else:
             # The key "num" is not a QString of an integer
             self.settings.setValue("num", 0)
@@ -72,7 +72,7 @@ class contentRow(QWidget):
     def addHeader(self):
         """Append a new contentHead to the list"""
         # Create a new contentHead devoid of settings
-        self.layout.addWidget(contentHead(self.layout.count(), self))
+        self.layout.addWidget(contentHead(self.layout.count(), self), Qt.AlignmentFlag.AlignTop)
         self.settings.setValue("num", self.layout.count())
 
         self.setLayout(self.layout)
@@ -168,4 +168,4 @@ class contentRow(QWidget):
         # Shift the start position by 1 widget (rightward if moving right, leftward if moving left) 
         for i in range(start + step, end + step, step):
             os.rename(f"{filePrefix}{str(i)}.ini", f"{filePrefix}{str(i - step)}.ini")
-            self.layout.itemAt(i).widget().index = i - step
+            self.layout.itemAt(i - step).widget().index = i - step

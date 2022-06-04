@@ -31,6 +31,8 @@ class mainWrapper(QWidget):
         self.setWindowTitle('Atomicity')
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_ID)
 
+        self.layout = QGridLayout()
+
         # Initialize widgets
         self.adder = contentAdder()
 
@@ -42,8 +44,9 @@ class mainWrapper(QWidget):
         self.contentRowScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.contentRowScroll.verticalScrollBar().setDisabled(True)
         self.contentRowScroll.setWidget(self.contentRow)
-        self.contentRowScroll.setMaximumSize(self.contentRow.width(), self.contentRow.height())
-        print("Maximum width of contentRowScroll = ", self.contentRow.width())
+        self.contentRowScroll.setMinimumSize(200, self.adder.height + self.layout.verticalSpacing())
+        self.contentRowScroll.setMaximumSize(self.contentRow.width(), self.contentRow.height() + self.layout.verticalSpacing())
+        #print("Maximum width of contentRowScroll = ", self.contentRow.width())
         self.contentRowScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.contentRowScroll.setFrameShape(QFrame.Shape.NoFrame)
 
@@ -89,11 +92,9 @@ class mainWrapper(QWidget):
         colVbox = QVBoxLayout()
         colVbox.addWidget(emptyBtn)
         colVbox.addWidget(self.contentGridScroll)
-
-        self.layout = QGridLayout()
         
         self.layout.addWidget(self.adder, 0, 0, 1, 1)
-        self.layout.addWidget(self.contentRowScroll, 0, 1, 1, 10, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignLeft)
+        self.layout.addWidget(self.contentRowScroll, 0, 1, 1, 10, Qt.AlignmentFlag.AlignLeft)
         self.layout.addLayout(dateVbox, 1, 0, -1, 1)
         self.layout.addLayout(colVbox, 1, 1, -1, 10)
 
