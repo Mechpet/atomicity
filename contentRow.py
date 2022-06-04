@@ -32,7 +32,6 @@ class contentRow(QWidget):
         if self.settings.value("num"):
             for i in range(int(self.settings.value("num"))):
                 self.layout.addWidget(contentHead(i, self))
-                self.showColumn.emit(i)
         else:
             # The key "num" is not a QString of an integer
             self.settings.setValue("num", 0)
@@ -152,8 +151,8 @@ class contentRow(QWidget):
     def deleteHead(self, index):
         """Deletes a contentHead from the row; assumes that the contentHead exists"""
         # Delete all references to the widget
+        self.layout.itemAt(index).widget().close()
         self.layout.removeWidget(self.layout.itemAt(index).widget())
-        self.layout.removeItem(self.layout.itemAt(index))
         self.settings.setValue("num", self.layout.count())
 
     def renameHeads(self, start, end):

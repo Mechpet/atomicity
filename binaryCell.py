@@ -6,7 +6,7 @@ from contentCell import contentCell
 
 class binaryCell(contentCell):
     """Measures the result of one habit on a specific date (true or false inputs only via buttons)"""
-    def __init__(self):
+    def __init__(self, state = None):
         super().__init__()
 
         self.setStyleSheet("""
@@ -29,6 +29,11 @@ class binaryCell(contentCell):
         """)
         self.initUI()
         self.initWidgets()
+        
+        if state is True:
+            self.setTrue()
+        elif state is False:
+            self.setFalse()
 
     def initWidgets(self):
         # contentCell binary-type:

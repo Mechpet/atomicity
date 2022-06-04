@@ -79,7 +79,6 @@ class mainWrapper(QWidget):
         # Connect widgets
         self.adder.added.connect(self.contentRow.addHeader)
         self.dateEdit.clicked.connect(self.dateColumn.setDate)
-        self.contentRow.showColumn.connect(self.contentGrid.showColumn)
 
         # Layout the widgets
         dateVbox = QVBoxLayout()

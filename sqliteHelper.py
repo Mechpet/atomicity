@@ -79,6 +79,9 @@ def fetchEntry(connection, tableName, date):
 
     return cursor.fetchone()
 
+def fetchConsecutive(connection, tableName, date, entries):
+    return
+
 def initTable(connection, tableName, startDate):
     """Initialize a table with empty entries"""
     days = [startDate]

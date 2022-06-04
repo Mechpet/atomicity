@@ -20,9 +20,17 @@ class contentGrid(QWidget):
 
         #self.setLayout(layout)
 
-    def showColumn(self, i):
+    def showColumns(self, topDate):
+        """Display all columns"""
+        settings = QSettings("Mechpet", "Atomicity")
+        settings.beginGroup("contentRow")
+        for i in range(settings.value("num")):
+            self.showColumn(i, topDate)
+
+    def showColumn(self, i, topDate):
         """Display a column of fulfillment matching the one at the given index"""
         settingName = f"contentHead{i}.ini"
         settings = QSettings(settingName, QSettings.Format.IniFormat)
 
         tableName = settings.value("table")
+        newColumn = contentColumn(cellType.binary, tableName, topDate)

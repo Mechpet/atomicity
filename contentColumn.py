@@ -2,13 +2,14 @@ from PyQt6.QtWidgets import QVBoxLayout, QWidget
 from contentCell import cellType
 from binaryCell import binaryCell
 from benchmarkCell import benchmarkCell
+import sqliteHelper as sql
 
 DEFAULT_NUM_IN_COLUMN = 14
 
 # Layout of contentCells in a vertical column
 class contentColumn(QWidget):
     """A row of contentHeads."""
-    def __init__(self, type):
+    def __init__(self, type, tableName, topDate):
         super().__init__()
 
         self.setFixedWidth(200)
