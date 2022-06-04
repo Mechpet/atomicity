@@ -43,6 +43,7 @@ class mainWrapper(QWidget):
         self.contentRowScroll.verticalScrollBar().setDisabled(True)
         self.contentRowScroll.setWidget(self.contentRow)
         self.contentRowScroll.setMaximumSize(self.contentRow.width(), self.contentRow.height())
+        print("Maximum width of contentRowScroll = ", self.contentRow.width())
         self.contentRowScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.contentRowScroll.setFrameShape(QFrame.Shape.NoFrame)
 
@@ -92,7 +93,7 @@ class mainWrapper(QWidget):
         self.layout = QGridLayout()
         
         self.layout.addWidget(self.adder, 0, 0, 1, 1)
-        self.layout.addWidget(self.contentRowScroll, 0, 1, 1, 10, Qt.AlignmentFlag.AlignLeft)
+        self.layout.addWidget(self.contentRowScroll, 0, 1, 1, 10, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignLeft)
         self.layout.addLayout(dateVbox, 1, 0, -1, 1)
         self.layout.addLayout(colVbox, 1, 1, -1, 10)
 

@@ -168,3 +168,4 @@ class contentRow(QWidget):
         # Shift the start position by 1 widget (rightward if moving right, leftward if moving left) 
         for i in range(start + step, end + step, step):
             os.rename(f"{filePrefix}{str(i)}.ini", f"{filePrefix}{str(i - step)}.ini")
+            self.layout.itemAt(i).widget().index = i - step
