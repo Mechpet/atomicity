@@ -14,11 +14,18 @@ class contentColumn(QWidget):
 
         self.setFixedWidth(200)
 
+        self.cellType = type
+        self.tableName = tableName
+
+        self.initUI(topDate)
+
+    def initUI(self, topDate):
         layout = QVBoxLayout()
-        if type == cellType.binary:
+
+        if self.cellType == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):
                 layout.addWidget(binaryCell())
-        elif type == cellType.benchmark:
+        elif self.cellType == cellType.benchmark:
             for i in range(DEFAULT_NUM_IN_COLUMN):
                 layout.addWidget(benchmarkCell())
         else:

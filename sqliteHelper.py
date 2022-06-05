@@ -37,11 +37,6 @@ def createContentColumnTable(connection, tableName = generateName()):
     try:
         cursor = connection.cursor()
         cursor.execute(createCmd)
-        indexCmd = f"""
-            CREATE UNIQUE INDEX indexDate
-            ON {tableName} (date);
-        """
-        #cursor.execute(indexCmd)
         return True
     except Error as e:
         if errorMsgsOn:

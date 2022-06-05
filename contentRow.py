@@ -79,6 +79,7 @@ class contentRow(QWidget):
         self.setLayout(self.layout)
 
         self.layout.itemAt(self.layout.count() - 1).widget().settingsWindow()
+        self.showColumn.emit(self.layout.count())
 
     def eventFilter(self, object, event):
         """Filter mouse events"""

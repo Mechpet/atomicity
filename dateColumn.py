@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel
-from PyQt6.QtCore import Qt, QDate
+from PyQt6.QtCore import Qt, QDate, pyqtSignal
 from calendarWindow import calendarWindow
 
 # Maps the dayOfWeek() -> Name of day
@@ -14,6 +14,7 @@ dayNames = {
 }
 
 class dateColumn(QWidget):
+    topDateChanged = pyqtSignal(QDate)
     def __init__(self, firstDay = QDate.currentDate()):
         super().__init__()
         self.numDays = 14
@@ -50,11 +51,13 @@ class dateColumn(QWidget):
     
     def updateDate(self, topDate):
         # Update the topmost date only if the selected date is not in the future
-        self.topDate = topDate
-        self.dates = [self.topDate]
-        for i in range(self.numDays):
-            self.dayDates[i].updateDate(self.dates[-1])
-            self.dates.append(self.dates[-1].addDays(-1))
+        if topDate != self.topDate:
+            self.topDate = topDate
+            self.dates = [self.topDate]
+            for i in range(self.numDays):
+                self.dayDates[i].updateDate(self.dates[-1])
+                self.dates.append(self.dates[-1].addDays(-1))
+            self.topDateChanged.emit(topDate)
 
         if self.dialog is not None:
             self.dialog.close()

@@ -62,7 +62,7 @@ class mainWrapper(QWidget):
 
         self.dateEdit = QPushButton("Jump to date", self)
 
-        self.contentGrid = contentGrid()
+        self.contentGrid = contentGrid(self.dateColumn.topDate)
 
         self.contentGridScroll = QScrollArea()
         self.contentGridScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -83,6 +83,8 @@ class mainWrapper(QWidget):
         # Connect widgets
         self.adder.added.connect(self.contentRow.addHeader)
         self.dateEdit.clicked.connect(self.dateColumn.setDate)
+        self.dateColumn.topDateChanged.connect(self.contentGrid.updateGrid)
+        self.contentRow.showColumn.connect(lambda: self.contentGrid.show)
 
         # Layout the widgets
         dateVbox = QVBoxLayout()
