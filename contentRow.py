@@ -1,5 +1,5 @@
 from xmlrpc.client import Boolean
-from PyQt6.QtWidgets import QHBoxLayout, QWidget
+from PyQt6.QtWidgets import QHBoxLayout, QWidget, QLayout
 from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData, pyqtSignal
 from PyQt6.QtGui import QDrag, QPixmap, QPainter, QCursor
 from math import floor
@@ -29,6 +29,7 @@ class contentRow(QWidget):
 
         self.layout = QHBoxLayout()
         self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSizeConstraint(QLayout.SizeConstraint.SetMinAndMaxSize)
 
         if self.settings.value("num"):
             for i in range(int(self.settings.value("num"))):

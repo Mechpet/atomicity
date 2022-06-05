@@ -14,6 +14,7 @@ from contentCell import cellType
 from binaryCell import binaryCell
 from contentColumn import contentColumn
 from contentGrid import contentGrid
+from scalingScrollArea import scalingScrollArea
 
 
 app = QApplication(sys.argv)
@@ -38,18 +39,19 @@ class mainWrapper(QWidget):
 
         self.contentRow = contentRow()
         self.contentRow.horScroll.connect(setHorScroll)
-        self.contentRowScroll = QScrollArea()
+        self.contentRowScroll = scalingScrollArea()
         self.contentRowScroll.setWidgetResizable(True)
         self.contentRowScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         #self.contentRowScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.contentRowScroll.verticalScrollBar().setDisabled(True)
         self.contentRowScroll.setWidget(self.contentRow)
-        self.contentRowScroll.setMinimumSize(200, 200)
-        self.contentRowScroll.setMaximumSize(3000, 200)
-        self.contentRowScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.contentRowScroll.setFixedHeight(200)
+        #self.contentRowScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.contentRowScroll.setFrameShape(QFrame.Shape.NoFrame)        
         print("Width of the contentRow = ", self.contentRow.width())
+        print("Height of the contentRow = ", self.contentRow.height())
         print("Width of the scroll = ", self.contentRowScroll.width())
+        print("Height of the scroll = ", self.contentRowScroll.height())
         print("Horizontal spacing = ", self.contentRow.layout.spacing())
 
         self.dateColumn = dateColumn()
