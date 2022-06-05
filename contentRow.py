@@ -32,7 +32,7 @@ class contentRow(QWidget):
 
         if self.settings.value("num"):
             for i in range(int(self.settings.value("num"))):
-                self.layout.addWidget(contentHead(i, self), Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+                self.layout.addWidget(contentHead(i, self), Qt.AlignmentFlag.AlignLeft)
         else:
             # The key "num" is not a QString of an integer
             self.settings.setValue("num", 0)
@@ -73,7 +73,7 @@ class contentRow(QWidget):
     def addHeader(self):
         """Append a new contentHead to the list"""
         # Create a new contentHead devoid of settings
-        self.layout.addWidget(contentHead(self.layout.count(), self), Qt.AlignmentFlag.AlignTop)
+        self.layout.addWidget(contentHead(self.layout.count(), self), Qt.AlignmentFlag.AlignLeft)
         self.settings.setValue("num", self.layout.count())
 
         self.setLayout(self.layout)

@@ -1,4 +1,5 @@
 # Header of each column (topmost block of data that is static to vertical scrolling)
+from multiprocessing import connection
 from PyQt6.QtWidgets import QWidget, QPushButton, QDialog, QGridLayout, QLabel
 from PyQt6.QtGui import QPainter, QPainterPath, QBrush, QPen, QColor, QTextOption, QCursor, QIcon
 from PyQt6.QtCore import Qt, QRectF, QSettings, QSize, QFile, QDate
@@ -206,6 +207,7 @@ class contentHead(QWidget):
     def delData(self):
         """Delete the instance"""
         if self.parent is not None:
+            sql.dropTable(sql.connection, self.settings.value("table"))
             self.parent.deleteHead(self.index)
             os.chmod(f"contentHead{str(self.index)}.ini", S_IWUSR | S_IREAD)
             os.remove(f"contentHead{str(self.index)}.ini")
