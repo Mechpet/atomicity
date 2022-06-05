@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QWidget, QPushButton, QDialog, QGridLayout, QLabel
 from PyQt6.QtGui import QPainter, QPainterPath, QBrush, QPen, QColor, QTextOption, QCursor, QIcon
 from PyQt6.QtCore import Qt, QRectF, QSettings, QSize, QFile, QDate
 import os
+from stat import S_IREAD, S_IRGRP, S_IROTH, S_IWUSR
 
 from settingsWindow import contentHeadSettingsWindow
 import sqliteHelper as sql
@@ -158,6 +159,11 @@ class contentHead(QWidget):
     
     def synchronize(self):
         """Update all of the settings of the contentHead"""
+        # Make the file writeable and readable
+        try:
+            os.chmod(self.settingName, S_IWUSR | S_IREAD)
+        except FileNotFoundError:
+            pass
         self.settings.setValue("text", self.text)
         self.settings.setValue("cellRed", self.cellColor.red())
         self.settings.setValue("cellGreen", self.cellColor.green())
@@ -167,6 +173,11 @@ class contentHead(QWidget):
         self.settings.setValue("textBlue", self.textColor.blue())
         self.settings.setValue("path", self.iconPath)
         self.settings.sync()
+        # Make the file read-only
+        try:
+            os.chmod(self.settingName, S_IREAD | S_IRGRP | S_IROTH)
+        except FileNotFoundError:
+            print(f"EXCEPTION: File {self.settingName}'s operation failed.")
 
     def fetch(self):
         """Sets all of its attributes based on the currently set settings"""
@@ -196,6 +207,7 @@ class contentHead(QWidget):
         """Delete the instance"""
         if self.parent is not None:
             self.parent.deleteHead(self.index)
+            os.chmod(f"contentHead{str(self.index)}.ini", S_IWUSR | S_IREAD)
             os.remove(f"contentHead{str(self.index)}.ini")
             self.parent.renameHeads(self.index, -1)
             self.window.instance = None

@@ -49,6 +49,7 @@ class dateColumn(QWidget):
         self.setLayout(self.layout)
     
     def updateDate(self, topDate):
+        # Update the topmost date only if the selected date is not in the future
         self.topDate = topDate
         self.dates = [self.topDate]
         for i in range(self.numDays):
@@ -83,7 +84,5 @@ class dayDate(QWidget):
         self.layout.addWidget(self.dayLabel, 0, Qt.AlignmentFlag.AlignHCenter)
     
     def updateDate(self, newDate):
-        if newDate.daysTo(QDate.currentDate()) >= 0:
-            # Only update the date if it's not in the future
-            self.dateLabel.setText(newDate.toString(Qt.DateFormat.ISODate))
-            self.dayLabel.setText(dayNames[newDate.dayOfWeek()])
+        self.dateLabel.setText(newDate.toString(Qt.DateFormat.ISODate))
+        self.dayLabel.setText(dayNames[newDate.dayOfWeek()])

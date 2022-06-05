@@ -28,10 +28,11 @@ class contentRow(QWidget):
         self.change = False
 
         self.layout = QHBoxLayout()
+        self.layout.setContentsMargins(0, 0, 0, 0)
 
         if self.settings.value("num"):
             for i in range(int(self.settings.value("num"))):
-                self.layout.addWidget(contentHead(i, self), Qt.AlignmentFlag.AlignTop)
+                self.layout.addWidget(contentHead(i, self), Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
         else:
             # The key "num" is not a QString of an integer
             self.settings.setValue("num", 0)
