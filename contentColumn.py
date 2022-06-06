@@ -22,12 +22,11 @@ class contentColumn(QWidget):
     def initUI(self, topDate):
         layout = QVBoxLayout()
 
+        info = sql.fetchConsecutive(sql.connection, self.tableName, topDate, DEFAULT_NUM_IN_COLUMN)
+
         if self.cellType == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):
-                layout.addWidget(binaryCell())
-        elif self.cellType == cellType.benchmark:
-            for i in range(DEFAULT_NUM_IN_COLUMN):
-                layout.addWidget(benchmarkCell())
+                layout.addWidget(binaryCell(info[i][1]))
         else:
             print(f"EXCEPTION: {type} not in cellType enum.")
 

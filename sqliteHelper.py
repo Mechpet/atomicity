@@ -71,7 +71,8 @@ def dropTable(connection, tableName):
 def fetchEntry(connection, tableName, date):
     """Fetch a single entry with the given date"""
     fetchCmd = f"""
-        SELECT date, value, cumulative FROM {tableName} WHERE date = '{date}'
+        SELECT date, value, cumulative FROM {tableName}
+        WHERE date = '{date}'
     """
 
     cursor = connection.cursor()
@@ -79,8 +80,18 @@ def fetchEntry(connection, tableName, date):
 
     return cursor.fetchone()
 
-def fetchConsecutive(connection, tableName, date, entries):
-    return
+def fetchConsecutive(connection, tableName, topDate, entries):
+    fetchCmd = f"""
+        SELECT date, value, cumulative FROM {tableName}
+        WHERE date <= date('{topDate}')
+        ORDER BY date DESC
+        LIMIT {entries}
+    """
+    
+    cursor = connection.cursor()
+    cursor.execute(fetchCmd)
+
+    return cursor.fetchall()
 
 def initTable(connection, tableName, startDate):
     """Initialize a table with empty entries"""
