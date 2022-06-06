@@ -56,9 +56,7 @@ class contentRow(QWidget):
     def dropEvent(self, event):
         """After the drag completes, save the settings"""
         # If there may have been a change to the layout, rewrite the settings
-        print("Leave event!")
         if self.change:
-            print("Change detected!")
             # Rename the dragged widget's settings to a temporary file
             os.rename(f"contentHead{self.selected.index}.ini", "temp.ini")
             # Rename all the involved files
@@ -96,7 +94,6 @@ class contentRow(QWidget):
 
     def mousePressEvent(self, event):
         """When the mouse left-clicks on a contentHead, store information about the item being moved"""
-        print("Mouse pressed")
         if event.button() == Qt.MouseButton.LeftButton:
             self.selected = self.getSelectedBinary(event.position().x(), event.position().y())
         elif event.button() == Qt.MouseButton.MiddleButton:
