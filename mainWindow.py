@@ -6,7 +6,7 @@ import ctypes
 from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QSizePolicy, QPushButton, QFrame, QLabel, QVBoxLayout
 from PyQt6.QtGui import QIcon, QCursor
 from PyQt6.QtCore import Qt, QSettings
-from headList import headList
+from headList import headList, headListScroll
 from window import APP_ID
 from dateList import dateList
 from headAdder import headAdder
@@ -33,15 +33,9 @@ class mainWrapper(QWidget):
         self.adder = headAdder()
 
         self.headList = headList()
-        self.headListScroll = QScrollArea()
-        self.headListScroll.setWidgetResizable(True)
-        self.headListScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.headListScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.headListScroll.horizontalScrollBar().setDisabled(True)
-        self.headListScroll.setWidget(self.headList)
-        self.headListScroll.setFixedWidth(200)
-        self.headListScroll.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
-        self.headListScroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.headListScroll = headListScroll()
+        self.headListScroll.installWidget(self.headList)
+        print("Head list scroll height = ", self.headListScroll.height())
 
         self.dateList = dateList()
         self.dateScroll = QScrollArea()

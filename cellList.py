@@ -23,10 +23,10 @@ class cellList(QWidget):
     def initUI(self, topDate):
         layout = QHBoxLayout()
 
-        print("topDate = ", topDate)
+        #print("topDate = ", topDate)
 
         info = sql.fetchConsecutive(sql.connection, self.tableName, topDate.toString(Qt.DateFormat.ISODate), DEFAULT_NUM_IN_COLUMN)
-        print("Info = ", info)
+       # print("Info = ", info)
 
         if self.cellType == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):

@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QVBoxLayout, QWidget, QLayout
+from PyQt6.QtWidgets import QVBoxLayout, QWidget, QLayout, QScrollArea, QFrame, QSizePolicy
 from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData, pyqtSignal
 from PyQt6.QtGui import QDrag, QPixmap, QPainter, QCursor
 from math import floor
@@ -6,7 +6,7 @@ import os
 
 from contentHead import contentHead
 
-# Layout of contentHeaders in a horizontal row
+# Layout of contentHeads 
 class headList(QWidget):
     """A row of contentHeads."""
     append = pyqtSignal(int)
@@ -44,11 +44,16 @@ class headList(QWidget):
 
     def dragMoveEvent(self, event):
         """As the dragged widget moves, show the preview of the contentRow"""
-        hovering = self.getSelectedBinary(event.position().x(), event.position().y())
-        if hovering is not None and self.selected is not None and hovering is not self.selected:
-            # Re-arrange the layout:
-            self.rearrange(self.layout.indexOf(hovering))
-            self.change = True
+        print(f"Event position = {event.position().x()}, {event.position().y()}")
+        print(f"Widget dimensions are = {self.width()}, {self.height()}")
+        if False:
+            print("HOLY")
+        else:
+            hovering = self.getSelectedBinary(event.position().x(), event.position().y())
+            if hovering is not None and self.selected is not None and hovering is not self.selected:
+                # Re-arrange the layout:
+                self.rearrange(self.layout.indexOf(hovering))
+                self.change = True
     
     def dropEvent(self, event):
         """After the drag completes, save the settings"""
@@ -163,3 +168,19 @@ class headList(QWidget):
         for i in range(start + step, end + step, step):
             os.rename(f"{filePrefix}{str(i)}.ini", f"{filePrefix}{str(i - step)}.ini")
             self.layout.itemAt(i - step).widget().index = i - step
+
+class headListScroll(QScrollArea):
+    """QScrollArea built specifically for the headList and its dragging functions"""
+    def __init__(self):
+        super().__init__()
+
+        self.setWidgetResizable(True)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.horizontalScrollBar().setDisabled(True)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
+        self.setFrameShape(QFrame.Shape.NoFrame)
+
+    def installWidget(self, widget):
+        self.setWidget(widget)
+        self.setFixedWidth(widget.width())

@@ -1,5 +1,4 @@
 # Header of each column (topmost block of data that is static to vertical scrolling)
-from multiprocessing import connection
 from PyQt6.QtWidgets import QWidget, QPushButton, QDialog, QGridLayout, QLabel
 from PyQt6.QtGui import QPainter, QPainterPath, QBrush, QPen, QColor, QTextOption, QCursor, QIcon
 from PyQt6.QtCore import Qt, QRectF, QSettings, QSize, QFile, QDate
