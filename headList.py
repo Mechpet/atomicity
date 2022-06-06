@@ -1,5 +1,4 @@
-from xmlrpc.client import Boolean
-from PyQt6.QtWidgets import QHBoxLayout, QWidget, QLayout
+from PyQt6.QtWidgets import QVBoxLayout, QWidget, QLayout
 from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData, pyqtSignal
 from PyQt6.QtGui import QDrag, QPixmap, QPainter, QCursor
 from math import floor
@@ -8,10 +7,9 @@ import os
 from contentHead import contentHead
 
 # Layout of contentHeaders in a horizontal row
-class contentRow(QWidget):
+class headList(QWidget):
     """A row of contentHeads."""
-    horScroll = pyqtSignal(Boolean)
-    showColumn = pyqtSignal(int)
+    append = pyqtSignal(int)
     def __init__(self):
         super().__init__()
 
@@ -19,21 +17,20 @@ class contentRow(QWidget):
         self.dragged = None
         self.setAcceptDrops(True)
         self.setMouseTracking(True)
-        #self.installEventFilter(self)
 
         self.settings = QSettings("Mechpet", "Atomicity")
-        self.settings.beginGroup("contentRow")
+        self.settings.beginGroup("headList")
 
         self.selected = None
         self.change = False
 
-        self.layout = QHBoxLayout()
+        self.layout = QVBoxLayout()
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSizeConstraint(QLayout.SizeConstraint.SetMinAndMaxSize)
 
         if self.settings.value("num"):
             for i in range(int(self.settings.value("num"))):
-                self.layout.addWidget(contentHead(i, self), Qt.AlignmentFlag.AlignLeft)
+                self.layout.addWidget(contentHead(i, self))
         else:
             # The key "num" is not a QString of an integer
             self.settings.setValue("num", 0)
@@ -72,7 +69,7 @@ class contentRow(QWidget):
     def addHeader(self):
         """Append a new contentHead to the list"""
         # Create a new contentHead devoid of settings
-        self.layout.addWidget(contentHead(self.layout.count(), self), Qt.AlignmentFlag.AlignLeft)
+        self.layout.addWidget(contentHead(self.layout.count(), self))
         self.settings.setValue("num", self.layout.count())
 
         self.setLayout(self.layout)
@@ -96,9 +93,6 @@ class contentRow(QWidget):
         """When the mouse left-clicks on a contentHead, store information about the item being moved"""
         if event.button() == Qt.MouseButton.LeftButton:
             self.selected = self.getSelectedBinary(event.position().x(), event.position().y())
-        elif event.button() == Qt.MouseButton.MiddleButton:
-            self.horScroll.emit(True)
-            self.setCursor(QCursor(QCursor(Qt.CursorShape.SizeHorCursor)))
     
     def mouseMoveEvent(self, event):
         """When the mouse moves and has selected a widget, enable dragging and dropping of the widget"""
@@ -142,9 +136,9 @@ class contentRow(QWidget):
         
             if self.layout.itemAt(mid).geometry().contains(x, y):
                 return self.layout.itemAt(mid).widget()
-            elif self.layout.itemAt(mid).geometry().x() < x:
+            elif self.layout.itemAt(mid).geometry().y() < y:
                 low = mid + 1
-            elif self.layout.itemAt(mid).geometry().x() > x:
+            elif self.layout.itemAt(mid).geometry().y() > y:
                 high = mid - 1
         return None
 

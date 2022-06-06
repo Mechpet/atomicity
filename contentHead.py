@@ -123,7 +123,6 @@ class contentHead(QWidget):
 
     def settingsWindow(self):
         """Open a new window that takes priority over the main application"""
-        self.btn.setProperty("opened", True)
         self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.cellColor, self.textColor, self.iconPath, self)
         self.window.apply.connect(self.updateData)
         self.window.show()

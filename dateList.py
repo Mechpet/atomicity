@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from PyQt6.QtCore import Qt, QDate, pyqtSignal
 from calendarWindow import calendarWindow
 
@@ -13,7 +13,7 @@ dayNames = {
     7 : "Sunday"
 }
 
-class dateColumn(QWidget):
+class dateList(QWidget):
     topDateChanged = pyqtSignal(QDate)
     def __init__(self, firstDay = QDate.currentDate()):
         super().__init__()
@@ -40,7 +40,7 @@ class dateColumn(QWidget):
         self.dayDates = []
         for i in range(self.numDays - 1):
             self.dates.append(self.dates[-1].addDays(-1))
-        self.layout = QVBoxLayout(self)
+        self.layout = QHBoxLayout(self)
 
         for date in self.dates:
             newDayDate = dayDate(date)

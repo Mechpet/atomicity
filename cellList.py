@@ -1,4 +1,5 @@
-from PyQt6.QtWidgets import QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QHBoxLayout, QWidget
+from PyQt6.QtCore import Qt
 from contentCell import cellType
 from binaryCell import binaryCell
 from benchmarkCell import benchmarkCell
@@ -6,13 +7,13 @@ import sqliteHelper as sql
 
 DEFAULT_NUM_IN_COLUMN = 14
 
-# Layout of contentCells in a vertical column
-class contentColumn(QWidget):
-    """A row of contentHeads."""
+# Layout of contentCells
+class cellList(QWidget):
+    """A row of contentCells."""
     def __init__(self, type, tableName, topDate):
         super().__init__()
 
-        self.setFixedWidth(200)
+        self.setFixedHeight(200)
 
         self.cellType = type
         self.tableName = tableName
@@ -20,9 +21,12 @@ class contentColumn(QWidget):
         self.initUI(topDate)
 
     def initUI(self, topDate):
-        layout = QVBoxLayout()
+        layout = QHBoxLayout()
 
-        info = sql.fetchConsecutive(sql.connection, self.tableName, topDate, DEFAULT_NUM_IN_COLUMN)
+        print("topDate = ", topDate)
+
+        info = sql.fetchConsecutive(sql.connection, self.tableName, topDate.toString(Qt.DateFormat.ISODate), DEFAULT_NUM_IN_COLUMN)
+        print("Info = ", info)
 
         if self.cellType == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):

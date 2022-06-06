@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import QWidget, QPushButton
 from PyQt6.QtGui import QIcon, QCursor
 from PyQt6.QtCore import QSize, Qt, pyqtSignal
 
-class contentAdder(QWidget):
+class headAdder(QWidget):
     """Fixed cell that allows adding new contentHeaders"""
     added = pyqtSignal()
     def __init__(self):

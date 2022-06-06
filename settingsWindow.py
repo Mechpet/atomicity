@@ -141,7 +141,6 @@ class contentHeadSettingsWindow(Window):
                     background: {newColor.name()};
                 }}
             """)
-            print("Set widget's color")
         
         self.dialog = None
 

@@ -6,16 +6,11 @@ import ctypes
 from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QSizePolicy, QPushButton, QFrame, QLabel, QVBoxLayout
 from PyQt6.QtGui import QIcon, QCursor
 from PyQt6.QtCore import Qt, QSettings
-from contentRow import contentRow
+from headList import headList
 from window import APP_ID
-from dateColumn import dateColumn
-from contentAdder import contentAdder
-from contentCell import cellType
-from binaryCell import binaryCell
-from contentColumn import contentColumn
-from contentGrid import contentGrid
-from scalingScrollArea import scalingScrollArea
-
+from dateList import dateList
+from headAdder import headAdder
+from cellGrid import cellGrid
 
 app = QApplication(sys.argv)
 
@@ -35,41 +30,41 @@ class mainWrapper(QWidget):
         self.layout = QGridLayout()
 
         # Initialize widgets
-        self.adder = contentAdder()
+        self.adder = headAdder()
 
-        self.contentRow = contentRow()
-        self.contentRow.horScroll.connect(setHorScroll)
-        self.contentRowScroll = QScrollArea()
-        self.contentRowScroll.setWidgetResizable(True)
-        self.contentRowScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.contentRowScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.contentRowScroll.verticalScrollBar().setDisabled(True)
-        self.contentRowScroll.setWidget(self.contentRow)
-        self.contentRowScroll.setFixedHeight(200)
-        self.contentRowScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        self.contentRowScroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.headList = headList()
+        self.headListScroll = QScrollArea()
+        self.headListScroll.setWidgetResizable(True)
+        self.headListScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.headListScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.headListScroll.horizontalScrollBar().setDisabled(True)
+        self.headListScroll.setWidget(self.headList)
+        self.headListScroll.setFixedWidth(200)
+        self.headListScroll.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
+        self.headListScroll.setFrameShape(QFrame.Shape.NoFrame)
 
-        self.dateColumn = dateColumn()
+        self.dateList = dateList()
         self.dateScroll = QScrollArea()
+        #self.dateScroll.setWidgetResizable(True)
         self.dateScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.dateScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.dateScroll.horizontalScrollBar().setDisabled(True)
-        self.dateScroll.setWidget(self.dateColumn)
-        self.dateScroll.setMaximumSize(self.dateColumn.width(), self.dateColumn.height())
-        self.dateScroll.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
+        #self.dateScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.dateScroll.verticalScrollBar().setDisabled(True)
+        self.dateScroll.setWidget(self.dateList)
+        #self.dateScroll.setMaximumSize(self.dateList.width(), self.dateList.height())
+        self.dateScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.dateScroll.setFrameShape(QFrame.Shape.NoFrame)
 
         self.dateEdit = QPushButton("Jump to date", self)
 
-        self.contentGrid = contentGrid(self.dateColumn.topDate)
+        self.cellGrid = cellGrid(self.dateList.topDate)
 
-        self.contentGridScroll = QScrollArea()
-        self.contentGridScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.contentGridScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.contentGridScroll.setWidget(self.contentGrid)
-        self.contentGridScroll.setMaximumSize(self.contentGrid.width(), self.contentGrid.height())
-        self.contentGridScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.contentGridScroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.cellGridScroll = QScrollArea()
+        self.cellGridScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.cellGridScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.cellGridScroll.setWidget(self.cellGrid)
+        self.cellGridScroll.setMaximumSize(self.cellGrid.width(), self.cellGrid.height())
+        self.cellGridScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.cellGridScroll.setFrameShape(QFrame.Shape.NoFrame)
 
         emptyBtn = QPushButton("", self)
         emptyBtn.setStyleSheet("""
@@ -80,28 +75,27 @@ class mainWrapper(QWidget):
         """)
 
         # Connect widgets
-        self.adder.added.connect(self.contentRow.addHeader)
-        self.dateEdit.clicked.connect(self.dateColumn.setDate)
-        self.dateColumn.topDateChanged.connect(self.contentGrid.updateGrid)
-        self.contentRow.showColumn.connect(lambda: self.contentGrid.show)
+        self.adder.added.connect(self.headList.addHeader)
+        self.dateEdit.clicked.connect(self.dateList.setDate)
+        self.dateList.topDateChanged.connect(self.cellGrid.updateGrid)
+        self.headList.append.connect(self.cellGrid.showCellsAt)
 
         # Layout the widgets
         dateVbox = QVBoxLayout()
         dateVbox.addWidget(self.dateEdit)
         dateVbox.addWidget(self.dateScroll)
-
-        colVbox = QVBoxLayout()
-        colVbox.addWidget(emptyBtn)
-        colVbox.addWidget(self.contentGridScroll)
         
         self.layout.addWidget(self.adder, 0, 0, 1, 1)
-        self.layout.addWidget(self.contentRowScroll, 0, 1)
+        self.layout.addLayout(dateVbox, 0, 1, 1, -1, Qt.AlignmentFlag.AlignLeft)
         self.layout.setColumnStretch(1, 1)
-        self.layout.addLayout(dateVbox, 1, 0, -1, 1)
-        self.layout.addLayout(colVbox, 1, 1, -1, 10)
+        self.layout.addWidget(self.headListScroll, 1, 0, -1, 1)
+        self.layout.addWidget(self.cellGridScroll, 1, 1)
 
-        self.dateScroll.verticalScrollBar().valueChanged.connect(self.contentGridScroll.verticalScrollBar().setValue)
-        self.contentGridScroll.verticalScrollBar().valueChanged.connect(self.dateScroll.verticalScrollBar().setValue)
+        # Connect related scroll areas
+        self.dateScroll.horizontalScrollBar().valueChanged.connect(self.cellGridScroll.horizontalScrollBar().setValue)
+        self.cellGridScroll.horizontalScrollBar().valueChanged.connect(self.dateScroll.horizontalScrollBar().setValue)
+        self.headListScroll.verticalScrollBar().valueChanged.connect(self.cellGridScroll.verticalScrollBar().setValue)
+        self.cellGridScroll.verticalScrollBar().valueChanged.connect(self.headListScroll.verticalScrollBar().setValue)
 
         self.setLayout(self.layout)
 
@@ -116,7 +110,7 @@ def main():
 
 def resetContentHeads():
     settings = QSettings("Mechpet", "Atomicity")
-    settings.beginGroup("contentRow")
+    settings.beginGroup("headList")
 
     settings.setValue("num", 0)
     quit()
