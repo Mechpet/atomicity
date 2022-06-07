@@ -20,7 +20,7 @@ class contentHead(QWidget):
     """A block that acts as the head of the list of contentCells."""
     def __init__(self, index, parent = None):
         super().__init__(parent)
-        self.setMouseTracking(True)
+        #self.setMouseTracking(True)
         self.setCursor(QCursor(Qt.CursorShape.OpenHandCursor))
 
         self.index = index

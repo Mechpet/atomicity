@@ -13,16 +13,8 @@ class headList(QWidget):
     def __init__(self):
         super().__init__()
 
-        # Install continuous mouse tracking
-        self.dragged = None
-        self.setAcceptDrops(True)
-        self.setMouseTracking(True)
-
         self.settings = QSettings("Mechpet", "Atomicity")
         self.settings.beginGroup("headList")
-
-        self.selected = None
-        self.change = False
 
         self.layout = QVBoxLayout()
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -37,39 +29,10 @@ class headList(QWidget):
 
         self.setLayout(self.layout)
 
-    def dragEnterEvent(self, event):
-        """Display the cursor as accepting drag-and-drop events"""
-        self.change = False
-        event.accept()
-
-    def dragMoveEvent(self, event):
-        """As the dragged widget moves, show the preview of the contentRow"""
-        print(f"Event position = {event.position().x()}, {event.position().y()}")
-        print(f"Widget dimensions are = {self.width()}, {self.height()}")
-        if False:
-            print("HOLY")
-        else:
-            hovering = self.getSelectedBinary(event.position().x(), event.position().y())
-            if hovering is not None and self.selected is not None and hovering is not self.selected:
-                # Re-arrange the layout:
-                self.rearrange(self.layout.indexOf(hovering))
-                self.change = True
-    
-    def dropEvent(self, event):
-        """After the drag completes, save the settings"""
-        # If there may have been a change to the layout, rewrite the settings
-        if self.change:
-            # Rename the dragged widget's settings to a temporary file
-            os.rename(f"contentHead{self.selected.index}.ini", "temp.ini")
-            # Rename all the involved files
-            self.renameHeads(self.selected.index, self.layout.indexOf(self.selected))
-            # Finalize the dragged widget's setting file name
-            os.rename("temp.ini", f"contentHead{self.layout.indexOf(self.selected)}.ini")
-
-    def rearrange(self, index):
-        """Remove the selected widget and re-insert it back to a specified index"""
-        self.layout.removeWidget(self.selected)
-        self.layout.insertWidget(index, self.selected)
+    def rearrange(self, selected, target):
+        targetIndex = self.layout.indexOf(target)
+        self.layout.removeWidget(selected)
+        self.layout.insertWidget(targetIndex, selected)
         
     def addHeader(self):
         """Append a new contentHead to the list"""
@@ -80,56 +43,7 @@ class headList(QWidget):
         self.setLayout(self.layout)
 
         self.layout.itemAt(self.layout.count() - 1).widget().settingsWindow()
-        self.showColumn.emit(self.layout.count())
-
-    def eventFilter(self, object, event):
-        """Filter mouse events"""
-        result = False
-        if object is self:
-            if event.type() == QEvent.Type.MouseButtonPress:
-                self.mousePressEvent(event)
-            elif event.type() == QEvent.Type.MouseMove:
-                self.mouseMoveEvent(event)
-            elif event.type() == QEvent.Type.MouseButtonRelease:
-                self.mouseReleaseEvent(event)
-        return result
-
-    def mousePressEvent(self, event):
-        """When the mouse left-clicks on a contentHead, store information about the item being moved"""
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.selected = self.getSelectedBinary(event.position().x(), event.position().y())
-    
-    def mouseMoveEvent(self, event):
-        """When the mouse moves and has selected a widget, enable dragging and dropping of the widget"""
-        # If the user just selected a widget: (must initialize the drag instance)
-        if event.buttons() & Qt.MouseButton.LeftButton and self.selected is not None:
-            # Grab a pixmap of the full widget
-            pixmapOpaque = self.selected.grab()
-
-            # Create an empty transparent pixmap to paint on
-            pixmap = QPixmap(self.selected.geometry().width(), self.selected.geometry().height())
-            pixmap.fill(Qt.GlobalColor.transparent)
-
-            # Paint in a transparent version of the widget to be dragged
-            painter = QPainter(pixmap)
-            painter.setOpacity(0.33)
-            painter.drawPixmap(0, 0, pixmapOpaque)
-            painter.end()
-
-            mimedata = QMimeData()
-            mimedata.setImageData(pixmap)
-
-            self.dragged = QDrag(self.selected)
-            self.dragged.setMimeData(mimedata)
-            self.dragged.setPixmap(pixmap)
-
-            # Set the drag image at the cursor location
-            self.dragged.setHotSpot(event.pos() - self.selected.pos())
-            self.dragged.exec()
-
-            # Clear the instances after execution is over
-            self.dragged = None
-            self.selected = None
+        self.append.emit(self.layout.count() - 1)
 
     def getSelectedBinary(self, x, y):
         """Get the item index of the content using binary search"""
@@ -184,3 +98,92 @@ class headListScroll(QScrollArea):
     def installWidget(self, widget):
         self.setWidget(widget)
         self.setFixedWidth(widget.width())
+        self.setAcceptDrops(True)
+        self.setMouseTracking(True)
+        self.selected = None
+        self.change = False
+        self.widget = widget
+        #self.installEventFilter(self)
+    
+    def eventFilter(self, object, event):
+        """Filter mouse events"""
+        if object is self:
+            if event.type() == QEvent.Type.MouseButtonPress:
+                self.mousePressEvent(event)
+            elif event.type() == QEvent.Type.MouseMove:
+                self.mouseMoveEvent(event)
+            elif event.type() == QEvent.Type.MouseButtonRelease:
+                self.mouseReleaseEvent(event)
+        else:
+            pass#print(f"Somebody else's event = {object}")
+        return super().eventFilter(object, event)
+
+    def resizeEvent(self, event):
+        print(f"Resized scroll area to {self.width()}, {self.height()}")
+
+    def mousePressEvent(self, event):
+        """When the mouse left-clicks on a contentHead, store information about the item being moved"""
+        #print("Pressed mouse on widget")
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.selected = self.widget.getSelectedBinary(event.position().x(), event.position().y() + self.verticalScrollBar().value() / 100. * self.widget.height())
+
+    def mouseMoveEvent(self, event):
+        """When the mouse moves and has selected a widget, enable dragging and dropping of the widget"""
+        # If the user just selected a widget: (must initialize the drag instance)
+        if event.buttons() & Qt.MouseButton.LeftButton and self.selected is not None:
+            # Grab a pixmap of the full widget
+            pixmapOpaque = self.selected.grab()
+
+            # Create an empty transparent pixmap to paint on
+            pixmap = QPixmap(self.selected.geometry().width(), self.selected.geometry().height())
+            pixmap.fill(Qt.GlobalColor.transparent)
+
+            # Paint in a transparent version of the widget to be dragged
+            painter = QPainter(pixmap)
+            painter.setOpacity(0.33)
+            painter.drawPixmap(0, 0, pixmapOpaque)
+            painter.end()
+
+            mimedata = QMimeData()
+            mimedata.setImageData(pixmap)
+
+            self.dragged = QDrag(self.selected)
+            self.dragged.setMimeData(mimedata)
+            self.dragged.setPixmap(pixmap)
+
+            # Set the drag image at the cursor location
+            self.dragged.setHotSpot(event.pos() - self.selected.pos())
+            self.dragged.exec()
+
+            # Clear the instances after execution is over
+            self.dragged = None
+            self.selected = None
+
+    def dragEnterEvent(self, event):
+        """Display the cursor as accepting drag-and-drop events"""
+        self.change = False
+        event.accept()
+
+    def dragMoveEvent(self, event):
+        """As the dragged widget moves, show the preview of the contentRow"""
+        if False:
+            print("HOLY")
+        else:
+            hovering = self.widget.getSelectedBinary(event.position().x(), event.position().y() + self.verticalScrollBar().value() / 100. * self.widget.height())
+            print(f"Hovering is {hovering}")
+            if hovering is not None and self.selected is not None and hovering is not self.selected:
+                # Re-arrange the layout:
+                print("Rearranging")
+                self.widget.rearrange(self.selected, hovering)
+                self.change = True
+
+    def dropEvent(self, event):
+        """After the drag completes, save the settings"""
+        # If there may have been a change to the layout, rewrite the settings
+        if self.change:
+            # Rename the dragged widget's settings to a temporary file
+            os.rename(f"contentHead{self.selected.index}.ini", "temp.ini")
+            # Rename all the involved files
+            self.widget.renameHeads(self.selected.index, self.widget.layout.indexOf(self.selected))
+            # Finalize the dragged widget's setting file name
+            os.rename("temp.ini", f"contentHead{self.widget.layout.indexOf(self.selected)}.ini")

@@ -3,7 +3,7 @@ from cgitb import reset
 import sys
 import ctypes
 
-from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QSizePolicy, QPushButton, QFrame, QLabel, QVBoxLayout
+from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QSizePolicy, QPushButton, QFrame, QVBoxLayout
 from PyQt6.QtGui import QIcon, QCursor
 from PyQt6.QtCore import Qt, QSettings
 from headList import headList, headListScroll
@@ -80,10 +80,10 @@ class mainWrapper(QWidget):
         dateVbox.addWidget(self.dateScroll)
         
         self.layout.addWidget(self.adder, 0, 0, 1, 1)
-        self.layout.addLayout(dateVbox, 0, 1, 1, -1, Qt.AlignmentFlag.AlignLeft)
-        self.layout.setColumnStretch(1, 1)
+        self.layout.addLayout(dateVbox, 0, 1, 1, 20, Qt.AlignmentFlag.AlignLeft)
+        #self.layout.setColumnStretch(1, 1)
         self.layout.addWidget(self.headListScroll, 1, 0, -1, 1)
-        self.layout.addWidget(self.cellGridScroll, 1, 1)
+        self.layout.addWidget(self.cellGridScroll, 1, 1, -1, 20, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
         # Connect related scroll areas
         self.dateScroll.horizontalScrollBar().valueChanged.connect(self.cellGridScroll.horizontalScrollBar().setValue)
