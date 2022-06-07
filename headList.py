@@ -100,6 +100,7 @@ class headListScroll(QScrollArea):
         self.setFixedWidth(widget.width())
         self.setAcceptDrops(True)
         self.setMouseTracking(True)
+        self.threshold = 0.15
         self.selected = None
         self.change = False
         self.widget = widget
@@ -166,8 +167,15 @@ class headListScroll(QScrollArea):
 
     def dragMoveEvent(self, event):
         """As the dragged widget moves, show the preview of the contentRow"""
-        if False:
-            print("HOLY")
+        print("DRAG MOVE")
+        if event.position().y() < self.height() * self.threshold:
+            print("Drag upward")
+            closeness = 1 - event.position().y() / (self.height() * self.threshold)
+            self.verticalScrollBar().setValue(max(self.verticalScrollBar().value() - 10 * closeness, 0.0))
+        elif event.position().y() > self.height() * (1 - self.threshold):
+            closeness = (event.position().y() - (self.height() * (1 - self.threshold))) / (self.height() * self.threshold)
+            self.verticalScrollBar().setValue(min(self.verticalScrollBar().value() + 10 * closeness, 100.0))
+            print("Drag downward")
         else:
             hovering = self.widget.getSelectedBinary(event.position().x(), event.position().y() + self.verticalScrollBar().value() / 100. * self.widget.height())
             print(f"Hovering is {hovering}")
