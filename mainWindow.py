@@ -90,6 +90,7 @@ class mainWrapper(QWidget):
         self.cellGridScroll.horizontalScrollBar().valueChanged.connect(self.dateScroll.horizontalScrollBar().setValue)
         self.headListScroll.verticalScrollBar().valueChanged.connect(self.cellGridScroll.verticalScrollBar().setValue)
         self.cellGridScroll.verticalScrollBar().valueChanged.connect(self.headListScroll.verticalScrollBar().setValue)
+        self.dateScroll.horizontalScrollBar().setValue(self.dateList.width())
 
         self.setLayout(self.layout)
 

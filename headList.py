@@ -83,6 +83,12 @@ class headList(QWidget):
             os.rename(f"{filePrefix}{str(i)}.ini", f"{filePrefix}{str(i - step)}.ini")
             self.layout.itemAt(i - step).widget().index = i - step
 
+    def hoverMoveEvent(self, event):
+        print("Executing a hover move event on the widget.")
+
+    def hoverEnterEvent(self, event):
+        print("Executing a hover enter event on the widget.")
+
 class headListScroll(QScrollArea):
     """QScrollArea built specifically for the headList and its dragging functions"""
     def __init__(self):
@@ -126,7 +132,8 @@ class headListScroll(QScrollArea):
         """When the mouse left-clicks on a contentHead, store information about the item being moved"""
         #print("Pressed mouse on widget")
         if event.button() == Qt.MouseButton.LeftButton:
-            self.selected = self.widget.getSelectedBinary(event.position().x(), event.position().y() + self.verticalScrollBar().value() / 100. * self.widget.height())
+            self.selected = self.widget.getSelectedBinary(event.position().x(), event.position().y() + (self.verticalScrollBar().value() / self.widget.height()) * self.widget.height())
+
 
     def mouseMoveEvent(self, event):
         """When the mouse moves and has selected a widget, enable dragging and dropping of the widget"""
@@ -153,7 +160,7 @@ class headListScroll(QScrollArea):
             self.dragged.setPixmap(pixmap)
 
             # Set the drag image at the cursor location
-            self.dragged.setHotSpot(event.pos() - self.selected.pos())
+            self.dragged.setHotSpot(event.pos())# - self.selected.pos())
             self.dragged.exec()
 
             # Clear the instances after execution is over
@@ -177,13 +184,21 @@ class headListScroll(QScrollArea):
             self.verticalScrollBar().setValue(min(self.verticalScrollBar().value() + 10 * closeness, 100.0))
             print("Drag downward")
         else:
-            hovering = self.widget.getSelectedBinary(event.position().x(), event.position().y() + self.verticalScrollBar().value() / 100. * self.widget.height())
+            hovering = self.widget.getSelectedBinary(event.position().x(), event.position().y() + (self.verticalScrollBar().value() / self.widget.height()) * self.widget.height())
+
+            
             print(f"Hovering is {hovering}")
             if hovering is not None and self.selected is not None and hovering is not self.selected:
                 # Re-arrange the layout:
                 print("Rearranging")
                 self.widget.rearrange(self.selected, hovering)
                 self.change = True
+
+    def hoverEnterEvent(self, event):
+        print("Entering a hover move event on the scroll.")
+
+    def hoverMoveEvent(self, event):
+        print("Executing a hover move event on the scroll.")
 
     def dropEvent(self, event):
         """After the drag completes, save the settings"""
