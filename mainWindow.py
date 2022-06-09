@@ -5,7 +5,7 @@ import ctypes
 
 from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QSizePolicy, QPushButton, QFrame, QVBoxLayout
 from PyQt6.QtGui import QIcon, QCursor
-from PyQt6.QtCore import Qt, QSettings
+from PyQt6.QtCore import Qt, QSettings, QTimer
 from headList import headList, headListScroll
 from window import APP_ID
 from dateList import dateList
