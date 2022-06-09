@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QVBoxLayout, QWidget, QLayout, QScrollArea, QFrame, QSizePolicy
-from PyQt6.QtCore import QSettings, QEvent, Qt, QMimeData, pyqtSignal, QRunnable, QObject, QThreadPool, QTimer, QThread
-from PyQt6.QtGui import QDrag, QPixmap, QPainter, QCursor
+from PyQt6.QtCore import QSettings, Qt, QMimeData, pyqtSignal, QObject, QTimer, QThread, QPoint
+from PyQt6.QtGui import QDrag, QPixmap, QPainter
 from math import floor
 import os
 
@@ -50,6 +50,7 @@ class headList(QWidget):
         low = 0
         high = self.layout.count() - 1
 
+        print(f"Got y as {y}")
         while low <= high:
             mid = floor((high + low) / 2)
         
@@ -59,6 +60,7 @@ class headList(QWidget):
                 low = mid + 1
             elif self.layout.itemAt(mid).geometry().y() > y:
                 high = mid - 1
+        print("Returning None")
         return None
 
     def deleteHead(self, index):
@@ -117,13 +119,11 @@ class headListScroll(QScrollArea):
     
     def eventFilter(self, object, event):
         """Filter mouse events"""
+        print("ENTER EVENT FILTER")
         if object is self:
-            print("Clearing worker")
-            self.worker = None
+            if self.worker is not None:
+                self.clearThread()
         return super().eventFilter(object, event)
-
-    def resizeEvent(self, event):
-        print(f"Resized scroll area to {self.width()}, {self.height()}")
 
     def mousePressEvent(self, event):
         """When the mouse left-clicks on a contentHead, store information about the item being moved"""
@@ -156,7 +156,9 @@ class headListScroll(QScrollArea):
             self.dragged.setPixmap(pixmap)
 
             # Set the drag image at the cursor location
-            self.dragged.setHotSpot(event.pos())# - self.selected.pos())
+            hotspotPos = event.pos()#QPoint(0, 0)
+            self.dragged.setHotSpot(hotspotPos)
+            print(f"Hotspot location is at ({hotspotPos.x()}, {hotspotPos.y()})")
             self.dragged.exec()
 
             # Clear the instances after execution is over
@@ -170,6 +172,7 @@ class headListScroll(QScrollArea):
 
     def dragMoveEvent(self, event):
         """As the dragged widget moves, show the preview of the contentRow"""
+        print("DRAG MOVE EVENT")
         if event.position().y() < self.height() * self.threshold:
             closeness = 1 - event.position().y() / (self.height() * self.threshold)
             self.worker = Worker(closeness)
@@ -183,17 +186,16 @@ class headListScroll(QScrollArea):
             self.worker.ready.connect(self.weightedScroll)
             self.thread.start()
         else:
+            if self.worker is not None:
+                self.clearThread()
             hovering = self.widget.getSelectedBinary(event.position().x(), event.position().y() + (self.verticalScrollBar().value() / self.widget.height()) * self.widget.height())
 
-            print(f"Hovering is {hovering}")
             if hovering is not None and self.selected is not None and hovering is not self.selected:
                 # Re-arrange the layout:
-                print("Rearranging")
                 self.widget.rearrange(self.selected, hovering)
                 self.change = True
 
     def weightedScroll(self, closeness):
-        print("SCROLLLLLL")
         newValue = self.verticalScrollBar().value() - 10.0 * closeness
         if newValue < 0.0:
             newValue = 0.0
@@ -211,6 +213,11 @@ class headListScroll(QScrollArea):
             self.widget.renameHeads(self.selected.index, self.widget.layout.indexOf(self.selected))
             # Finalize the dragged widget's setting file name
             os.rename("temp.ini", f"contentHead{self.widget.layout.indexOf(self.selected)}.ini")
+
+    def clearThread(self):
+        self.thread.quit()
+        self.thread.wait()
+        self.worker = None
 
 class Worker(QObject):
     ready = pyqtSignal(float)
