@@ -3,6 +3,7 @@ import secrets
 import enum
 from PyQt6.QtCore import Qt, QDate
 from sqlite3 import Error
+from time import sleep
 
 errorMsgsOn = False
 
@@ -101,5 +102,34 @@ def initTable(connection, tableName, startDate):
     
     for day in days:
         upsertDay(connection, tableName, day.toString(Qt.DateFormat.ISODate), None, 1.00)
+
+def fillTable(connection, tableName):
+    """Fills a table with empty entries up to the current date if the entry does not exist"""
+    cursor = connection.cursor()
+
+    print("Table = ", tableName)
+
+    nextDate = QDate.currentDate()
+    while True:
+        existsCmd = f"""
+            SELECT EXISTS(
+                SELECT date FROM {tableName}
+                WHERE date = date('{nextDate.toString(Qt.DateFormat.ISODate)}')
+                LIMIT 1
+            )
+        """
+
+        cursor.execute(existsCmd)
+        retvalue = cursor.fetchone()
+        if retvalue:
+            # The row with the next iterated date exists; conclude that there's no more need to update
+            print("Found the corresponding date")
+            break
+        else:
+            print("Did not find the corresponding date")
+            upsertDay(connection, tableName, nextDate.toString(Qt.DateFormat.ISODate), None, 1.00)
+            nextDate = nextDate.addDays(-1)
+
+    connection.commit()
     
 connection = createConnection(r"database\info.db")

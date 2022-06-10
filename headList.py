@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QVBoxLayout, QWidget, QLayout, QScrollArea, QFrame, QSizePolicy
-from PyQt6.QtCore import QSettings, Qt, QMimeData, pyqtSignal, QObject, QTimer, QThread, QPoint
+from PyQt6.QtCore import QSettings, Qt, QMimeData, pyqtSignal, QObject, QTimer, QThread, QPoint, QEvent
 from PyQt6.QtGui import QDrag, QPixmap, QPainter
 from math import floor
 import os
@@ -123,11 +123,18 @@ class headListScroll(QScrollArea):
         if object is self:
             if self.worker is not None:
                 self.clearThread()
+        print(f"Filtered to {event.type()}")
+        if event.type() == QEvent.Type.Paint:
+            print("Paint event")
+            if object is self:
+                print("By scroller")
+            elif object is self.widget:
+                print("By widget")
         return super().eventFilter(object, event)
 
     def mousePressEvent(self, event):
         """When the mouse left-clicks on a contentHead, store information about the item being moved"""
-        #print("Pressed mouse on widget")
+        print("Pressed mouse")
         if event.button() == Qt.MouseButton.LeftButton:
             self.selected = self.widget.getSelectedBinary(event.position().x(), event.position().y() + (self.verticalScrollBar().value() / self.widget.height()) * self.widget.height())
 

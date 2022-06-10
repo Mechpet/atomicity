@@ -118,8 +118,6 @@ class contentHead(QWidget):
         qp.setPen(textPen)
         qp.drawText(contentHeadRect, self.text, QTextOption(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop))
 
-        qp.end()
-
     def settingsWindow(self):
         """Open a new window that takes priority over the main application"""
         self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.cellColor, self.textColor, self.iconPath, self)
@@ -184,6 +182,8 @@ class contentHead(QWidget):
         self.cellColor = QColor(int(self.settings.value("cellRed")), int(self.settings.value("cellGreen")), int(self.settings.value("cellBlue")))
         self.textColor = QColor(int(self.settings.value("textRed")), int(self.settings.value("textGreen")), int(self.settings.value("textBlue")))
         self.iconPath = self.settings.value("path")
+
+        sql.fillTable(sql.connection, self.settings.value("table"))
 
     def default(self):
         """Sets all of its attributes to default settings and saves settings"""
