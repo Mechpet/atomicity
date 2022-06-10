@@ -1,10 +1,12 @@
 from PyQt6.QtWidgets import QWidget, QPushButton, QHBoxLayout, QStackedWidget
 from PyQt6.QtGui import QCursor
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 
 from contentCell import contentCell
+from time import sleep
 
 class binaryCell(contentCell):
+    commitRequest = pyqtSignal(bool)
     """Measures the result of one habit on a specific date (true or false inputs only via buttons)"""
     def __init__(self, state = None):
         super().__init__()
@@ -30,9 +32,9 @@ class binaryCell(contentCell):
         self.initUI()
         self.initWidgets()
         
-        if state is True:
+        if state == 1:
             self.setTrue()
-        elif state is False:
+        elif state == 0:
             self.setFalse()
 
     def initWidgets(self):
@@ -49,13 +51,13 @@ class binaryCell(contentCell):
         self.trueBtn = QPushButton("", self)
         self.trueBtn.setObjectName("trueBtn")
         self.trueBtn.setToolTip("Complete!")
-        self.trueBtn.clicked.connect(self.setTrue)
+        self.trueBtn.clicked.connect(lambda: self.updateProperties(self.setTrue))
         self.trueBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.falseBtn = QPushButton("", self)
         self.falseBtn.setObjectName("falseBtn")
         self.falseBtn.setToolTip("Incomplete...")
-        self.falseBtn.clicked.connect(self.setFalse)
+        self.falseBtn.clicked.connect(lambda: self.updateProperties(self.setFalse))
         self.falseBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         layout = QHBoxLayout()
@@ -86,6 +88,10 @@ class binaryCell(contentCell):
         self.value = False
         self.color = self.palette["markedFalse"]
         self.cell.setCurrentWidget(self.marked)
+
+    def updateProperties(self, fn):
+        fn()
+        self.commitRequest.emit(self.value)
 
     def resetMarked(self):
         """If the user 'resets', but they don't actually do anything, the value is not lost"""

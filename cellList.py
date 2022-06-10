@@ -4,6 +4,7 @@ from contentCell import cellType
 from binaryCell import binaryCell
 from benchmarkCell import benchmarkCell
 import sqliteHelper as sql
+from time import sleep
 
 DEFAULT_NUM_IN_COLUMN = 14
 
@@ -21,18 +22,27 @@ class cellList(QWidget):
         self.initUI(topDate)
 
     def initUI(self, topDate):
-        layout = QHBoxLayout()
-
-        #print("topDate = ", topDate)
+        self.topDate = topDate
+        self.layout = QHBoxLayout()
 
         info = sql.fetchConsecutive(sql.connection, self.tableName, topDate.toString(Qt.DateFormat.ISODate), DEFAULT_NUM_IN_COLUMN)
-       # print("Info = ", info)
 
         if self.cellType == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):
-                layout.addWidget(binaryCell(info[i][1]))
+                newBinaryCell = binaryCell(info[i][1])
+                newBinaryCell.commitRequest.connect(self.commit)
+                self.layout.addWidget(newBinaryCell)
         else:
             print(f"EXCEPTION: {type} not in cellType enum.")
 
-        layout.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(layout)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(self.layout)
+
+    def commit(self, newValue):
+        print(f"self.sender() = {self.sender()}")
+        index = self.layout.indexOf(self.sender())
+        print(f"index = {index}")
+        if index >= 0:
+            print("Upserting")
+            # Valid sender
+            sql.upsertDay(sql.connection, self.tableName, self.topDate.addDays(-1 * index).toString(Qt.DateFormat.ISODate), newValue, 1.00)

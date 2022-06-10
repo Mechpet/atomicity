@@ -112,16 +112,14 @@ def fillTable(connection, tableName):
     nextDate = QDate.currentDate()
     while True:
         existsCmd = f"""
-            SELECT EXISTS(
-                SELECT date FROM {tableName}
-                WHERE date = date('{nextDate.toString(Qt.DateFormat.ISODate)}')
-                LIMIT 1
-            )
+            SELECT date FROM {tableName}
+            WHERE date = date('{nextDate.toString(Qt.DateFormat.ISODate)}')
+            LIMIT 1
         """
 
         cursor.execute(existsCmd)
         retvalue = cursor.fetchone()
-        if retvalue:
+        if retvalue is not None:
             # The row with the next iterated date exists; conclude that there's no more need to update
             print("Found the corresponding date")
             break

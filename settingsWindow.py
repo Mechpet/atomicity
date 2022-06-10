@@ -119,7 +119,7 @@ class contentHeadSettingsWindow(Window):
         """[Slot] Communicate backward to associated contentHead the text and color, then force close window to immediately update."""
         newText = self.nameEdit.text()
         if newText and newText[0] != '\n':
-            newText = '\n' + newText
+            newText = '\n\n' + newText
         newIconPath = self.iconLine.text()
         # Pass the currently selected colors (apparent in the pushButtons)
         self.apply.emit(newText, self.cellColorEdit.palette().button().color(), self.textColorEdit.palette().button().color(), newIconPath)

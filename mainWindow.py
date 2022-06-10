@@ -83,7 +83,7 @@ class mainWrapper(QWidget):
         self.layout.addLayout(dateVbox, 0, 1, 1, 20, Qt.AlignmentFlag.AlignLeft)
         #self.layout.setColumnStretch(1, 1)
         self.layout.addWidget(self.headListScroll, 1, 0, -1, 1)
-        self.layout.addWidget(self.cellGridScroll, 1, 1, -1, 20, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        self.layout.addWidget(self.cellGridScroll, 1, 1, -1, -1)
 
         # Connect related scroll areas
         self.dateScroll.horizontalScrollBar().valueChanged.connect(self.cellGridScroll.horizontalScrollBar().setValue)

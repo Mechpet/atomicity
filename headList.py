@@ -119,22 +119,13 @@ class headListScroll(QScrollArea):
     
     def eventFilter(self, object, event):
         """Filter mouse events"""
-        print("ENTER EVENT FILTER")
         if object is self:
             if self.worker is not None:
                 self.clearThread()
-        print(f"Filtered to {event.type()}")
-        if event.type() == QEvent.Type.Paint:
-            print("Paint event")
-            if object is self:
-                print("By scroller")
-            elif object is self.widget:
-                print("By widget")
         return super().eventFilter(object, event)
 
     def mousePressEvent(self, event):
         """When the mouse left-clicks on a contentHead, store information about the item being moved"""
-        print("Pressed mouse")
         if event.button() == Qt.MouseButton.LeftButton:
             self.selected = self.widget.getSelectedBinary(event.position().x(), event.position().y() + (self.verticalScrollBar().value() / self.widget.height()) * self.widget.height())
 
@@ -165,7 +156,6 @@ class headListScroll(QScrollArea):
             # Set the drag image at the cursor location
             hotspotPos = event.pos()#QPoint(0, 0)
             self.dragged.setHotSpot(hotspotPos)
-            print(f"Hotspot location is at ({hotspotPos.x()}, {hotspotPos.y()})")
             self.dragged.exec()
 
             # Clear the instances after execution is over
@@ -179,7 +169,6 @@ class headListScroll(QScrollArea):
 
     def dragMoveEvent(self, event):
         """As the dragged widget moves, show the preview of the contentRow"""
-        print("DRAG MOVE EVENT")
         if event.position().y() < self.height() * self.threshold:
             closeness = 1 - event.position().y() / (self.height() * self.threshold)
             self.worker = Worker(closeness)
