@@ -37,6 +37,15 @@ class cellGrid(QWidget):
         newList = cellList(cellType.binary, tableName, self.topDate)
         self.layout.addWidget(newList)
 
+    def deleteRowAt(self, index):
+        self.layout.itemAt(index).widget().close()
+        self.layout.removeWidget(self.layout.itemAt(index).widget())
+
+    def rearrangeRows(self, selectedIndex, targetIndex):
+        deletedRow = self.layout.itemAt(selectedIndex).widget()
+        self.layout.removeWidget(deletedRow)
+        self.layout.insertWidget(targetIndex, deletedRow)
+
     def updateGrid(self, newDate):
         self.topDate = newDate
 

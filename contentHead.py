@@ -42,7 +42,6 @@ class contentHead(QWidget):
         # Customize the 'Settings' button
         self.btn = QPushButton("", self)
         self.btn.resize(QSize(75, 75))
-        #self.btn.move(self.size * 0.05, self.size * 0.85)
         self.btn.setToolTip("<b>Settings</b>")
         self.btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn.setProperty("opened", False)

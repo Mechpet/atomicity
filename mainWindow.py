@@ -5,12 +5,15 @@ import ctypes
 
 from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QSizePolicy, QPushButton, QFrame, QVBoxLayout
 from PyQt6.QtGui import QIcon, QCursor
-from PyQt6.QtCore import Qt, QSettings, QTimer
+from PyQt6.QtCore import Qt, QSettings
+
+
 from headList import headList, headListScroll
 from window import APP_ID
 from dateList import dateList
 from headAdder import headAdder
 from cellGrid import cellGrid
+from scroll import scroll
 
 app = QApplication(sys.argv)
 
@@ -38,13 +41,11 @@ class mainWrapper(QWidget):
         print("Head list scroll height = ", self.headListScroll.height())
 
         self.dateList = dateList()
-        self.dateScroll = QScrollArea()
-        #self.dateScroll.setWidgetResizable(True)
+        self.dateScroll = scroll()
         self.dateScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         #self.dateScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.dateScroll.verticalScrollBar().setDisabled(True)
         self.dateScroll.setWidget(self.dateList)
-        #self.dateScroll.setMaximumSize(self.dateList.width(), self.dateList.height())
         self.dateScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.dateScroll.setFrameShape(QFrame.Shape.NoFrame)
 
@@ -52,7 +53,7 @@ class mainWrapper(QWidget):
 
         self.cellGrid = cellGrid(self.dateList.topDate)
 
-        self.cellGridScroll = QScrollArea()
+        self.cellGridScroll = scroll()
         self.cellGridScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.cellGridScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.cellGridScroll.setWidget(self.cellGrid)
@@ -73,6 +74,8 @@ class mainWrapper(QWidget):
         self.dateEdit.clicked.connect(self.dateList.setDate)
         self.dateList.topDateChanged.connect(self.cellGrid.updateGrid)
         self.headList.append.connect(self.cellGrid.showCellsAt)
+        self.headList.deleteRow.connect(self.cellGrid.deleteRowAt)
+        self.headList.rearrangeRow.connect(self.cellGrid.rearrangeRows)
 
         # Layout the widgets
         dateVbox = QVBoxLayout()
