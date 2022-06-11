@@ -78,6 +78,14 @@ class binaryCell(contentCell):
         layout2 = QHBoxLayout()
         layout2.addWidget(self.cell)
         self.setLayout(layout2)
+
+    def updateUI(self, newValue):
+        if newValue == 1:
+            self.setTrue()
+        elif newValue == 0:
+            self.setFalse()
+        else:
+            self.resetMarked()
     
     def setTrue(self):
         self.value = True
@@ -95,4 +103,5 @@ class binaryCell(contentCell):
 
     def resetMarked(self):
         """If the user 'resets', but they don't actually do anything, the value is not lost"""
+        self.color = self.palette["unmarked"]
         self.cell.setCurrentWidget(self.unmarked)

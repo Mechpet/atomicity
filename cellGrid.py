@@ -1,8 +1,11 @@
+from re import L
 from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 from PyQt6.QtCore import QSettings, QDate
 import sqliteHelper as sql
 from contentCell import cellType
 from cellList import cellList
+
+from timeit import default_timer as timer
 
 DEFAULT_NUM_COLUMNS = 14
 # Layout of contentCells in a vertical column
@@ -37,4 +40,17 @@ class cellGrid(QWidget):
     def updateGrid(self, newDate):
         self.topDate = newDate
 
-        return
+        start = timer()
+
+        # Remove all lists and then create new lists:
+        #for i in range(self.layout.count() - 1, -1, -1):
+        #    self.layout.removeWidget(self.layout.itemAt(i).widget())
+        #self.showAllCells()
+
+        # Update all lists:
+        for i in range(self.layout.count()):
+            self.layout.itemAt(i).widget().updateUI(newDate)
+
+        end = timer()
+        with open("updateGrid.txt", "a+") as file:
+            file.write(f"Took {end - start} seconds")

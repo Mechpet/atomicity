@@ -38,6 +38,17 @@ class cellList(QWidget):
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
 
+    def updateUI(self, newTopDate):
+        self.topDate = newTopDate
+
+        info = sql.fetchConsecutive(sql.connection, self.tableName, newTopDate.toString(Qt.DateFormat.ISODate), DEFAULT_NUM_IN_COLUMN)
+
+        if self.cellType == cellType.binary:
+            for i in range(DEFAULT_NUM_IN_COLUMN):
+                self.layout.itemAt(i).widget().updateUI(info[i][1])
+        else:
+            print(f"EXCEPTION: {type} not in cellType enum.")
+
     def commit(self, newValue):
         print(f"self.sender() = {self.sender()}")
         index = self.layout.indexOf(self.sender())

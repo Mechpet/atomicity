@@ -107,8 +107,6 @@ def fillTable(connection, tableName):
     """Fills a table with empty entries up to the current date if the entry does not exist"""
     cursor = connection.cursor()
 
-    print("Table = ", tableName)
-
     nextDate = QDate.currentDate()
     while True:
         existsCmd = f"""
@@ -121,10 +119,8 @@ def fillTable(connection, tableName):
         retvalue = cursor.fetchone()
         if retvalue is not None:
             # The row with the next iterated date exists; conclude that there's no more need to update
-            print("Found the corresponding date")
             break
         else:
-            print("Did not find the corresponding date")
             upsertDay(connection, tableName, nextDate.toString(Qt.DateFormat.ISODate), None, 1.00)
             nextDate = nextDate.addDays(-1)
 

@@ -17,11 +17,11 @@ class contentCell(QWidget):
         super().__init__()
 
         self.palette = {
-            "unmarkedBg" : QColor(155, 155, 155),
+            "unmarked" : QColor(155, 155, 155),
             "markedTrue" : QColor(0, 200, 0),
             "markedFalse" : QColor(200, 0, 0)
         }
-        self.color = self.palette["unmarkedBg"]
+        self.color = self.palette["unmarked"]
 
         self.initUI()
 
