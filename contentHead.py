@@ -20,7 +20,6 @@ class contentHead(QWidget):
     """A block that acts as the head of the list of contentCells."""
     def __init__(self, index, parent = None):
         super().__init__(parent)
-        #self.setMouseTracking(True)
         self.setCursor(QCursor(Qt.CursorShape.OpenHandCursor))
 
         self.index = index
@@ -42,7 +41,6 @@ class contentHead(QWidget):
         # Customize the 'Settings' button
         self.btn = QPushButton("", self)
         self.btn.resize(QSize(75, 75))
-        #self.btn.move(self.size * 0.05, self.size * 0.85)
         self.btn.setToolTip("<b>Settings</b>")
         self.btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn.setProperty("opened", False)
@@ -214,4 +212,4 @@ class contentHead(QWidget):
             self.window.dialog.close()
             self.window.close()
         else:
-            print("Parent is None")
+            print("EXCEPTION: Parent is None")

@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QColorDialog, QFileDialog, QRadioButton
+from PyQt6.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QColorDialog, QFileDialog, QButtonGroup, QRadioButton
 from PyQt6.QtCore import Qt, pyqtSignal, QFile
 from PyQt6.QtGui import QColor, QIcon
 import os
@@ -82,8 +82,13 @@ class contentHeadSettingsWindow(Window):
         self.typeLabel = QLabel("Type of habit:", self)
 
         # RadioButtons that allow changing what type of habit it is (binary or benchmark)
+        self.cellTypeOption = QButtonGroup()
         self.binary = QRadioButton("Binary", self)
         self.benchmark = QRadioButton("Benchmark", self)
+
+        self.cellTypeOption.addButton(self.binary)
+        self.cellTypeOption.addButton(self.benchmark)
+        self.binary.setChecked(True)
 
         # PushButton on the bottom-left corner to delete the contentHead and all of its associated data
         self.delButton = QPushButton("Delete", self)
@@ -160,7 +165,7 @@ class contentHeadSettingsWindow(Window):
             self.dialog.setDirectory(os.path.split(self.iconLine.text())[0])
 
         self.dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.dialog.fileSelected.connect(self.setIconPath)
+        self.dialog.fileSelected.connect(self.iconLine.setText)
         self.dialog.show()
 
     def openConfirmDialog(self):

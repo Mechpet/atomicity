@@ -10,6 +10,8 @@ from contentHead import contentHead
 class headList(QWidget):
     """A row of contentHeads."""
     append = pyqtSignal(int)
+    deleteRow = pyqtSignal(int)
+    rearrangeRow = pyqtSignal(int, int)
     def __init__(self):
         super().__init__()
 
@@ -33,6 +35,10 @@ class headList(QWidget):
         targetIndex = self.layout.indexOf(target)
         self.layout.removeWidget(selected)
         self.layout.insertWidget(targetIndex, selected)
+        self.rearrangeRow.emit(selected.index, targetIndex)
+        temp = target.index
+        target.index = selected.index
+        selected.index = temp
         
     def addHeader(self):
         """Append a new contentHead to the list"""
@@ -43,14 +49,13 @@ class headList(QWidget):
         self.setLayout(self.layout)
 
         self.layout.itemAt(self.layout.count() - 1).widget().settingsWindow()
-        self.append.emit(self.layout.count() - 1)
+        self.append.emit(self.layout.count() - 1, )
 
     def getSelectedBinary(self, x, y):
         """Get the item index of the content using binary search"""
         low = 0
         high = self.layout.count() - 1
 
-        print(f"Got y as {y}")
         while low <= high:
             mid = floor((high + low) / 2)
         
@@ -60,7 +65,6 @@ class headList(QWidget):
                 low = mid + 1
             elif self.layout.itemAt(mid).geometry().y() > y:
                 high = mid - 1
-        print("Returning None")
         return None
 
     def deleteHead(self, index):
@@ -68,6 +72,7 @@ class headList(QWidget):
         # Delete all references to the widget
         self.layout.itemAt(index).widget().close()
         self.layout.removeWidget(self.layout.itemAt(index).widget())
+        self.deleteRow.emit(index)
         self.settings.setValue("num", self.layout.count())
 
     def renameHeads(self, start, end):
@@ -154,7 +159,7 @@ class headListScroll(QScrollArea):
             self.dragged.setPixmap(pixmap)
 
             # Set the drag image at the cursor location
-            hotspotPos = event.pos()#QPoint(0, 0)
+            hotspotPos = QPoint(0, 0)
             self.dragged.setHotSpot(hotspotPos)
             self.dragged.exec()
 

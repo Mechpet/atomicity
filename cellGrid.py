@@ -28,14 +28,23 @@ class cellGrid(QWidget):
         for i in range(settings.value("num")):
             self.showCellsAt(i)
 
-    def showCellsAt(self, i):
+    def showCellsAt(self, i, cellType = cellType.binary):
         """Display cells matching the one at the given index"""
         settingName = f"contentHead{i}.ini"
         settings = QSettings(settingName, QSettings.Format.IniFormat)
 
         tableName = settings.value("table")
-        newList = cellList(cellType.binary, tableName, self.topDate)
+        newList = cellList(cellType, tableName, self.topDate)
         self.layout.addWidget(newList)
+
+    def deleteRowAt(self, index):
+        self.layout.itemAt(index).widget().close()
+        self.layout.removeWidget(self.layout.itemAt(index).widget())
+
+    def rearrangeRows(self, selectedIndex, targetIndex):
+        deletedRow = self.layout.itemAt(selectedIndex).widget()
+        self.layout.removeWidget(deletedRow)
+        self.layout.insertWidget(targetIndex, deletedRow)
 
     def updateGrid(self, newDate):
         self.topDate = newDate
