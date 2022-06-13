@@ -19,6 +19,9 @@ class headList(QWidget):
         self.settings = QSettings("Mechpet", "Atomicity")
         self.settings.beginGroup("headList")
 
+        #self.setMinimumSize(200, 200)
+        print("Height = ", self.height())
+
         self.layout = QVBoxLayout()
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSizeConstraint(QLayout.SizeConstraint.SetMinAndMaxSize)
@@ -134,7 +137,7 @@ class headListScroll(QScrollArea):
 
     def mousePressEvent(self, event):
         """When the mouse left-clicks on a contentHead, store information about the item being moved"""
-        if event.button() == Qt.MouseButton.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton and self.widget.height():
             self.selected = self.widget.getSelectedBinary(event.position().x(), event.position().y() + (self.verticalScrollBar().value() / self.widget.height()) * self.widget.height())
 
     def mouseMoveEvent(self, event):

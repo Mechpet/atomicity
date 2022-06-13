@@ -18,7 +18,7 @@ acceptedExtensions = (
 # `dialog`      = Current opened dialog (if any).
 class contentHeadSettingsWindow(Window):
     """A pop-up window that allows users to adjust the settings of contentHeads."""
-    apply = pyqtSignal(str, QColor, QColor, str)
+    apply = pyqtSignal(str, QColor, QColor, str, int)
     delete = pyqtSignal()
     removeIconSignal = pyqtSignal()
     def __init__(self, x, y, w, h, name, cellColor, textColor, iconPath, type, instance):
@@ -86,11 +86,11 @@ class contentHeadSettingsWindow(Window):
         self.binary = QRadioButton("Binary", self)
         self.benchmark = QRadioButton("Benchmark", self)
 
-        self.cellTypeOption.addButton(self.binary)
-        self.cellTypeOption.addButton(self.benchmark)
-        if type is cellType.binary:
+        self.cellTypeOption.addButton(self.binary, cellType.binary.value)
+        self.cellTypeOption.addButton(self.benchmark, cellType.benchmark.value)
+        if type == cellType.binary:
             self.binary.setChecked(True)
-        elif type is cellType.benchmark:
+        elif type == cellType.benchmark:
             self.benchmark.setChecked(True)
 
         # PushButton on the bottom-left corner to delete the contentHead and all of its associated data
@@ -130,7 +130,7 @@ class contentHeadSettingsWindow(Window):
             newText = '\n\n' + newText
         newIconPath = self.iconLine.text()
         # Pass the currently selected colors (apparent in the pushButtons)
-        self.apply.emit(newText, self.cellColorEdit.palette().button().color(), self.textColorEdit.palette().button().color(), newIconPath)
+        self.apply.emit(newText, self.cellColorEdit.palette().button().color(), self.textColorEdit.palette().button().color(), newIconPath, self.cellTypeOption.checkedId())
         self.close()
 
     def openColorDialog(self, initColor, widget):

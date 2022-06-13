@@ -15,6 +15,7 @@ class cellGrid(QWidget):
         super().__init__()
 
         self.topDate = topDate
+        self.setMinimumHeight(100)
         self.layout = QVBoxLayout()
 
         self.showAllCells()

@@ -3,7 +3,7 @@ from cgitb import reset
 import sys
 import ctypes
 
-from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QSizePolicy, QPushButton, QFrame, QVBoxLayout
+from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QSizePolicy, QPushButton, QFrame, QVBoxLayout, QLabel
 from PyQt6.QtGui import QIcon, QCursor
 from PyQt6.QtCore import Qt, QSettings
 
@@ -38,12 +38,10 @@ class mainWrapper(QWidget):
         self.headList = headList()
         self.headListScroll = headListScroll()
         self.headListScroll.installWidget(self.headList)
-        print("Head list scroll height = ", self.headListScroll.height())
 
         self.dateList = dateList()
         self.dateScroll = scroll()
         self.dateScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        #self.dateScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.dateScroll.verticalScrollBar().setDisabled(True)
         self.dateScroll.setWidget(self.dateList)
         self.dateScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
@@ -58,7 +56,6 @@ class mainWrapper(QWidget):
         self.cellGridScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.cellGridScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.cellGridScroll.setWidget(self.cellGrid)
-        #self.cellGridScroll.setMaximumSize(self.cellGrid.width(), self.cellGrid.height())
         self.cellGridScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.cellGridScroll.setFrameShape(QFrame.Shape.NoFrame)
 
@@ -84,10 +81,10 @@ class mainWrapper(QWidget):
         dateVbox.addWidget(self.dateScroll)
         
         self.layout.addWidget(self.adder, 0, 0, 1, 1)
-        self.layout.addLayout(dateVbox, 0, 1, 1, 20, Qt.AlignmentFlag.AlignLeft)
+        self.layout.addLayout(dateVbox, 0, 1, 1, -1, Qt.AlignmentFlag.AlignLeft)
         #self.layout.setColumnStretch(1, 1)
         self.layout.addWidget(self.headListScroll, 1, 0, -1, 1)
-        self.layout.addWidget(self.cellGridScroll, 1, 1, -1, -1)
+        self.layout.addWidget(self.cellGridScroll, 1, 1, -1, -1, Qt.AlignmentFlag.AlignTop)
 
         # Connect related scroll areas
         self.dateScroll.horizontalScrollBar().valueChanged.connect(self.cellGridScroll.horizontalScrollBar().setValue)

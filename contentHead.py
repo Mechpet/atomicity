@@ -137,7 +137,7 @@ class contentHead(QWidget):
         self.settings = QSettings(self.settingName, QSettings.Format.IniFormat)
         return QFile.exists(self.settingName)
 
-    def updateData(self, newName, newCellColor, newTextColor, newIconPath):
+    def updateData(self, newName, newCellColor, newTextColor, newIconPath, type):
         """[Slot] Update the contentHead's text"""
         self.text = newName
         self.cellColor = newCellColor
@@ -151,6 +151,8 @@ class contentHead(QWidget):
             # Set current icon to null
             self.iconPath = None
             self.iconBtn.setIcon(QIcon())
+        self.type = cellType(type)
+
         # Update on local device
         self.synchronize()
     

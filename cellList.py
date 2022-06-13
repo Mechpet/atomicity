@@ -27,12 +27,12 @@ class cellList(QWidget):
 
         info = sql.fetchConsecutive(sql.connection, self.tableName, topDate.toString(Qt.DateFormat.ISODate), DEFAULT_NUM_IN_COLUMN)
 
-        if self.cellType == cellType.binary.value:
+        if self.cellType == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):
                 newBinaryCell = binaryCell(info[i][1])
                 newBinaryCell.commitRequest.connect(self.commit)
                 self.layout.addWidget(newBinaryCell)
-        elif self.cellType == cellType.benchmark.value:
+        elif self.cellType == cellType.benchmark:
             for i in range(DEFAULT_NUM_IN_COLUMN):
                 newBenchmarkCell = benchmarkCell(info[i][1])
                 newBenchmarkCell.commitRequest.connect(self.commit)
