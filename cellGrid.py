@@ -28,13 +28,20 @@ class cellGrid(QWidget):
         for i in range(settings.value("num")):
             self.showCellsAt(i)
 
-    def showCellsAt(self, i, cellType = cellType.binary):
+    def showCellsAt(self, i):
         """Display cells matching the one at the given index"""
         settingName = f"contentHead{i}.ini"
         settings = QSettings(settingName, QSettings.Format.IniFormat)
 
         tableName = settings.value("table")
-        newList = cellList(cellType, tableName, self.topDate)
+        print("The celltype is ", settings.value("type"))
+        if settings.value("type") == cellType.binary:
+            print("which is binary")
+        elif settings.value("type") == cellType.benchmark:
+            print("which is benchmark")
+        else:
+            print("Which is none")
+        newList = cellList(settings.value("type"), tableName, self.topDate)
         self.layout.addWidget(newList)
 
     def deleteRowAt(self, index):
@@ -49,17 +56,6 @@ class cellGrid(QWidget):
     def updateGrid(self, newDate):
         self.topDate = newDate
 
-        start = timer()
-
-        # Remove all lists and then create new lists:
-        #for i in range(self.layout.count() - 1, -1, -1):
-        #    self.layout.removeWidget(self.layout.itemAt(i).widget())
-        #self.showAllCells()
-
         # Update all lists:
         for i in range(self.layout.count()):
             self.layout.itemAt(i).widget().updateUI(newDate)
-
-        end = timer()
-        with open("updateGrid.txt", "a+") as file:
-            file.write(f"Took {end - start} seconds")

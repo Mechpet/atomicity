@@ -27,13 +27,18 @@ class cellList(QWidget):
 
         info = sql.fetchConsecutive(sql.connection, self.tableName, topDate.toString(Qt.DateFormat.ISODate), DEFAULT_NUM_IN_COLUMN)
 
-        if self.cellType == cellType.binary:
+        if self.cellType == cellType.binary.value:
             for i in range(DEFAULT_NUM_IN_COLUMN):
                 newBinaryCell = binaryCell(info[i][1])
                 newBinaryCell.commitRequest.connect(self.commit)
                 self.layout.addWidget(newBinaryCell)
+        elif self.cellType == cellType.benchmark.value:
+            for i in range(DEFAULT_NUM_IN_COLUMN):
+                newBenchmarkCell = benchmarkCell(info[i][1])
+                newBenchmarkCell.commitRequest.connect(self.commit)
+                self.layout.addWidget(newBenchmarkCell)
         else:
-            print(f"EXCEPTION: {type} not in cellType enum.")
+            print(f"EXCEPTION: {type} not in cellType enum; cellList.initUI()")
 
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)

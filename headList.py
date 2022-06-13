@@ -5,6 +5,7 @@ from math import floor
 import os
 
 from contentHead import contentHead
+from contentCell import cellType
 
 # Layout of contentHeads 
 class headList(QWidget):
@@ -43,13 +44,15 @@ class headList(QWidget):
     def addHeader(self):
         """Append a new contentHead to the list"""
         # Create a new contentHead devoid of settings
-        self.layout.addWidget(contentHead(self.layout.count(), self))
+        newContentHead = contentHead(self.layout.count(), self)
+        self.layout.addWidget(newContentHead)
         self.settings.setValue("num", self.layout.count())
 
         self.setLayout(self.layout)
 
-        self.layout.itemAt(self.layout.count() - 1).widget().settingsWindow()
-        self.append.emit(self.layout.count() - 1, )
+        newContentHead.settingsWindow()
+        newContentHead.window.apply.connect(lambda: self.append.emit(self.layout.count() - 1))
+
 
     def getSelectedBinary(self, x, y):
         """Get the item index of the content using binary search"""

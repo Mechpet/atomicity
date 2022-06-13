@@ -5,6 +5,7 @@ from PyQt6.QtCore import Qt, QRectF, QSettings, QSize, QFile, QDate
 import os
 from stat import S_IREAD, S_IRGRP, S_IROTH, S_IWUSR
 
+from contentCell import cellType
 from settingsWindow import contentHeadSettingsWindow
 import sqliteHelper as sql
 
@@ -118,9 +119,10 @@ class contentHead(QWidget):
 
     def settingsWindow(self):
         """Open a new window that takes priority over the main application"""
-        self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.cellColor, self.textColor, self.iconPath, self)
+        self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.cellColor, self.textColor, self.iconPath, self.type, self)
         self.window.apply.connect(self.updateData)
         self.window.show()
+        print("HERE")
 
     def setIcon(self):
         """Set the icon of the contentHead quickly"""
@@ -167,6 +169,7 @@ class contentHead(QWidget):
         self.settings.setValue("textGreen", self.textColor.green())
         self.settings.setValue("textBlue", self.textColor.blue())
         self.settings.setValue("path", self.iconPath)
+        self.settings.setValue("type", self.type)
         self.settings.sync()
         # Make the file read-only
         try:
@@ -180,6 +183,7 @@ class contentHead(QWidget):
         self.cellColor = QColor(int(self.settings.value("cellRed")), int(self.settings.value("cellGreen")), int(self.settings.value("cellBlue")))
         self.textColor = QColor(int(self.settings.value("textRed")), int(self.settings.value("textGreen")), int(self.settings.value("textBlue")))
         self.iconPath = self.settings.value("path")
+        self.type = self.settings.value("type")
 
         sql.fillTable(sql.connection, self.settings.value("table"))
 
@@ -189,6 +193,7 @@ class contentHead(QWidget):
         self.cellColor = QColor(55, 55, 55)
         self.textColor = QColor(0, 0, 0)
         self.iconPath = None
+        self.type = cellType.binary
 
         # Create a new unique table
         tableName = sql.generateName()

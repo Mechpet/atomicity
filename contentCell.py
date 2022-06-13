@@ -1,9 +1,9 @@
 from PyQt6.QtWidgets import QWidget, QPushButton, QHBoxLayout, QStackedWidget
 from PyQt6.QtGui import QPainter, QPainterPath, QBrush, QPen, QColor, QCursor
 from PyQt6.QtCore import Qt, QRectF, QSize
-import enum
+from enum import IntEnum
 
-class cellType(enum.Enum):
+class cellType(IntEnum):
     """Determines the type of contentCell (and what layout it has, what functions it has)"""
     binary = 1
     benchmark = 2

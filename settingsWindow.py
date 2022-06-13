@@ -21,7 +21,7 @@ class contentHeadSettingsWindow(Window):
     apply = pyqtSignal(str, QColor, QColor, str)
     delete = pyqtSignal()
     removeIconSignal = pyqtSignal()
-    def __init__(self, x, y, w, h, name, cellColor, textColor, iconPath, instance):
+    def __init__(self, x, y, w, h, name, cellColor, textColor, iconPath, type, instance):
         super().__init__(SETTINGS_WINDOW_NAME, x, y, w, h)
 
         self.dialog = None
@@ -31,9 +31,9 @@ class contentHeadSettingsWindow(Window):
         
         # Block inputs to the mainWindow
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.initLayout(name, cellColor, textColor, iconPath)
+        self.initLayout(name, cellColor, textColor, iconPath, type)
 
-    def initLayout(self, name, initCellColor, initTextColor, iconPath):
+    def initLayout(self, name, initCellColor, initTextColor, iconPath, type):
         """Initialize the variable types of the window based on the appearance of the instance"""
         grid = QGridLayout()
 
@@ -88,7 +88,10 @@ class contentHeadSettingsWindow(Window):
 
         self.cellTypeOption.addButton(self.binary)
         self.cellTypeOption.addButton(self.benchmark)
-        self.binary.setChecked(True)
+        if type is cellType.binary:
+            self.binary.setChecked(True)
+        elif type is cellType.benchmark:
+            self.benchmark.setChecked(True)
 
         # PushButton on the bottom-left corner to delete the contentHead and all of its associated data
         self.delButton = QPushButton("Delete", self)

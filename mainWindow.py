@@ -54,10 +54,11 @@ class mainWrapper(QWidget):
         self.cellGrid = cellGrid(self.dateList.topDate)
 
         self.cellGridScroll = scroll()
+        self.cellGridScroll.setWidgetResizable(True)
         self.cellGridScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.cellGridScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.cellGridScroll.setWidget(self.cellGrid)
-        self.cellGridScroll.setMaximumSize(self.cellGrid.width(), self.cellGrid.height())
+        #self.cellGridScroll.setMaximumSize(self.cellGrid.width(), self.cellGrid.height())
         self.cellGridScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.cellGridScroll.setFrameShape(QFrame.Shape.NoFrame)
 
