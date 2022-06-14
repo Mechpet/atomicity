@@ -52,11 +52,11 @@ class mainWrapper(QWidget):
         self.cellGrid = cellGrid(self.dateList.topDate)
 
         self.cellGridScroll = scroll()
-        self.cellGridScroll.setWidgetResizable(True)
+        self.cellGridScroll.setWidgetResizable(False)
         self.cellGridScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.cellGridScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.cellGridScroll.setWidget(self.cellGrid)
-        self.cellGridScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.cellGridScroll.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
         self.cellGridScroll.setFrameShape(QFrame.Shape.NoFrame)
 
         emptyBtn = QPushButton("", self)
@@ -84,7 +84,7 @@ class mainWrapper(QWidget):
         self.layout.addLayout(dateVbox, 0, 1, 1, -1, Qt.AlignmentFlag.AlignLeft)
         #self.layout.setColumnStretch(1, 1)
         self.layout.addWidget(self.headListScroll, 1, 0, -1, 1)
-        self.layout.addWidget(self.cellGridScroll, 1, 1, -1, -1, Qt.AlignmentFlag.AlignTop)
+        self.layout.addWidget(self.cellGridScroll, 1, 1, -1, -1)#, Qt.AlignmentFlag.AlignTop)
 
         # Connect related scroll areas
         self.dateScroll.horizontalScrollBar().valueChanged.connect(self.cellGridScroll.horizontalScrollBar().setValue)

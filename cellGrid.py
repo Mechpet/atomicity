@@ -1,5 +1,5 @@
 from re import L
-from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QLayout
 from PyQt6.QtCore import QSettings, QDate
 import sqliteHelper as sql
 from contentCell import cellType
@@ -17,6 +17,8 @@ class cellGrid(QWidget):
         self.topDate = topDate
         self.setMinimumHeight(100)
         self.layout = QVBoxLayout()
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSizeConstraint(QLayout.SizeConstraint.SetMinAndMaxSize)
 
         self.showAllCells()
 
