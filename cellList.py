@@ -11,7 +11,7 @@ DEFAULT_NUM_IN_COLUMN = 14
 # Layout of contentCells
 class cellList(QWidget):
     """A row of contentCells."""
-    def __init__(self, type, tableName, topDate):
+    def __init__(self, type, tableName = None, topDate = None):
         super().__init__()
 
         self.setFixedHeight(200)
@@ -19,8 +19,28 @@ class cellList(QWidget):
         self.cellType = type
         self.tableName = tableName
 
-        self.initUI(topDate)
+        if topDate is not None and tableName is not None:
+            self.initUI(topDate)
+        else:
+            self.initDefault()
 
+    def initDefault(self):
+        self.layout = QHBoxLayout()
+
+        if self.cellType == cellType.binary:
+            for i in range(DEFAULT_NUM_IN_COLUMN):
+                newBinaryCell = binaryCell()
+                self.layout.addWidget(newBinaryCell)
+        elif self.cellType == cellType.benchmark:
+            for i in range(DEFAULT_NUM_IN_COLUMN):
+                newBenchmarkCell = benchmarkCell()
+                self.layout.addWidget(newBenchmarkCell)
+        else:
+            print(f"EXCEPTION: {type} not in cellType enum; cellList.initUI()")
+
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(self.layout)
+        
     def initUI(self, topDate):
         self.topDate = topDate
         self.layout = QHBoxLayout()

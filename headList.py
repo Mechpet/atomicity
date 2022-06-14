@@ -19,7 +19,7 @@ class headList(QWidget):
         self.settings = QSettings("Mechpet", "Atomicity")
         self.settings.beginGroup("headList")
 
-        #self.setMinimumSize(200, 200)
+        self.setMinimumSize(200, 200)
         print("Height = ", self.height())
 
         self.layout = QVBoxLayout()
@@ -110,6 +110,7 @@ class headListScroll(QScrollArea):
         self.thread = QThread()
         self.worker = None
 
+        self.setFixedWidth(200)
         self.setWidgetResizable(True)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)

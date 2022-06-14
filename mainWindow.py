@@ -2,6 +2,7 @@
 from cgitb import reset
 import sys
 import ctypes
+from types import CellType
 
 from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QSizePolicy, QPushButton, QFrame, QVBoxLayout, QLabel
 from PyQt6.QtGui import QIcon, QCursor
@@ -12,6 +13,9 @@ from headList import headList, headListScroll
 from window import APP_ID
 from dateList import dateList
 from headAdder import headAdder
+from contentHead import contentHead
+from contentCell import cellType
+from cellList import cellList
 from cellGrid import cellGrid
 from scroll import scroll
 
@@ -79,12 +83,25 @@ class mainWrapper(QWidget):
         dateVbox = QVBoxLayout()
         dateVbox.addWidget(self.dateEdit)
         dateVbox.addWidget(self.dateScroll)
+
+        self.dailyLabel = QLabel("DAILY")
+        self.dailyLabel.setFixedSize(200, 200)
+
+        self.daily = cellList(cellType.benchmark)
+        self.dailyScroll = scroll()
+        self.dailyScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.dailyScroll.verticalScrollBar().setDisabled(True)
+        self.dailyScroll.setWidget(self.daily)
+        self.dailyScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.dailyScroll.setFrameShape(QFrame.Shape.NoFrame)
         
+        print(f"Head list scroll has dimensions: {self.headListScroll.width()}, {self.headListScroll.height()}")
         self.layout.addWidget(self.adder, 0, 0, 1, 1)
         self.layout.addLayout(dateVbox, 0, 1, 1, -1, Qt.AlignmentFlag.AlignLeft)
-        #self.layout.setColumnStretch(1, 1)
-        self.layout.addWidget(self.headListScroll, 1, 0, -1, 1)
-        self.layout.addWidget(self.cellGridScroll, 1, 1, -1, -1)#, Qt.AlignmentFlag.AlignTop)
+        self.layout.addWidget(self.dailyLabel, 1, 0, 1, 1)
+        self.layout.addWidget(self.dailyScroll, 1, 1, 1, -1)
+        self.layout.addWidget(self.headListScroll, 3, 0, -1, 1)
+        self.layout.addWidget(self.cellGridScroll, 3, 1, -1, -1)#, Qt.AlignmentFlag.AlignTop)
 
         # Connect related scroll areas
         self.dateScroll.horizontalScrollBar().valueChanged.connect(self.cellGridScroll.horizontalScrollBar().setValue)
