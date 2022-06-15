@@ -195,11 +195,11 @@ class contentHead(QWidget):
         self.cellColor = QColor(55, 55, 55)
         self.textColor = QColor(0, 0, 0)
         self.iconPath = None
-        self.type = cellType.binary
+        self.type = None
 
         # Create a new unique table
         tableName = sql.generateName()
-        while sql.createContentColumnTable(sql.connection, tableName) is False:
+        while not sql.createContentColumnTable(sql.connection, tableName):
             tableName = sql.generateName()
 
         self.settings.setValue("table", tableName)

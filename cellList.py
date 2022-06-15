@@ -1,9 +1,11 @@
 from PyQt6.QtWidgets import QHBoxLayout, QWidget
 from PyQt6.QtCore import Qt
+
 from contentCell import cellType
-from binaryCell import binaryCell
+from binaryCell import binaryCell, binaryState
 from benchmarkCell import benchmarkCell
 import sqliteHelper as sql
+
 from time import sleep
 
 DEFAULT_NUM_IN_COLUMN = 14
@@ -15,6 +17,34 @@ class cellList(QWidget):
         super().__init__()
 
         self.setFixedHeight(200)
+        self.setStyleSheet("""
+            QPushButton {
+                width: 75px;
+                height: 75px;
+                border: 0px;
+                background: transparent;
+            }
+            QPushButton#trueBtn {
+                border-image: url(images/appIcons/check_trans.png);
+            }
+            QPushButton#falseBtn {
+                border-image: url(images/appIcons/cross_trans.png);
+            }
+            QPushButton#markedBtn {
+                width: 200px;
+                height: 100px;
+            }
+            QLineEdit {
+                border-radius: 15px;
+                width: 66px;
+                height: 100px;
+            }
+            QLineEdit[readonly = 'true'] {
+                background: transparent;
+                width: 66px;
+                height: 100px;
+            }
+        """)
 
         self.cellType = type
         self.tableName = tableName
@@ -49,8 +79,11 @@ class cellList(QWidget):
 
         if self.cellType == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):
-                newBinaryCell = binaryCell(info[i][1])
-                newBinaryCell.commitRequest.connect(self.commit)
+                if i < len(info):
+                    newBinaryCell = binaryCell(info[i][1])
+                    newBinaryCell.commitRequest.connect(self.commit)
+                else:
+                    newBinaryCell = binaryCell()
                 self.layout.addWidget(newBinaryCell)
         elif self.cellType == cellType.benchmark:
             for i in range(DEFAULT_NUM_IN_COLUMN):
@@ -70,7 +103,10 @@ class cellList(QWidget):
 
         if self.cellType == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):
-                self.layout.itemAt(i).widget().updateUI(info[i][1])
+                if i < len(info):
+                    self.layout.itemAt(i).widget().updateUI(info[i][1])
+                else:
+                    self.layout.itemAt(i).widget().updateUI()
         else:
             print(f"EXCEPTION: {type} not in cellType enum.")
 

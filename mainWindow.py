@@ -98,17 +98,16 @@ class mainWrapper(QWidget):
         print(f"Head list scroll has dimensions: {self.headListScroll.width()}, {self.headListScroll.height()}")
         self.layout.addWidget(self.adder, 0, 0, 1, 1)
         self.layout.addLayout(dateVbox, 0, 1, 1, -1, Qt.AlignmentFlag.AlignLeft)
-        self.layout.addWidget(self.dailyLabel, 1, 0, 1, 1)
-        self.layout.addWidget(self.dailyScroll, 1, 1, 1, -1)
-        self.layout.addWidget(self.headListScroll, 3, 0, -1, 1)
-        self.layout.addWidget(self.cellGridScroll, 3, 1, -1, -1)#, Qt.AlignmentFlag.AlignTop)
+        #self.layout.addWidget(self.dailyLabel, 1, 0, 1, 1)
+        #self.layout.addWidget(self.dailyScroll, 1, 1, 1, -1)
+        self.layout.addWidget(self.headListScroll, 1, 0, -1, 1)
+        self.layout.addWidget(self.cellGridScroll, 1, 1, -1, -1)#, Qt.AlignmentFlag.AlignTop)
 
         # Connect related scroll areas
         self.dateScroll.horizontalScrollBar().valueChanged.connect(self.cellGridScroll.horizontalScrollBar().setValue)
         self.cellGridScroll.horizontalScrollBar().valueChanged.connect(self.dateScroll.horizontalScrollBar().setValue)
         self.headListScroll.verticalScrollBar().valueChanged.connect(self.cellGridScroll.verticalScrollBar().setValue)
         self.cellGridScroll.verticalScrollBar().valueChanged.connect(self.headListScroll.verticalScrollBar().setValue)
-        self.dateScroll.horizontalScrollBar().setValue(self.dateList.width())
 
         self.setLayout(self.layout)
 

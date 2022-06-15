@@ -2,40 +2,29 @@ from PyQt6.QtWidgets import QWidget, QPushButton, QHBoxLayout, QStackedWidget
 from PyQt6.QtGui import QCursor
 from PyQt6.QtCore import Qt, pyqtSignal
 
-from contentCell import contentCell
+from contentCell import contentCell, palette
 from time import sleep
+from enum import IntEnum
+
+class binaryState(IntEnum):
+    """Determines the type of contentCell (and what layout it has, what functions it has)"""
+    readOnly = -1
+    false = 0
+    true = 1
 
 class binaryCell(contentCell):
     commitRequest = pyqtSignal(bool)
     """Measures the result of one habit on a specific date (true or false inputs only via buttons)"""
-    def __init__(self, state = None):
+    def __init__(self, state = binaryState.readOnly.value):
         super().__init__()
 
-        self.setStyleSheet("""
-            QPushButton {
-                width: 75px;
-                height: 75px;
-                border: 0px;
-                background: transparent;
-            }
-            QPushButton#trueBtn {
-                border-image: url(images/appIcons/check_trans.png);
-            }
-            QPushButton#falseBtn {
-                border-image: url(images/appIcons/cross_trans.png);
-            }
-            QPushButton#markedBtn {
-                width: 200px;
-                height: 100px;
-            }
-        """)
+
         self.initUI()
-        self.initWidgets()
-        
-        if state == 1:
-            self.setTrue()
-        elif state == 0:
-            self.setFalse()
+        self.value = state
+        if state is not binaryState.readOnly.value:
+            self.initWidgets()
+        else:
+            self.setReadOnly()
 
     def initWidgets(self):
         # contentCell binary-type:
@@ -79,22 +68,32 @@ class binaryCell(contentCell):
         layout2.addWidget(self.cell)
         self.setLayout(layout2)
 
-    def updateUI(self, newValue):
-        if newValue == 1:
+        if self.value == binaryState.true.value:
             self.setTrue()
-        elif newValue == 0:
+        elif self.value == binaryState.false.value:
             self.setFalse()
-        else:
+
+    def setReadOnly(self):
+        pass
+
+    def updateUI(self, newValue):
+        if newValue == binaryState.true.value:
+            self.setTrue()
+        elif newValue == binaryState.false.value:
+            self.setFalse()
+        elif newValue == None:
             self.resetMarked()
+        elif newValue == binaryState.readOnly.value:
+            self.setReadOnly()
     
     def setTrue(self):
         self.value = True
-        self.color = self.palette["markedTrue"]
+        self.color = palette["markedTrue"]
         self.cell.setCurrentWidget(self.marked)
 
     def setFalse(self):
         self.value = False
-        self.color = self.palette["markedFalse"]
+        self.color = palette["markedFalse"]
         self.cell.setCurrentWidget(self.marked)
 
     def updateProperties(self, fn):
@@ -103,5 +102,5 @@ class binaryCell(contentCell):
 
     def resetMarked(self):
         """If the user 'resets', but they don't actually do anything, the value is not lost"""
-        self.color = self.palette["unmarked"]
+        self.color = palette["unmarked"]
         self.cell.setCurrentWidget(self.unmarked)

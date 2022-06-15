@@ -88,10 +88,19 @@ class contentHeadSettingsWindow(Window):
 
         self.cellTypeOption.addButton(self.binary, cellType.binary.value)
         self.cellTypeOption.addButton(self.benchmark, cellType.benchmark.value)
+
+        # If the head has a type already, it has been initialized already
         if type == cellType.binary:
             self.binary.setChecked(True)
+            self.binary.setEnabled(False)
+            self.benchmark.setEnabled(False)
         elif type == cellType.benchmark:
             self.benchmark.setChecked(True)
+            self.binary.setEnabled(False)
+            self.benchmark.setEnabled(False)
+        else:
+            # Default to binary type
+            self.binary.setChecked(True)
 
         # PushButton on the bottom-left corner to delete the contentHead and all of its associated data
         self.delButton = QPushButton("Delete", self)

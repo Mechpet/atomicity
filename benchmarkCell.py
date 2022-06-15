@@ -10,19 +10,6 @@ class benchmarkCell(contentCell):
     def __init__(self, value = None):
         super().__init__()
 
-        self.setStyleSheet("""
-            QLineEdit {
-                border-radius: 15px;
-                width: 66px;
-                height: 100px;
-            }
-
-            QLineEdit[readonly = 'true'] {
-                background: transparent;
-                width: 66px;
-                height: 100px;
-            }
-        """)
         self.initWidgets(value)
 
     def initWidgets(self, value):
