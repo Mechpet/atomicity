@@ -8,6 +8,13 @@ class cellType(IntEnum):
     binary = 1
     benchmark = 2
 
+palette = {
+    "unmarked" : QColor(155, 155, 155),
+    "markedTrue" : QColor(0, 200, 0),
+    "markedFalse" : QColor(200, 0, 0),
+    "null" : QColor(0, 0, 0)
+}
+
 # `value` = The user-inputted value for the contentCell; accepted options:
 #           {binary} None, True, False 
 #           {benchmark} None, float
@@ -19,9 +26,10 @@ class contentCell(QWidget):
         self.palette = {
             "unmarked" : QColor(155, 155, 155),
             "markedTrue" : QColor(0, 200, 0),
-            "markedFalse" : QColor(200, 0, 0)
+            "markedFalse" : QColor(200, 0, 0),
+            "null" : QColor(0, 0, 0)
         }
-        self.color = self.palette["unmarked"]
+        self.color = palette["unmarked"]
 
         self.initUI()
 
@@ -34,7 +42,6 @@ class contentCell(QWidget):
 
     def paintEvent(self, e):
         qp = QPainter(self)
-        #qp.begin(self)
 
         col = QColor(0, 0, 0)
         col.setNamedColor('#d4d4d4')
@@ -56,3 +63,4 @@ class contentCell(QWidget):
 
         qp.end()
         self.update()
+        

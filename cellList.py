@@ -101,12 +101,13 @@ class cellList(QWidget):
 
         info = sql.fetchConsecutive(sql.connection, self.tableName, newTopDate.toString(Qt.DateFormat.ISODate), DEFAULT_NUM_IN_COLUMN)
 
+        print("Length of info = ", len(info))
         if self.cellType == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):
                 if i < len(info):
                     self.layout.itemAt(i).widget().updateUI(info[i][1])
                 else:
-                    self.layout.itemAt(i).widget().updateUI()
+                    self.layout.itemAt(i).widget().updateUI(binaryState.readOnly)
         else:
             print(f"EXCEPTION: {type} not in cellType enum.")
 

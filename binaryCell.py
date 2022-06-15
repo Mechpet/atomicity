@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QPushButton, QHBoxLayout, QStackedWidget
 from PyQt6.QtGui import QCursor
 from PyQt6.QtCore import Qt, pyqtSignal
+from timeit import default_timer as timer
 
 from contentCell import contentCell, palette
 from time import sleep
@@ -15,16 +16,12 @@ class binaryState(IntEnum):
 class binaryCell(contentCell):
     commitRequest = pyqtSignal(bool)
     """Measures the result of one habit on a specific date (true or false inputs only via buttons)"""
-    def __init__(self, state = binaryState.readOnly.value):
+    def __init__(self, state):
         super().__init__()
-
 
         self.initUI()
         self.value = state
-        if state is not binaryState.readOnly.value:
-            self.initWidgets()
-        else:
-            self.setReadOnly()
+        self.initWidgets()
 
     def initWidgets(self):
         # contentCell binary-type:
@@ -72,9 +69,14 @@ class binaryCell(contentCell):
             self.setTrue()
         elif self.value == binaryState.false.value:
             self.setFalse()
+        elif self.value == binaryState.readOnly.value:
+            self.cell.hide()
 
     def setReadOnly(self):
-        pass
+        start = timer()
+        self.cell.hide()
+        end = timer()
+        print(f"Hiding took {end - start}")
 
     def updateUI(self, newValue):
         if newValue == binaryState.true.value:
@@ -90,11 +92,19 @@ class binaryCell(contentCell):
         self.value = True
         self.color = palette["markedTrue"]
         self.cell.setCurrentWidget(self.marked)
+        start = timer()
+        self.cell.show()
+        end = timer()
+        print(f"Showing took {end - start}")
 
     def setFalse(self):
         self.value = False
         self.color = palette["markedFalse"]
         self.cell.setCurrentWidget(self.marked)
+        start = timer()
+        self.cell.show()
+        end = timer()
+        print(f"Showing took {end - start}")
 
     def updateProperties(self, fn):
         fn()
@@ -104,3 +114,7 @@ class binaryCell(contentCell):
         """If the user 'resets', but they don't actually do anything, the value is not lost"""
         self.color = palette["unmarked"]
         self.cell.setCurrentWidget(self.unmarked)
+        start = timer()
+        self.cell.show()
+        end = timer()
+        print(f"Showing took {end - start}")
