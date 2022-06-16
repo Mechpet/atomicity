@@ -1,4 +1,5 @@
-from PyQt6.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QColorDialog, QFileDialog, QButtonGroup, QRadioButton, QCalendarWidget
+from PyQt6.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QColorDialog, QFileDialog, QButtonGroup, QRadioButton, QCalendarWidget,\
+                            QVBoxLayout, QTabWidget, QWidget, QHBoxLayout
 from PyQt6.QtCore import Qt, pyqtSignal, QFile, QDate
 from PyQt6.QtGui import QColor, QIcon
 import os
@@ -24,6 +25,9 @@ class contentHeadSettingsWindow(Window):
     def __init__(self, x, y, w, h, name, cellColor, textColor, iconPath, type, startDate, instance):
         super().__init__(SETTINGS_WINDOW_NAME, x, y, w, h)
 
+        self.setStyleSheet("""
+        """)
+
         self.dialog = None
         self.instance = instance
 
@@ -35,7 +39,12 @@ class contentHeadSettingsWindow(Window):
 
     def initLayout(self, name, initCellColor, initTextColor, iconPath, type, startDate):
         """Initialize the variable types of the window based on the appearance of the instance"""
-        grid = QGridLayout()
+        layout = QVBoxLayout()
+        globalButtonLayout = QHBoxLayout()
+        tabs = QTabWidget()
+
+        general = QWidget()
+        generalGrid = QGridLayout()
 
         # Label that says 'Name:'
         self.nameLabel = QLabel("Name:", self)
@@ -123,23 +132,31 @@ class contentHeadSettingsWindow(Window):
         self.cancelButton.clicked.connect(self.close)
 
         # Format the widgets in a gridLayout
-        grid.addWidget(self.nameLabel, 0, 0)
-        grid.addWidget(self.nameEdit, 0, 1, 1, -1)
-        grid.addWidget(self.cellColorLabel, 1, 0)
-        grid.addWidget(self.cellColorEdit, 1, 1, 1, 1)
-        grid.addWidget(self.textColorLabel, 1, 2, 1, 1)
-        grid.addWidget(self.textColorEdit, 1, 3, 1, 1)
-        grid.addWidget(self.iconLine, 2, 0, 1, 3)
-        grid.addWidget(self.iconEdit, 2, 3)
-        grid.addWidget(self.typeLabel, 3, 0, 1, 1)
-        grid.addWidget(self.binary, 3, 2, 1, 1)
-        grid.addWidget(self.benchmark, 3, 3, 1, 1)
-        grid.addWidget(self.calendar, 4, 0, 2, 3)
-        grid.addWidget(self.delButton, 8, 0, 1, 1)
-        grid.addWidget(self.applyButton, 8, 2, 1, 1)
-        grid.addWidget(self.cancelButton, 8, 3, 1, 1)
+        generalGrid.addWidget(self.nameLabel, 0, 0)
+        generalGrid.addWidget(self.nameEdit, 0, 1, 1, -1)
+        generalGrid.addWidget(self.cellColorLabel, 1, 0)
+        generalGrid.addWidget(self.cellColorEdit, 1, 1, 1, 1)
+        generalGrid.addWidget(self.textColorLabel, 1, 2, 1, 1)
+        generalGrid.addWidget(self.textColorEdit, 1, 3, 1, 1)
+        generalGrid.addWidget(self.iconLine, 2, 0, 1, 3)
+        generalGrid.addWidget(self.iconEdit, 2, 4)
+        generalGrid.addWidget(self.typeLabel, 3, 0, 1, 1)
+        generalGrid.addWidget(self.binary, 3, 2, 1, 1)
+        generalGrid.addWidget(self.benchmark, 3, 3, 1, 1)
+        generalGrid.addWidget(self.calendar, 4, 0, 2, 4)
+        generalGrid.setVerticalSpacing(10)
+    
+        general.setLayout(generalGrid)
 
-        self.setLayout(grid)
+        tabs.addTab(general, "General")
+
+        layout.addWidget(tabs)
+        globalButtonLayout.addWidget(self.delButton)
+        globalButtonLayout.addWidget(self.applyButton)
+        globalButtonLayout.addWidget(self.cancelButton)
+        layout.addLayout(globalButtonLayout)
+
+        self.setLayout(layout)
 
     def sendData(self):
         """[Slot] Communicate backward to associated contentHead the text and color, then force close window to immediately update."""
