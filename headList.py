@@ -237,5 +237,4 @@ class Worker(QObject):
         self.timer.start(10)
 
     def proc(self):
-        print("PROC")
         self.ready.emit(self.closeness)

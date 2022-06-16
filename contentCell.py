@@ -34,33 +34,8 @@ class contentCell(QWidget):
         self.initUI()
 
     def initUI(self):
-        """Initialize the appearance of the widgets (for now, only accepts binary-type)"""
+        """Initialize the appearance of the widgets"""
         self.size = 200
         self.setFixedSize(self.size, 100)
 
         self.value = None
-
-    def paintEvent(self, e):
-        qp = QPainter(self)
-
-        col = QColor(0, 0, 0)
-        col.setNamedColor('#d4d4d4')
-
-        qp.setRenderHint(QPainter.RenderHint.Antialiasing, True)
-        path = QPainterPath()
-
-        pen = QPen(col, 0.5)
-        qp.setPen(pen)
-        brush = QBrush(self.color)
-        qp.setBrush(brush)
-
-        rect = QRectF(0, 0, self.frameGeometry().width(), self.frameGeometry().height())
-        rect.adjust(0.0, 0.0, 1, 1)
-        path.addRoundedRect(rect, 10, 10)
-        qp.setClipPath(path)
-        qp.fillPath(path, qp.brush())
-        qp.strokePath(path, qp.pen())
-
-        qp.end()
-        self.update()
-        

@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QPushButton, QHBoxLayout, QStackedWidget
-from PyQt6.QtGui import QCursor
-from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QCursor, QPainter, QPainterPath, QBrush, QPen, QColor
+from PyQt6.QtCore import Qt, pyqtSignal, QRectF
 from timeit import default_timer as timer
 
 from contentCell import contentCell, palette
@@ -70,16 +70,10 @@ class binaryCell(contentCell):
         elif self.value == binaryState.false.value:
             self.setFalse()
         elif self.value == binaryState.readOnly.value:
-            print("IS READ ONLY")
             self.cell.hide()
-        else:
-            print("DIDNt do aything")
 
     def setReadOnly(self):
-        start = timer()
         self.cell.hide()
-        end = timer()
-        print(f"Hiding took {end - start}")
 
     def updateUI(self, newValue):
         if newValue == binaryState.true.value:
@@ -95,19 +89,13 @@ class binaryCell(contentCell):
         self.value = True
         self.color = palette["markedTrue"]
         self.cell.setCurrentWidget(self.marked)
-        start = timer()
         self.cell.show()
-        end = timer()
-        print(f"Showing took {end - start}")
 
     def setFalse(self):
         self.value = False
         self.color = palette["markedFalse"]
         self.cell.setCurrentWidget(self.marked)
-        start = timer()
         self.cell.show()
-        end = timer()
-        print(f"Showing took {end - start}")
 
     def updateProperties(self, fn):
         fn()
@@ -117,7 +105,28 @@ class binaryCell(contentCell):
         """If the user 'resets', but they don't actually do anything, the value is not lost"""
         self.color = palette["unmarked"]
         self.cell.setCurrentWidget(self.unmarked)
-        start = timer()
         self.cell.show()
-        end = timer()
-        print(f"Showing took {end - start}")
+
+    def paintEvent(self, e):
+        qp = QPainter(self)
+
+        col = QColor(0, 0, 0)
+        col.setNamedColor('#d4d4d4')
+
+        qp.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+        path = QPainterPath()
+
+        pen = QPen(col, 0.5)
+        qp.setPen(pen)
+        brush = QBrush(self.color)
+        qp.setBrush(brush)
+
+        rect = QRectF(0, 0, self.frameGeometry().width(), self.frameGeometry().height())
+        rect.adjust(0.0, 0.0, 1, 1)
+        path.addRoundedRect(rect, 10, 10)
+        qp.setClipPath(path)
+        qp.fillPath(path, qp.brush())
+        qp.strokePath(path, qp.pen())
+
+        qp.end()
+        self.update()

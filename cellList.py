@@ -35,14 +35,25 @@ class cellList(QWidget):
                 height: 100px;
             }
             QLineEdit {
-                border-radius: 15px;
-                width: 66px;
-                height: 100px;
+                border-radius: 5px;
+                min-width: 50px;
+                max-width: 50px;
+                height: 50px;
+                font-size: 12px;
             }
-            QLineEdit[readonly = 'true'] {
+            QLabel {
                 background: transparent;
-                width: 66px;
-                height: 100px;
+                min-width: 50px;
+                max-width: 50px;
+                height: 50px;
+                font-size: 12px;
+            }
+            QLabel#divider {
+                background: transparent;
+                min-width: 80px;
+                max-width: 80px;
+                height: 50px;
+                font-size: 30px;
             }
         """)
 

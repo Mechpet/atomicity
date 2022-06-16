@@ -95,7 +95,6 @@ class mainWrapper(QWidget):
         self.dailyScroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.dailyScroll.setFrameShape(QFrame.Shape.NoFrame)
         
-        print(f"Head list scroll has dimensions: {self.headListScroll.width()}, {self.headListScroll.height()}")
         self.layout.addWidget(self.adder, 0, 0, 1, 1)
         self.layout.addLayout(dateVbox, 0, 1, 1, -1, Qt.AlignmentFlag.AlignLeft)
         #self.layout.addWidget(self.dailyLabel, 1, 0, 1, 1)
