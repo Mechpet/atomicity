@@ -70,7 +70,10 @@ class binaryCell(contentCell):
         elif self.value == binaryState.false.value:
             self.setFalse()
         elif self.value == binaryState.readOnly.value:
+            print("IS READ ONLY")
             self.cell.hide()
+        else:
+            print("DIDNt do aything")
 
     def setReadOnly(self):
         start = timer()

@@ -77,13 +77,15 @@ class cellList(QWidget):
 
         info = sql.fetchConsecutive(sql.connection, self.tableName, topDate.toString(Qt.DateFormat.ISODate), DEFAULT_NUM_IN_COLUMN)
 
+        print("INFO = ")
+        print(info)
         if self.cellType == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):
                 if i < len(info):
                     newBinaryCell = binaryCell(info[i][1])
                     newBinaryCell.commitRequest.connect(self.commit)
                 else:
-                    newBinaryCell = binaryCell()
+                    newBinaryCell = binaryCell(binaryState.readOnly)
                 self.layout.addWidget(newBinaryCell)
         elif self.cellType == cellType.benchmark:
             for i in range(DEFAULT_NUM_IN_COLUMN):

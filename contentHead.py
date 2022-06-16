@@ -119,7 +119,7 @@ class contentHead(QWidget):
 
     def settingsWindow(self):
         """Open a new window that takes priority over the main application"""
-        self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.cellColor, self.textColor, self.iconPath, self.type, self)
+        self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.cellColor, self.textColor, self.iconPath, self.type, self.startDate, self)
         self.window.apply.connect(self.updateData)
         self.window.show()
         print("HERE")
@@ -137,7 +137,7 @@ class contentHead(QWidget):
         self.settings = QSettings(self.settingName, QSettings.Format.IniFormat)
         return QFile.exists(self.settingName)
 
-    def updateData(self, newName, newCellColor, newTextColor, newIconPath, type):
+    def updateData(self, newName, newCellColor, newTextColor, newIconPath, type, startDate):
         """[Slot] Update the contentHead's text"""
         self.text = newName
         self.cellColor = newCellColor
@@ -152,6 +152,7 @@ class contentHead(QWidget):
             self.iconPath = None
             self.iconBtn.setIcon(QIcon())
         self.type = cellType(type)
+        self.startDate = startDate
 
         # Update on local device
         self.synchronize()
@@ -172,6 +173,7 @@ class contentHead(QWidget):
         self.settings.setValue("textBlue", self.textColor.blue())
         self.settings.setValue("path", self.iconPath)
         self.settings.setValue("type", self.type)
+        self.settings.setValue("startDate", self.startDate)
         self.settings.sync()
         # Make the file read-only
         try:
@@ -186,6 +188,7 @@ class contentHead(QWidget):
         self.textColor = QColor(int(self.settings.value("textRed")), int(self.settings.value("textGreen")), int(self.settings.value("textBlue")))
         self.iconPath = self.settings.value("path")
         self.type = self.settings.value("type")
+        self.startDate = self.settings.value("startDate")
 
         sql.fillTable(sql.connection, self.settings.value("table"))
 
@@ -196,6 +199,7 @@ class contentHead(QWidget):
         self.textColor = QColor(0, 0, 0)
         self.iconPath = None
         self.type = None
+        self.startDate = None
 
         # Create a new unique table
         tableName = sql.generateName()
@@ -203,7 +207,9 @@ class contentHead(QWidget):
             tableName = sql.generateName()
 
         self.settings.setValue("table", tableName)
-        sql.initTable(sql.connection, tableName, QDate(2022, 5, 16))
+
+    def initTable(self):
+        sql.initTable(sql.connection, self.settings.value("table"), self.startDate)
 
         self.synchronize()
     

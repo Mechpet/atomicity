@@ -54,8 +54,8 @@ class headList(QWidget):
         self.setLayout(self.layout)
 
         newContentHead.settingsWindow()
+        newContentHead.window.apply.connect(newContentHead.initTable)
         newContentHead.window.apply.connect(lambda: self.append.emit(self.layout.count() - 1))
-
 
     def getSelectedBinary(self, x, y):
         """Get the item index of the content using binary search"""

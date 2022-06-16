@@ -1,5 +1,5 @@
-from PyQt6.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QColorDialog, QFileDialog, QButtonGroup, QRadioButton
-from PyQt6.QtCore import Qt, pyqtSignal, QFile
+from PyQt6.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QColorDialog, QFileDialog, QButtonGroup, QRadioButton, QCalendarWidget
+from PyQt6.QtCore import Qt, pyqtSignal, QFile, QDate
 from PyQt6.QtGui import QColor, QIcon
 import os
 from window import Window
@@ -18,10 +18,10 @@ acceptedExtensions = (
 # `dialog`      = Current opened dialog (if any).
 class contentHeadSettingsWindow(Window):
     """A pop-up window that allows users to adjust the settings of contentHeads."""
-    apply = pyqtSignal(str, QColor, QColor, str, int)
+    apply = pyqtSignal(str, QColor, QColor, str, int, QDate)
     delete = pyqtSignal()
     removeIconSignal = pyqtSignal()
-    def __init__(self, x, y, w, h, name, cellColor, textColor, iconPath, type, instance):
+    def __init__(self, x, y, w, h, name, cellColor, textColor, iconPath, type, startDate, instance):
         super().__init__(SETTINGS_WINDOW_NAME, x, y, w, h)
 
         self.dialog = None
@@ -31,9 +31,9 @@ class contentHeadSettingsWindow(Window):
         
         # Block inputs to the mainWindow
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.initLayout(name, cellColor, textColor, iconPath, type)
+        self.initLayout(name, cellColor, textColor, iconPath, type, startDate)
 
-    def initLayout(self, name, initCellColor, initTextColor, iconPath, type):
+    def initLayout(self, name, initCellColor, initTextColor, iconPath, type, startDate):
         """Initialize the variable types of the window based on the appearance of the instance"""
         grid = QGridLayout()
 
@@ -99,8 +99,16 @@ class contentHeadSettingsWindow(Window):
             self.binary.setEnabled(False)
             self.benchmark.setEnabled(False)
         else:
-            # Default to binary type
+            # Default to binary type if the head is new
             self.binary.setChecked(True)
+
+        # Calendar widget to select the starting date
+        self.calendar = QCalendarWidget()
+        if startDate is not None:
+            self.calendar.setSelectedDate(startDate)
+            self.calendar.setSelectionMode(QCalendarWidget.SelectionMode.NoSelection)
+        else:
+            self.calendar.setMaximumDate(QDate.currentDate())
 
         # PushButton on the bottom-left corner to delete the contentHead and all of its associated data
         self.delButton = QPushButton("Delete", self)
@@ -118,17 +126,18 @@ class contentHeadSettingsWindow(Window):
         grid.addWidget(self.nameLabel, 0, 0)
         grid.addWidget(self.nameEdit, 0, 1, 1, -1)
         grid.addWidget(self.cellColorLabel, 1, 0)
-        grid.addWidget(self.cellColorEdit, 1, 1, 2, 2)
-        grid.addWidget(self.textColorLabel, 3, 0)
-        grid.addWidget(self.textColorEdit, 3, 1, 1, 1)
-        grid.addWidget(self.iconLine, 4, 0, 1, 3)
-        grid.addWidget(self.iconEdit, 4, 3)
-        grid.addWidget(self.typeLabel, 5, 0, 1, 1)
-        grid.addWidget(self.binary, 5, 2, 1, 1)
-        grid.addWidget(self.benchmark, 5, 3, 1, 1)
-        grid.addWidget(self.delButton, 7, 0, 1, 1)
-        grid.addWidget(self.applyButton, 7, 2, 1, 1)
-        grid.addWidget(self.cancelButton, 7, 3, 1, 1)
+        grid.addWidget(self.cellColorEdit, 1, 1, 1, 1)
+        grid.addWidget(self.textColorLabel, 1, 2, 1, 1)
+        grid.addWidget(self.textColorEdit, 1, 3, 1, 1)
+        grid.addWidget(self.iconLine, 2, 0, 1, 3)
+        grid.addWidget(self.iconEdit, 2, 3)
+        grid.addWidget(self.typeLabel, 3, 0, 1, 1)
+        grid.addWidget(self.binary, 3, 2, 1, 1)
+        grid.addWidget(self.benchmark, 3, 3, 1, 1)
+        grid.addWidget(self.calendar, 4, 0, 2, 3)
+        grid.addWidget(self.delButton, 8, 0, 1, 1)
+        grid.addWidget(self.applyButton, 8, 2, 1, 1)
+        grid.addWidget(self.cancelButton, 8, 3, 1, 1)
 
         self.setLayout(grid)
 
@@ -139,7 +148,7 @@ class contentHeadSettingsWindow(Window):
             newText = '\n\n' + newText
         newIconPath = self.iconLine.text()
         # Pass the currently selected colors (apparent in the pushButtons)
-        self.apply.emit(newText, self.cellColorEdit.palette().button().color(), self.textColorEdit.palette().button().color(), newIconPath, self.cellTypeOption.checkedId())
+        self.apply.emit(newText, self.cellColorEdit.palette().button().color(), self.textColorEdit.palette().button().color(), newIconPath, self.cellTypeOption.checkedId(), self.calendar.selectedDate())
         self.close()
 
     def openColorDialog(self, initColor, widget):
