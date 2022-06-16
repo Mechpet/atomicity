@@ -44,7 +44,7 @@ class benchmarkCell(contentCell):
         col.setNamedColor('#d4d4d4')
 
         qp.setRenderHint(QPainter.RenderHint.Antialiasing, True)
-        path = QPainterPath()
+        redPath = QPainterPath()
 
         pen = QPen(col, 0.5)
         qp.setPen(pen)
@@ -53,21 +53,23 @@ class benchmarkCell(contentCell):
 
         redRect = QRectF(0, 0, self.frameGeometry().width(), self.frameGeometry().height())
         redRect.adjust(0.0, 0.0, 1, 1)
-        path.addRoundedRect(redRect, 10, 10)
-        qp.setClipPath(path)
-        qp.fillPath(path, qp.brush())
-        qp.strokePath(path, qp.pen())
+        redPath.addRoundedRect(redRect, 10, 10)
+        qp.setClipPath(redPath)
+        qp.fillPath(redPath, qp.brush())
+        #qp.strokePath(redPath, qp.pen())
 
-        if self.input.text() != "None":
+        if self.input.text() != "None" and self.input.text() and float(self.input.text()) != 0.00:
+            print("SELF.INPUT.TEXT() = ", self.input.text())
             greenBrush = QBrush(QColor(0, 177, 0))
             qp.setBrush(greenBrush)
-            greenRect = QRectF(0, 0, int(self.frameGeometry().width() * (float(self.input.text()) / float(self.benchmark.text()))),
+            greenRect = QRectF(0, 0, min(self.frameGeometry().width(), abs(int(self.frameGeometry().width() * (float(self.input.text()) / float(self.benchmark.text()))))),
                 self.frameGeometry().height())
             greenRect.adjust(0.0, 0.0, 1, 1)
-            path.addRoundedRect(greenRect, 10, 10)
-            qp.setClipPath(path)
-            qp.fillPath(path, qp.brush())
-            qp.strokePath(path, qp.pen())
+            greenPath = QPainterPath()
+            greenPath.addRoundedRect(greenRect, 10, 10)
+            qp.setClipPath(greenPath)
+            qp.fillPath(greenPath, qp.brush())
+            #qp.strokePath(greenPath, qp.pen())
 
         qp.end()
         self.update()
