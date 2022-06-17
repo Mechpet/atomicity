@@ -8,7 +8,6 @@ from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QSi
 from PyQt6.QtGui import QIcon, QCursor
 from PyQt6.QtCore import Qt, QSettings
 
-
 from headList import headList, headListScroll
 from window import APP_ID
 from dateList import dateList

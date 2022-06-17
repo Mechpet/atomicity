@@ -5,6 +5,7 @@ from PyQt6.QtGui import QColor, QIcon
 import os
 from window import Window
 from contentCell import cellType
+from rules import ruleSettings
 
 SETTINGS_WINDOW_NAME = "Settings"
 # Accepted file extensions for the icon image file:
@@ -41,9 +42,12 @@ class contentHeadSettingsWindow(Window):
         """Initialize the variable types of the window based on the appearance of the instance"""
         layout = QVBoxLayout()
         globalButtonLayout = QHBoxLayout()
-        tabs = QTabWidget()
+        self.tabs = QTabWidget()
 
+        # Tab widgets:
         general = QWidget()
+        self.rules = None
+
         generalGrid = QGridLayout()
 
         # Label that says 'Name:'
@@ -98,6 +102,9 @@ class contentHeadSettingsWindow(Window):
         self.cellTypeOption.addButton(self.binary, cellType.binary.value)
         self.cellTypeOption.addButton(self.benchmark, cellType.benchmark.value)
 
+        # If the benchmark is picked, make sure the rules tab is available
+        self.benchmark.pressed.connect(self.enableRules)
+
         # If the head has a type already, it has been initialized already
         if type == cellType.binary:
             self.binary.setChecked(True)
@@ -148,9 +155,12 @@ class contentHeadSettingsWindow(Window):
     
         general.setLayout(generalGrid)
 
-        tabs.addTab(general, "General")
+        self.tabs.addTab(general, "General")
+        if self.benchmark.isChecked():
+            self.rules = ruleSettings()
+            self.tabs.addTab(self.rules, "General")
 
-        layout.addWidget(tabs)
+        layout.addWidget(self.tabs)
         globalButtonLayout.addWidget(self.delButton)
         globalButtonLayout.addWidget(self.applyButton)
         globalButtonLayout.addWidget(self.cancelButton)
@@ -235,3 +245,15 @@ class contentHeadSettingsWindow(Window):
         """Set the textEdit to the icon path selected in the fileDialog"""
         self.iconLine.setText(self.dialog.selectedFiles()[0])
 
+    def enableRules(self):
+        """Adds the rules tab if not already added"""
+        if self.rules is None:
+            self.rules = ruleSettings()
+            self.tabs.addTab(self.rules, "Rules")
+
+    def disableRules(self):
+        """Deletes the rules tab if already added"""
+        if self.rules is not None and self.tabs.indexOf(self.rules) != -1:
+            self.tabs.removeTab(self.tabs.indexOf(self.rules))
+            self.rules.close()
+            self.rules = None
