@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QHBoxLayout, QWidget
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QDate
 
 from contentCell import cellType
 from binaryCell import binaryCell, binaryState
@@ -13,7 +13,7 @@ DEFAULT_NUM_IN_COLUMN = 14
 # Layout of contentCells
 class cellList(QWidget):
     """A row of contentCells."""
-    def __init__(self, type, tableName = None, topDate = None):
+    def __init__(self, type, tableName = None, topDate = None, parentSettings = None):
         super().__init__()
 
         self.setFixedHeight(200)
@@ -59,6 +59,7 @@ class cellList(QWidget):
 
         self.cellType = type
         self.tableName = tableName
+        self.parentSettings = parentSettings
 
         if topDate is not None and tableName is not None:
             self.initUI(topDate)
@@ -77,7 +78,7 @@ class cellList(QWidget):
                 newBenchmarkCell = benchmarkCell()
                 self.layout.addWidget(newBenchmarkCell)
         else:
-            print(f"EXCEPTION: {type} not in cellType enum; cellList.initUI()")
+            print(f"EXCEPTION: {type} not in cellType enum; cellList.initDefault()")
 
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
@@ -88,7 +89,6 @@ class cellList(QWidget):
 
         info = sql.fetchConsecutive(sql.connection, self.tableName, topDate.toString(Qt.DateFormat.ISODate), DEFAULT_NUM_IN_COLUMN)
 
-        print("INFO = ")
         print(info)
         if self.cellType == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):
@@ -100,8 +100,13 @@ class cellList(QWidget):
                 self.layout.addWidget(newBinaryCell)
         elif self.cellType == cellType.benchmark:
             for i in range(DEFAULT_NUM_IN_COLUMN):
-                newBenchmarkCell = benchmarkCell(info[i][1])
-                newBenchmarkCell.commitRequest.connect(self.commit)
+                if i < len(info):
+                    print("Rules = ", self.parentSettings.value("rules"))
+                    print("Index = ", QDate.fromString(info[i][0], "yyyy-MM-dd").dayOfWeek() - 1)
+                    newBenchmarkCell = benchmarkCell(info[i][1], self.parentSettings.value("rules")[QDate.fromString(info[i][0], "yyyy-MM-dd").dayOfWeek() - 1])
+                    newBenchmarkCell.commitRequest.connect(self.commit)
+                else:
+                    newBenchmarkCell = benchmarkCell(-1)
                 self.layout.addWidget(newBenchmarkCell)
         else:
             print(f"EXCEPTION: {type} not in cellType enum; cellList.initUI()")

@@ -44,7 +44,7 @@ class cellGrid(QWidget):
             print("which is benchmark")
         else:
             print("Which is none")
-        newList = cellList(settings.value("type"), tableName, self.topDate)
+        newList = cellList(settings.value("type"), tableName, self.topDate, settings)
         self.layout.addWidget(newList)
 
     def deleteRowAt(self, index):

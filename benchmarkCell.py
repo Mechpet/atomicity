@@ -3,16 +3,17 @@ from PyQt6.QtGui import QDoubleValidator, QPainter, QPainterPath, QBrush, QPen, 
 from PyQt6.QtCore import Qt, pyqtSignal, QRectF
 
 from contentCell import contentCell
+from rules import BENCHMARK_DEFAULT_VALUE
 
 class benchmarkCell(contentCell):
     commitRequest = pyqtSignal(float)
     """Measures the result of one habit on a specific date (numeric inputs only via line editing)"""
-    def __init__(self, value = None):
+    def __init__(self, value = None, benchmark = BENCHMARK_DEFAULT_VALUE):
         super().__init__()
 
-        self.initWidgets(value)
+        self.initWidgets(value, benchmark)
 
-    def initWidgets(self, value):
+    def initWidgets(self, value, benchmark):
         self.input = QLineEdit(self)
         self.input.setPlaceholderText("None")
         self.input.setText(str(value))
@@ -23,7 +24,7 @@ class benchmarkCell(contentCell):
         slash.setObjectName("divider")
         slash.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.benchmark = QLabel("50.0")
+        self.benchmark = QLabel(str(benchmark))
         self.benchmark.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         layout = QHBoxLayout(self)
@@ -45,7 +46,7 @@ class benchmarkCell(contentCell):
 
         qp.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         redPath = QPainterPath()
-
+        
         pen = QPen(col, 0.5)
         qp.setPen(pen)
         redBrush = QBrush(QColor(177, 0, 0))
@@ -56,10 +57,8 @@ class benchmarkCell(contentCell):
         redPath.addRoundedRect(redRect, 10, 10)
         qp.setClipPath(redPath)
         qp.fillPath(redPath, qp.brush())
-        #qp.strokePath(redPath, qp.pen())
 
-        if self.input.text() != "None" and self.input.text() and float(self.input.text()) != 0.00:
-            print("SELF.INPUT.TEXT() = ", self.input.text())
+        if self.input.text() != "None" and self.input.text() and float(self.input.text()) != 0.00 and float(self.benchmark.text()) != 0.00:
             greenBrush = QBrush(QColor(0, 177, 0))
             qp.setBrush(greenBrush)
             greenRect = QRectF(0, 0, min(self.frameGeometry().width(), abs(int(self.frameGeometry().width() * (float(self.input.text()) / float(self.benchmark.text()))))),
@@ -69,7 +68,6 @@ class benchmarkCell(contentCell):
             greenPath.addRoundedRect(greenRect, 10, 10)
             qp.setClipPath(greenPath)
             qp.fillPath(greenPath, qp.brush())
-            #qp.strokePath(greenPath, qp.pen())
 
         qp.end()
         self.update()

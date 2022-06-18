@@ -137,7 +137,7 @@ class contentHead(QWidget):
         self.settings = QSettings(self.settingName, QSettings.Format.IniFormat)
         return QFile.exists(self.settingName)
 
-    def updateData(self, newName, newCellColor, newTextColor, newIconPath, type, startDate):
+    def updateData(self, newName, newCellColor, newTextColor, newIconPath, type, startDate, newRules):
         """[Slot] Update the contentHead's text"""
         self.text = newName
         self.cellColor = newCellColor
@@ -153,6 +153,7 @@ class contentHead(QWidget):
             self.iconBtn.setIcon(QIcon())
         self.type = cellType(type)
         self.startDate = startDate
+        self.rules = newRules
 
         # Update on local device
         self.synchronize()
@@ -174,6 +175,7 @@ class contentHead(QWidget):
         self.settings.setValue("path", self.iconPath)
         self.settings.setValue("type", self.type)
         self.settings.setValue("startDate", self.startDate)
+        self.settings.setValue("rules", self.rules)
         self.settings.sync()
         # Make the file read-only
         try:
@@ -189,6 +191,7 @@ class contentHead(QWidget):
         self.iconPath = self.settings.value("path")
         self.type = self.settings.value("type")
         self.startDate = self.settings.value("startDate")
+        self.rules = self.settings.value("rules")
 
         sql.fillTable(sql.connection, self.settings.value("table"))
 
@@ -200,6 +203,7 @@ class contentHead(QWidget):
         self.iconPath = None
         self.type = None
         self.startDate = None
+        self.rules = None
 
         # Create a new unique table
         tableName = sql.generateName()

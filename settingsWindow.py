@@ -20,7 +20,7 @@ acceptedExtensions = (
 # `dialog`      = Current opened dialog (if any).
 class contentHeadSettingsWindow(Window):
     """A pop-up window that allows users to adjust the settings of contentHeads."""
-    apply = pyqtSignal(str, QColor, QColor, str, int, QDate)
+    apply = pyqtSignal(str, QColor, QColor, str, int, QDate, list)
     delete = pyqtSignal()
     removeIconSignal = pyqtSignal()
     def __init__(self, x, y, w, h, name, cellColor, textColor, iconPath, type, startDate, instance):
@@ -174,8 +174,11 @@ class contentHeadSettingsWindow(Window):
         if newText and newText[0] != '\n':
             newText = '\n\n' + newText
         newIconPath = self.iconLine.text()
-        # Pass the currently selected colors (apparent in the pushButtons)
-        self.apply.emit(newText, self.cellColorEdit.palette().button().color(), self.textColorEdit.palette().button().color(), newIconPath, self.cellTypeOption.checkedId(), self.calendar.selectedDate())
+        if self.rules is not None:
+            newRules = self.rules.ruleValues()
+        else:
+            newRules = None
+        self.apply.emit(newText, self.cellColorEdit.palette().button().color(), self.textColorEdit.palette().button().color(), newIconPath, self.cellTypeOption.checkedId(), self.calendar.selectedDate(), newRules)
         self.close()
 
     def openColorDialog(self, initColor, widget):
