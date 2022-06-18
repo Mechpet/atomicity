@@ -26,6 +26,9 @@ class benchmarkCell(contentCell):
 
         self.benchmark = QLabel(str(benchmark))
         self.benchmark.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        if benchmark == BENCHMARK_DEFAULT_VALUE:
+            self.input.setReadOnly(True)
         
         layout = QHBoxLayout(self)
 
@@ -45,18 +48,21 @@ class benchmarkCell(contentCell):
         col.setNamedColor('#d4d4d4')
 
         qp.setRenderHint(QPainter.RenderHint.Antialiasing, True)
-        redPath = QPainterPath()
+        outerPath = QPainterPath()
         
         pen = QPen(col, 0.5)
         qp.setPen(pen)
-        redBrush = QBrush(QColor(177, 0, 0))
-        qp.setBrush(redBrush)
+        if self.benchmark.text() == str(BENCHMARK_DEFAULT_VALUE): 
+            outerBrush = QBrush(self.palette["unmarked"])
+        else:
+            outerBrush = QBrush(self.palette["markedFalse"])
+        qp.setBrush(outerBrush)
 
-        redRect = QRectF(0, 0, self.frameGeometry().width(), self.frameGeometry().height())
-        redRect.adjust(0.0, 0.0, 1, 1)
-        redPath.addRoundedRect(redRect, 10, 10)
-        qp.setClipPath(redPath)
-        qp.fillPath(redPath, qp.brush())
+        outerRect = QRectF(0, 0, self.frameGeometry().width(), self.frameGeometry().height())
+        outerRect.adjust(0.0, 0.0, 1, 1)
+        outerPath.addRoundedRect(outerRect, 10, 10)
+        qp.setClipPath(outerPath)
+        qp.fillPath(outerPath, qp.brush())
 
         if self.input.text() != "None" and self.input.text() and float(self.input.text()) != 0.00 and float(self.benchmark.text()) != 0.00:
             greenBrush = QBrush(QColor(0, 177, 0))

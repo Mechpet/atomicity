@@ -177,7 +177,7 @@ class contentHeadSettingsWindow(Window):
         if self.rules is not None:
             newRules = self.rules.ruleValues()
         else:
-            newRules = None
+            newRules = []
         self.apply.emit(newText, self.cellColorEdit.palette().button().color(), self.textColorEdit.palette().button().color(), newIconPath, self.cellTypeOption.checkedId(), self.calendar.selectedDate(), newRules)
         self.close()
 

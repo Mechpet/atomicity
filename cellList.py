@@ -41,6 +41,13 @@ class cellList(QWidget):
                 height: 50px;
                 font-size: 12px;
             }
+            QLineEdit[readOnly = 'true'] {
+                background: grey;
+                border-radius: 5px;
+                min-width: 50px;
+                max-width: 50px;
+                height: 50px;
+            }
             QLabel {
                 background: transparent;
                 min-width: 50px;
@@ -106,7 +113,7 @@ class cellList(QWidget):
                     newBenchmarkCell = benchmarkCell(info[i][1], self.parentSettings.value("rules")[QDate.fromString(info[i][0], "yyyy-MM-dd").dayOfWeek() - 1])
                     newBenchmarkCell.commitRequest.connect(self.commit)
                 else:
-                    newBenchmarkCell = benchmarkCell(-1)
+                    newBenchmarkCell = benchmarkCell(0.0)
                 self.layout.addWidget(newBenchmarkCell)
         else:
             print(f"EXCEPTION: {type} not in cellType enum; cellList.initUI()")
