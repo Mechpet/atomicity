@@ -1,10 +1,11 @@
+from cmath import nan
 import sqlite3
 import secrets
 import enum
 from PyQt6.QtCore import Qt, QDate
 from sqlite3 import Error
 from time import sleep
-import numpy as np
+from numpy import inf
 
 errorMsgsOn = False
 
@@ -31,7 +32,7 @@ def createContentColumnTable(connection, tableName = generateName()):
     """Create a table in the connected database for a new column."""
     createCmd = f"CREATE TABLE {tableName} ( "\
         "date text PRIMARY KEY NOT NULL, "\
-        "value integer, "\
+        "value real, "\
         "cumulative real"\
     ");"
     try:
@@ -97,7 +98,7 @@ def initTable(connection, tableName, startDate):
         days.append(days[i].addDays(1))
     
     for day in days:
-        upsertDay(connection, tableName, day.toString(Qt.DateFormat.ISODate), np.nan, 1.00)
+        upsertDay(connection, tableName, day.toString(Qt.DateFormat.ISODate), inf, 1.00)
 
 def fillTable(connection, tableName):
     """Fills a table with empty entries up to the current date if the entry does not exist"""
@@ -115,7 +116,7 @@ def fillTable(connection, tableName):
             # The row with the next iterated date exists; conclude that there's no more need to update
             break
         else:
-            upsertDay(connection, tableName, nextDate.toString(Qt.DateFormat.ISODate), np.nan, 1.00)
+            upsertDay(connection, tableName, nextDate.toString(Qt.DateFormat.ISODate), inf, 1.00)
             nextDate = nextDate.addDays(-1)
 
     connection.commit()

@@ -4,7 +4,7 @@ import sys
 import ctypes
 from types import CellType
 
-from PyQt6.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QSizePolicy, QPushButton, QFrame, QVBoxLayout, QLabel
+from PyQt6.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QSizePolicy, QPushButton, QFrame, QVBoxLayout, QLabel
 from PyQt6.QtGui import QIcon, QCursor
 from PyQt6.QtCore import Qt, QSettings
 
@@ -34,9 +34,13 @@ class mainWrapper(QWidget):
         self.setWindowTitle('Atomicity')
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_ID)
 
+        layout = QVBoxLayout()
         self.layout = QGridLayout()
 
+        self.tabs = QTabWidget()
+
         # Initialize widgets
+        self.tracker = QWidget()
         self.adder = headAdder()
 
         self.headList = headList()
@@ -97,10 +101,8 @@ class mainWrapper(QWidget):
         
         self.layout.addWidget(self.adder, 0, 0, 1, 1)
         self.layout.addLayout(dateVbox, 0, 1, 1, -1, Qt.AlignmentFlag.AlignLeft)
-        #self.layout.addWidget(self.dailyLabel, 1, 0, 1, 1)
-        #self.layout.addWidget(self.dailyScroll, 1, 1, 1, -1)
         self.layout.addWidget(self.headListScroll, 1, 0, -1, 1)
-        self.layout.addWidget(self.cellGridScroll, 1, 1, -1, -1)#, Qt.AlignmentFlag.AlignTop)
+        self.layout.addWidget(self.cellGridScroll, 1, 1, -1, -1)
 
         # Connect related scroll areas
         self.dateScroll.horizontalScrollBar().valueChanged.connect(self.cellGridScroll.horizontalScrollBar().setValue)
@@ -108,10 +110,15 @@ class mainWrapper(QWidget):
         self.headListScroll.verticalScrollBar().valueChanged.connect(self.cellGridScroll.verticalScrollBar().setValue)
         self.cellGridScroll.verticalScrollBar().valueChanged.connect(self.headListScroll.verticalScrollBar().setValue)
 
-        self.setLayout(self.layout)
-
-        self.setGeometry(300, 300, 650, 550)
+        self.tracker.setLayout(self.layout)
         stats = statisticsWidget()
+
+        self.tabs.addTab(self.tracker, "Tracker")
+        self.tabs.addTab(stats, "Stats")
+
+        layout.addWidget(self.tabs)
+        self.setLayout(layout)
+        self.setGeometry(300, 300, 650, 550)
         self.show()
 
 def main():

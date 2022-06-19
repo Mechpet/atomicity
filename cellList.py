@@ -7,6 +7,7 @@ from benchmarkCell import benchmarkCell
 import sqliteHelper as sql
 
 from time import sleep
+import numpy as np
 
 DEFAULT_NUM_IN_COLUMN = 14
 
@@ -96,10 +97,8 @@ class cellList(QWidget):
 
         info = sql.fetchConsecutive(sql.connection, self.tableName, topDate.toString(Qt.DateFormat.ISODate), DEFAULT_NUM_IN_COLUMN)
 
-        print(info)
         if self.cellType == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):
-                print("Here")
                 if i < len(info):
                     newBinaryCell = binaryCell(info[i][1])
                     newBinaryCell.commitRequest.connect(self.commit)
@@ -109,8 +108,6 @@ class cellList(QWidget):
         elif self.cellType == cellType.benchmark:
             for i in range(DEFAULT_NUM_IN_COLUMN):
                 if i < len(info):
-                    print("Rules = ", self.parentSettings.value("rules"))
-                    print("Index = ", QDate.fromString(info[i][0], "yyyy-MM-dd").dayOfWeek() - 1)
                     newBenchmarkCell = benchmarkCell(info[i][1], self.parentSettings.value("rules")[QDate.fromString(info[i][0], "yyyy-MM-dd").dayOfWeek() - 1])
                     newBenchmarkCell.commitRequest.connect(self.commit)
                 else:
@@ -127,7 +124,6 @@ class cellList(QWidget):
 
         info = sql.fetchConsecutive(sql.connection, self.tableName, newTopDate.toString(Qt.DateFormat.ISODate), DEFAULT_NUM_IN_COLUMN)
 
-        print("Length of info = ", len(info))
         if self.cellType == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):
                 if i < len(info):
@@ -138,10 +134,7 @@ class cellList(QWidget):
             print(f"EXCEPTION: {type} not in cellType enum.")
 
     def commit(self, newValue):
-        print(f"self.sender() = {self.sender()}")
         index = self.layout.indexOf(self.sender())
-        print(f"index = {index}")
         if index >= 0:
-            print("Upserting")
             # Valid sender
             sql.upsertDay(sql.connection, self.tableName, self.topDate.addDays(-1 * index).toString(Qt.DateFormat.ISODate), newValue, 1.00)
