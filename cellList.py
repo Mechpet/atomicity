@@ -99,6 +99,7 @@ class cellList(QWidget):
         print(info)
         if self.cellType == cellType.binary:
             for i in range(DEFAULT_NUM_IN_COLUMN):
+                print("Here")
                 if i < len(info):
                     newBinaryCell = binaryCell(info[i][1])
                     newBinaryCell.commitRequest.connect(self.commit)

@@ -4,6 +4,7 @@ import enum
 from PyQt6.QtCore import Qt, QDate
 from sqlite3 import Error
 from time import sleep
+import numpy as np
 
 errorMsgsOn = False
 
@@ -28,13 +29,11 @@ def createConnection(dbFile):
 
 def createContentColumnTable(connection, tableName = generateName()):
     """Create a table in the connected database for a new column."""
-    createCmd = f"""
-        CREATE TABLE {tableName} (
-        date text PRIMARY KEY NOT NULL,
-        value integer,
-        cumulative real
-    );
-    """
+    createCmd = f"CREATE TABLE {tableName} ( "\
+        "date text PRIMARY KEY NOT NULL, "\
+        "value integer, "\
+        "cumulative real"\
+    ");"
     try:
         cursor = connection.cursor()
         cursor.execute(createCmd)
@@ -46,13 +45,11 @@ def createContentColumnTable(connection, tableName = generateName()):
 
 def upsertDay(connection, tableName, date, value, cumulative):
     """Write to the database to the appropriate table with the given values"""
-    insertCmd = f"""
-        INSERT INTO {tableName} 
-        (date, value, cumulative)
-        VALUES(?, ?, ?)
-        ON CONFLICT(date)
-        DO UPDATE SET value = excluded.value, cumulative = excluded.cumulative
-    """
+    insertCmd = f"INSERT INTO {tableName} "\
+        f"(date, value, cumulative) "\
+        "VALUES(?, ?, ?) "\
+        "ON CONFLICT(date) "\
+        "DO UPDATE SET value = excluded.value, cumulative = excluded.cumulative"
     insertValues = (date, value, cumulative)
 
     cursor = connection.cursor()
@@ -61,9 +58,7 @@ def upsertDay(connection, tableName, date, value, cumulative):
 
 def dropTable(connection, tableName):
     """Delete an entire table"""
-    deleteCmd = f"""
-        DROP TABLE {tableName}
-    """
+    deleteCmd = f"DROP TABLE {tableName}"
     
     cursor = connection.cursor()
     cursor.execute(deleteCmd)
@@ -71,10 +66,8 @@ def dropTable(connection, tableName):
 
 def fetchEntry(connection, tableName, date):
     """Fetch a single entry with the given date"""
-    fetchCmd = f"""
-        SELECT date, value, cumulative FROM {tableName}
-        WHERE date = '{date}'
-    """
+    fetchCmd = f"SELECT date, value, cumulative FROM {tableName} "\
+        f"WHERE date = '{date}'"
 
     cursor = connection.cursor()
     cursor.execute(fetchCmd)
@@ -82,12 +75,15 @@ def fetchEntry(connection, tableName, date):
     return cursor.fetchone()
 
 def fetchConsecutive(connection, tableName, topDate, entries):
-    fetchCmd = f"""
-        SELECT date, value, cumulative FROM {tableName}
-        WHERE date <= date('{topDate}')
-        ORDER BY date DESC
-        LIMIT {entries}
-    """
+    if entries >= 0:
+        limitString = f"LIMIT {entries}"
+    else:
+        limitString = ""
+
+    fetchCmd = f"SELECT date, value, cumulative FROM {tableName} "\
+        f"WHERE date <= date('{topDate}') "\
+        "ORDER BY date DESC "\
+        f"{limitString}"\
     
     cursor = connection.cursor()
     cursor.execute(fetchCmd)
@@ -101,7 +97,7 @@ def initTable(connection, tableName, startDate):
         days.append(days[i].addDays(1))
     
     for day in days:
-        upsertDay(connection, tableName, day.toString(Qt.DateFormat.ISODate), None, 1.00)
+        upsertDay(connection, tableName, day.toString(Qt.DateFormat.ISODate), np.nan, 1.00)
 
 def fillTable(connection, tableName):
     """Fills a table with empty entries up to the current date if the entry does not exist"""
@@ -109,11 +105,9 @@ def fillTable(connection, tableName):
 
     nextDate = QDate.currentDate()
     while True:
-        existsCmd = f"""
-            SELECT date FROM {tableName}
-            WHERE date = date('{nextDate.toString(Qt.DateFormat.ISODate)}')
-            LIMIT 1
-        """
+        existsCmd = f"SELECT date FROM {tableName} "\
+            f"WHERE date = date('{nextDate.toString(Qt.DateFormat.ISODate)}') "\
+            "LIMIT 1"
 
         cursor.execute(existsCmd)
         retvalue = cursor.fetchone()
@@ -121,7 +115,7 @@ def fillTable(connection, tableName):
             # The row with the next iterated date exists; conclude that there's no more need to update
             break
         else:
-            upsertDay(connection, tableName, nextDate.toString(Qt.DateFormat.ISODate), None, 1.00)
+            upsertDay(connection, tableName, nextDate.toString(Qt.DateFormat.ISODate), np.nan, 1.00)
             nextDate = nextDate.addDays(-1)
 
     connection.commit()

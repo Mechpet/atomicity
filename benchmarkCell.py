@@ -2,13 +2,15 @@ from PyQt6.QtWidgets import QHBoxLayout, QLineEdit, QLabel
 from PyQt6.QtGui import QDoubleValidator, QPainter, QPainterPath, QBrush, QPen, QColor
 from PyQt6.QtCore import Qt, pyqtSignal, QRectF
 
+import numpy as np
+
 from contentCell import contentCell
 from rules import BENCHMARK_DEFAULT_VALUE
 
 class benchmarkCell(contentCell):
     commitRequest = pyqtSignal(float)
     """Measures the result of one habit on a specific date (numeric inputs only via line editing)"""
-    def __init__(self, value = None, benchmark = BENCHMARK_DEFAULT_VALUE):
+    def __init__(self, value = np.nan, benchmark = BENCHMARK_DEFAULT_VALUE):
         super().__init__()
 
         self.initWidgets(value, benchmark)

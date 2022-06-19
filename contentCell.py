@@ -1,7 +1,9 @@
 from PyQt6.QtWidgets import QWidget, QPushButton, QHBoxLayout, QStackedWidget
 from PyQt6.QtGui import QPainter, QPainterPath, QBrush, QPen, QColor, QCursor
 from PyQt6.QtCore import Qt, QRectF, QSize
+
 from enum import IntEnum
+import numpy as np
 
 class cellType(IntEnum):
     """Determines the type of contentCell (and what layout it has, what functions it has)"""
@@ -38,4 +40,4 @@ class contentCell(QWidget):
         self.size = 200
         self.setFixedSize(self.size, 100)
 
-        self.value = None
+        self.value = np.nan

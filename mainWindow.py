@@ -16,6 +16,7 @@ from contentHead import contentHead
 from contentCell import cellType
 from cellList import cellList
 from cellGrid import cellGrid
+from statistics import statisticsWidget
 from scroll import scroll
 
 app = QApplication(sys.argv)
@@ -110,6 +111,7 @@ class mainWrapper(QWidget):
         self.setLayout(self.layout)
 
         self.setGeometry(300, 300, 650, 550)
+        stats = statisticsWidget()
         self.show()
 
 def main():

@@ -6,6 +6,7 @@ from timeit import default_timer as timer
 from contentCell import contentCell, palette
 from time import sleep
 from enum import IntEnum
+import numpy as np
 
 class binaryState(IntEnum):
     """Determines the type of contentCell (and what layout it has, what functions it has)"""
@@ -16,7 +17,7 @@ class binaryState(IntEnum):
 class binaryCell(contentCell):
     commitRequest = pyqtSignal(bool)
     """Measures the result of one habit on a specific date (true or false inputs only via buttons)"""
-    def __init__(self, state):
+    def __init__(self, state = np.nan):
         super().__init__()
 
         self.initUI()
@@ -80,7 +81,7 @@ class binaryCell(contentCell):
             self.setTrue()
         elif newValue == binaryState.false.value:
             self.setFalse()
-        elif newValue == None:
+        elif newValue == np.nan:
             self.resetMarked()
         elif newValue == binaryState.readOnly.value:
             self.setReadOnly()
