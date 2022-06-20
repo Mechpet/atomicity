@@ -1,3 +1,4 @@
+from select import select
 from PyQt6.QtWidgets import QVBoxLayout, QWidget, QLayout, QScrollArea, QFrame, QSizePolicy
 from PyQt6.QtCore import QSettings, Qt, QMimeData, pyqtSignal, QObject, QTimer, QThread, QPoint, QEvent
 from PyQt6.QtGui import QDrag, QPixmap, QPainter
@@ -85,9 +86,10 @@ class headList(QWidget):
         """Rename all the contentHead ini files starting from the given index assuming the given setting file is neglible"""
         filePrefix = "contentHead"
         if end < 0:
-            # Signals to rename to the end
+            # Signals to rename to the end if end is negative
             end = self.layout.count()
         if start >= end:
+            # Reverse order 
             step = -1
         else:
             step = 1
@@ -96,13 +98,8 @@ class headList(QWidget):
             os.rename(f"{filePrefix}{str(i)}.ini", f"{filePrefix}{str(i - step)}.ini")
             self.layout.itemAt(i - step).widget().index = i - step
 
-    def hoverMoveEvent(self, event):
-        print("Executing a hover move event on the widget.")
-
-    def hoverEnterEvent(self, event):
-        print("Executing a hover enter event on the widget.")
-
 class headListScroll(QScrollArea):
+    checkStats = pyqtSignal(contentHead)
     """QScrollArea built specifically for the headList and its dragging functions"""
     def __init__(self):
         super().__init__()
@@ -119,6 +116,7 @@ class headListScroll(QScrollArea):
         self.setFrameShape(QFrame.Shape.NoFrame)
 
     def installWidget(self, widget):
+        """Sets the scrollArea to the passed widget, activate important attributes"""
         self.setWidget(widget)
         self.setFixedWidth(widget.width())
         self.threshold = 0.15
@@ -127,18 +125,19 @@ class headListScroll(QScrollArea):
         self.widget = widget
 
     def installMouseEvents(self):
+        """Turns on mouse tracking events (dragging operations)"""
         self.trackerOn = True
         self.setAcceptDrops(True)
         self.setMouseTracking(True)
         self.installEventFilter(self)
 
     def uninstallMouseEvents(self):
+        """Turns off mouse tracking events (dragging is off)"""
         self.trackerOn = False
         self.setAcceptDrops(False)
-        #self.setMouseTracking(False)
     
     def eventFilter(self, object, event):
-        """Filter mouse events"""
+        """Filter mouse events - clear the thread if not in use by the worker"""
         if object is self:
             if self.worker is not None:
                 self.clearThread()
@@ -146,9 +145,13 @@ class headListScroll(QScrollArea):
 
     def mousePressEvent(self, event):
         """When the mouse left-clicks on a contentHead, store information about the item being moved"""
-        if event.button() == Qt.MouseButton.LeftButton and self.widget.height() and self.trackerOn:
+        if event.button() == Qt.MouseButton.LeftButton and self.widget.height():
             print("Mouse press event")
-            self.selected = self.widget.getSelectedBinary(event.position().x(), event.position().y() + (self.verticalScrollBar().value() / self.widget.height()) * self.widget.height())
+            selectedWidget = self.widget.getSelectedBinary(event.position().x(), event.position().y() + (self.verticalScrollBar().value() / self.widget.height()) * self.widget.height())
+            if self.trackerOn:
+                self.selected = selectedWidget
+            else:
+                self.checkStats.emit(selectedWidget)
 
     def mouseMoveEvent(self, event):
         """When the mouse moves and has selected a widget, enable dragging and dropping of the widget"""
@@ -213,6 +216,7 @@ class headListScroll(QScrollArea):
                 self.change = True
 
     def weightedScroll(self, closeness):
+        """Based on a passed value (closeness to the threshold areas), scroll the viewport by a weighted value"""
         newValue = self.verticalScrollBar().value() - 10.0 * closeness
         if newValue < 0.0:
             newValue = 0.0
@@ -246,4 +250,5 @@ class Worker(QObject):
         self.timer.start(10)
 
     def proc(self):
+        """Issue a scroll signal to the scrollArea"""
         self.ready.emit(self.closeness)

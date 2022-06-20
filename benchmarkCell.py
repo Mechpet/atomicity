@@ -66,7 +66,7 @@ class benchmarkCell(contentCell):
         qp.setClipPath(outerPath)
         qp.fillPath(outerPath, qp.brush())
 
-        if self.input.text() != "None" and self.input.text() and float(self.input.text()) != 0.00 and float(self.benchmark.text()) != 0.00:
+        if self.input.text() != "None" and self.input.text() and float(self.input.text()) != 0.00 and float(self.input.text()) != np.inf and float(self.benchmark.text()) != 0.00:
             greenBrush = QBrush(QColor(0, 177, 0))
             qp.setBrush(greenBrush)
             greenRect = QRectF(0, 0, min(self.frameGeometry().width(), abs(int(self.frameGeometry().width() * (float(self.input.text()) / float(self.benchmark.text()))))),

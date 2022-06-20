@@ -130,8 +130,6 @@ class mainWrapper(QWidget):
         elif index == 0:
             self.layout.addWidget(self.headListScroll, 1, 0, -1, 1)
 
-
-
 def main():
     #resetContentHeads()
     window = mainWrapper()
