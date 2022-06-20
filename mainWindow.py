@@ -46,6 +46,7 @@ class mainWrapper(QWidget):
         self.headList = headList()
         self.headListScroll = headListScroll()
         self.headListScroll.installWidget(self.headList)
+        self.headListScroll.installMouseEvents()
 
         self.dateList = dateList()
         self.dateScroll = scroll()
@@ -111,15 +112,25 @@ class mainWrapper(QWidget):
         self.cellGridScroll.verticalScrollBar().valueChanged.connect(self.headListScroll.verticalScrollBar().setValue)
 
         self.tracker.setLayout(self.layout)
-        stats = statisticsWidget()
+        self.stats = statisticsWidget()
 
         self.tabs.addTab(self.tracker, "Tracker")
-        self.tabs.addTab(stats, "Stats")
+        self.tabs.addTab(self.stats, "Stats")
+        self.tabs.currentChanged.connect(self.updateTabViewport)
 
         layout.addWidget(self.tabs)
         self.setLayout(layout)
         self.setGeometry(300, 300, 650, 550)
         self.show()
+
+    def updateTabViewport(self, index):
+        if index == 1:
+            self.stats.initUI(self.headListScroll)
+            self.stats.listWidget.uninstallMouseEvents()
+        elif index == 0:
+            self.layout.addWidget(self.headListScroll, 1, 0, -1, 1)
+
+
 
 def main():
     #resetContentHeads()

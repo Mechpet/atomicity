@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QGridLayout
+from PyQt6.QtWidgets import QWidget, QGridLayout, QPushButton
 from PyQt6.QtCore import Qt, QDate, QSettings
 import pyqtgraph as pg
 import sqliteHelper as sql
@@ -6,12 +6,14 @@ import sqliteHelper as sql
 class statisticsWidget(QWidget):
     def __init__(self):
         super().__init__()
+        self.layout = QGridLayout()
+        self.setLayout(self.layout)
 
-        self.initUI()
+    def initUI(self, listWidget):
+        self.listWidget = listWidget
+        self.layout.addWidget(self.listWidget, 0, 0, -1, 1)
 
-    def initUI(self):
-        layout = QGridLayout()
-
+    def showPlot(self):
         # Fetch settings from .ini and SQLite
         testSettingsName = "contentHead1.ini"
         self.settings = QSettings(testSettingsName, QSettings.Format.IniFormat)
@@ -29,7 +31,7 @@ class statisticsWidget(QWidget):
         line = pg.PlotDataItem(x, y, connect = "finite", pen = 'g', symbol = 'o', symbolPen = 'g', symbolBrush = 1.0, name = 'normal')
         plot.addItem(line)
 
-        layout.addWidget(plot)
+        self.layout.addWidget(plot)
 
-        self.setLayout(layout)
+        self.setLayout(self.layout)
 

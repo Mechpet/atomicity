@@ -121,13 +121,21 @@ class headListScroll(QScrollArea):
     def installWidget(self, widget):
         self.setWidget(widget)
         self.setFixedWidth(widget.width())
-        self.setAcceptDrops(True)
-        self.setMouseTracking(True)
         self.threshold = 0.15
         self.selected = None
         self.change = False
         self.widget = widget
+
+    def installMouseEvents(self):
+        self.trackerOn = True
+        self.setAcceptDrops(True)
+        self.setMouseTracking(True)
         self.installEventFilter(self)
+
+    def uninstallMouseEvents(self):
+        self.trackerOn = False
+        self.setAcceptDrops(False)
+        #self.setMouseTracking(False)
     
     def eventFilter(self, object, event):
         """Filter mouse events"""
@@ -138,7 +146,8 @@ class headListScroll(QScrollArea):
 
     def mousePressEvent(self, event):
         """When the mouse left-clicks on a contentHead, store information about the item being moved"""
-        if event.button() == Qt.MouseButton.LeftButton and self.widget.height():
+        if event.button() == Qt.MouseButton.LeftButton and self.widget.height() and self.trackerOn:
+            print("Mouse press event")
             self.selected = self.widget.getSelectedBinary(event.position().x(), event.position().y() + (self.verticalScrollBar().value() / self.widget.height()) * self.widget.height())
 
     def mouseMoveEvent(self, event):
