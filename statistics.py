@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QGridLayout, QComboBox
 from PyQt6.QtCore import Qt, QDate, QSettings, pyqtSlot
 import pyqtgraph as pg
+import pandas as pd
 from enum import IntEnum
 
 from contentHead import contentHead
@@ -32,6 +33,7 @@ class statisticsWidget(QWidget):
         """Initialize the QComboBox that holds the modes selectable"""
         for enumItem in plotModes:
             self.plotModeSelect.insertItem(enumItem.value, enumItem.name)
+        self.plotModeSelect.currentIndexChanged.connect(self.updatePlot)
 
     @pyqtSlot(contentHead) # from a contentHead
     def showPlot(self, clickedWidget):
@@ -47,8 +49,21 @@ class statisticsWidget(QWidget):
         # x = # of days since the startDay
         # y = value
         x = [i for i in range(startDate.daysTo(today) + 1)]
-        y = [row[1] for row in info]
+
+        currentMode = self.plotModeSelect.currentIndex()
+        match currentMode:
+            case plotModes.Value.value:
+                y = [row[1] for row in info]
+            case plotModes.Consecutive.value:
+                y = [row[1] for row in info]
+            case plotModes.Average.value:
+                ySeries = pd.Series([row[1] for row in info])
+                y = ySeries.expanding().mean().to_list()
 
         self.plot.clear()
         line = pg.PlotDataItem(x, y, connect = "finite", pen = 'g', symbol = 'o', symbolPen = 'g', symbolBrush = 1.0, name = 'normal')
         self.plot.addItem(line)
+
+    @pyqtSlot(int)
+    def updatePlot(index):
+        pass

@@ -66,7 +66,7 @@ class headList(QWidget):
         while low <= high:
             mid = floor((high + low) / 2)
         
-            if self.layout.itemAt(mid).geometry().contains(x, y):
+            if self.layout.itemAt(mid).geometry().contains(int(x), int(y)):
                 return self.layout.itemAt(mid).widget()
             elif self.layout.itemAt(mid).geometry().y() < y:
                 low = mid + 1
