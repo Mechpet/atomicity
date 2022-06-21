@@ -1,22 +1,37 @@
-from PyQt6.QtWidgets import QWidget, QGridLayout, QPushButton
+from PyQt6.QtWidgets import QWidget, QGridLayout, QComboBox
 from PyQt6.QtCore import Qt, QDate, QSettings, pyqtSlot
 import pyqtgraph as pg
+from enum import IntEnum
 
 from contentHead import contentHead
 import sqliteHelper as sql
+
+class plotModes(IntEnum):
+    """Indices for the plotModeSelect items"""
+    Value = 0
+    Consecutive = 1
+    Average = 2
 
 class statisticsWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.layout = QGridLayout()
         self.plot = pg.plot()
-        self.layout.addWidget(self.plot, 0, 1, -1, -1)
+        self.plotModeSelect = QComboBox()
+        self.initPlotMode()
+        self.layout.addWidget(self.plotModeSelect, 0, 1, 1, 1)
+        self.layout.addWidget(self.plot, 1, 1, -1, -1)
         self.setLayout(self.layout)
 
     def initUI(self, listWidget):
         self.listWidget = listWidget
         self.listWidget.checkStats.connect(self.showPlot)
         self.layout.addWidget(self.listWidget, 0, 0, -1, 1)
+
+    def initPlotMode(self):
+        """Initialize the QComboBox that holds the modes selectable"""
+        for enumItem in plotModes:
+            self.plotModeSelect.insertItem(enumItem.value, enumItem.name)
 
     @pyqtSlot(contentHead) # from a contentHead
     def showPlot(self, clickedWidget):
