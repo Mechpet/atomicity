@@ -37,13 +37,6 @@ class cellGrid(QWidget):
         settings = QSettings(settingName, QSettings.Format.IniFormat)
 
         tableName = settings.value("table")
-        print("The celltype is ", settings.value("type"))
-        if settings.value("type") == cellType.binary:
-            print("which is binary")
-        elif settings.value("type") == cellType.benchmark:
-            print("which is benchmark")
-        else:
-            print("Which is none")
         newList = cellList(settings.value("type"), tableName, self.topDate, settings)
         self.layout.addWidget(newList)
 

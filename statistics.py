@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QGridLayout, QComboBox
+from PyQt6.QtWidgets import QWidget, QGridLayout, QComboBox, QLabel
 from PyQt6.QtCore import Qt, QDate, QSettings, pyqtSlot
 import pyqtgraph as pg
 import pandas as pd
@@ -19,8 +19,14 @@ class statisticsWidget(QWidget):
         self.layout = QGridLayout()
         self.plot = pg.plot()
         self.plotModeSelect = QComboBox()
+        self.selectedDisplay = QLabel("")
+        self.selectedDisplay.setFixedSize(200, 200)
+
+        plotViewbox = self.plot.getViewBox()
+
         self.initPlotMode()
-        self.layout.addWidget(self.plotModeSelect, 0, 1, 1, 1)
+        self.layout.addWidget(self.plotModeSelect, 0, 2, 1, 1)
+        self.layout.addWidget(self.selectedDisplay, 0, 1, Qt.AlignmentFlag.AlignCenter)
         self.layout.addWidget(self.plot, 1, 1, -1, -1)
         self.setLayout(self.layout)
 
@@ -39,12 +45,14 @@ class statisticsWidget(QWidget):
     def showPlot(self, clickedWidget):
         """Clear the current plot's points and then draw the new plot"""
         # Fetch settings from .ini and SQLite
+        self.selectedDisplay.setPixmap(clickedWidget.grab())
         tableName = clickedWidget.settings.value("table")
         today = QDate.currentDate()
         startDate = clickedWidget.settings.value("startDate")
         info = sql.fetchConsecutive(sql.connection, tableName, today.toString(Qt.DateFormat.ISODate), -1)
         info.reverse()
 
+        self.plot.clear()
         # Plot data:
         # x = # of days since the startDay
         # y = value
@@ -54,13 +62,16 @@ class statisticsWidget(QWidget):
         match currentMode:
             case plotModes.Value.value:
                 y = [row[1] for row in info]
+                self.plot.setLabel("left", "Value")
             case plotModes.Consecutive.value:
                 y = [row[1] for row in info]
             case plotModes.Average.value:
                 ySeries = pd.Series([row[1] for row in info])
                 y = ySeries.expanding().mean().to_list()
+                self.plot.setLabel("left", "Average value")
+        
+        self.plot.setLabel("bottom", f"Days since {startDate.toString(Qt.DateFormat.ISODate)}")
 
-        self.plot.clear()
         line = pg.PlotDataItem(x, y, connect = "finite", pen = 'g', symbol = 'o', symbolPen = 'g', symbolBrush = 1.0, name = 'normal')
         self.plot.addItem(line)
 

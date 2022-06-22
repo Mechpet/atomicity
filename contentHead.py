@@ -122,7 +122,6 @@ class contentHead(QWidget):
         self.window = contentHeadSettingsWindow(0, 0, 500, 500, self.text, self.cellColor, self.textColor, self.iconPath, self.type, self.startDate, self)
         self.window.apply.connect(self.updateData)
         self.window.show()
-        print("HERE")
 
     def setIcon(self):
         """Set the icon of the contentHead quickly"""

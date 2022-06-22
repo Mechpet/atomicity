@@ -7,8 +7,6 @@ class scroll(QScrollArea):
         super().__init__()
 
     def wheelEvent(self, event):
-        print("Event = ", event)
-        print("Its angle delta = ", event.angleDelta())
         if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
             self.horizontalScrollBar().wheelEvent(event)
         else:

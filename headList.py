@@ -21,7 +21,6 @@ class headList(QWidget):
         self.settings.beginGroup("headList")
 
         self.setMinimumSize(200, 200)
-        print("Height = ", self.height())
 
         self.layout = QVBoxLayout()
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -146,11 +145,10 @@ class headListScroll(QScrollArea):
     def mousePressEvent(self, event):
         """When the mouse left-clicks on a contentHead, store information about the item being moved"""
         if event.button() == Qt.MouseButton.LeftButton and self.widget.height():
-            print("Mouse press event")
             selectedWidget = self.widget.getSelectedBinary(event.position().x(), event.position().y() + (self.verticalScrollBar().value() / self.widget.height()) * self.widget.height())
             if self.trackerOn:
                 self.selected = selectedWidget
-            else:
+            elif selectedWidget is not None:
                 self.checkStats.emit(selectedWidget)
 
     def mouseMoveEvent(self, event):
