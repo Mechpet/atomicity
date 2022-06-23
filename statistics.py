@@ -1,10 +1,14 @@
+from operator import truth
 from PyQt6.QtWidgets import QWidget, QGridLayout, QComboBox, QLabel
 from PyQt6.QtCore import Qt, QDate, QSettings, pyqtSlot
 import pyqtgraph as pg
 import pandas as pd
+import numpy as np
 from enum import IntEnum
+from itertools import cycle
 
 from contentHead import contentHead
+from contentCell import cellType
 import sqliteHelper as sql
 
 class plotModes(IntEnum):
@@ -64,7 +68,8 @@ class statisticsWidget(QWidget):
                 y = [row[1] for row in info]
                 self.plot.setLabel("left", "Value")
             case plotModes.Consecutive.value:
-                y = [row[1] for row in info]
+                ySeries = [row[1] for row in info]
+                y = self.getChain(clickedWidget, ySeries)
             case plotModes.Average.value:
                 ySeries = pd.Series([row[1] for row in info])
                 y = ySeries.expanding().mean().to_list()
@@ -76,5 +81,35 @@ class statisticsWidget(QWidget):
         self.plot.addItem(line)
 
     @pyqtSlot(int)
-    def updatePlot(index):
+    def updatePlot(self, index):
         pass
+
+    def getChain(self, clickedWidget, data):
+        referenceDf = pd.DataFrame(data, columns = ["value"])
+        referenceDf.replace([np.inf, -np.inf], np.nan, inplace=True)
+
+        if clickedWidget.settings.value("type") == cellType.binary:
+            referenceDf = pd.concat([pd.DataFrame([np.nan]), referenceDf]).reset_index(drop = True)
+            truthDf = referenceDf["value"].ge(1)
+            chainDf = truthDf * (truthDf.groupby((truthDf != truthDf.shift()).cumsum()).cumcount() + 1)
+            negativeChainDf = -1 * truthDf.groupby(truthDf.cumsum()).cumcount()
+            chainDf.loc[chainDf == 0] = negativeChainDf
+            chainDf = chainDf.iloc[1:]
+        elif clickedWidget.settings.value("type") == cellType.benchmark:
+            startingDayIndex = clickedWidget.settings.value("startDate").dayOfWeek()
+            numDays = referenceDf.shape[0]
+            rulesList = [float(ruleNum) for ruleNum in clickedWidget.settings.value("rules")]
+            rulesListShifted = cycle(rulesList[startingDayIndex:] + rulesList[:startingDayIndex])
+            rulesDf = [next(rulesListShifted) for count in range(numDays + 1)]
+            print(f"referenceDf = {referenceDf}, Shape of referenceDf = {numDays}")
+            print(f"RulesDf = {rulesDf}, len = {len(rulesDf)}")
+
+            referenceDf = pd.concat([pd.DataFrame([np.nan]), referenceDf]).reset_index(drop = True)
+            truthDf = referenceDf["value"].ge(rulesDf)
+            chainDf = truthDf * (truthDf.groupby((truthDf != truthDf.shift()).cumsum()).cumcount() + 1)
+            negativeChainDf = -1 * truthDf.groupby(truthDf.cumsum()).cumcount()
+            chainDf.loc[chainDf == 0] = negativeChainDf
+            chainDf = chainDf.iloc[1:]
+            print("Ret list of length = ", chainDf.shape[0])
+
+        return chainDf.to_list()
