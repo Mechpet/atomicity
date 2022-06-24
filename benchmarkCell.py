@@ -10,7 +10,7 @@ from rules import BENCHMARK_DEFAULT_VALUE
 class benchmarkCell(contentCell):
     commitRequest = pyqtSignal(float)
     """Measures the result of one habit on a specific date (numeric inputs only via line editing)"""
-    def __init__(self, value = np.nan, benchmark = BENCHMARK_DEFAULT_VALUE):
+    def __init__(self, value = 0.0, benchmark = BENCHMARK_DEFAULT_VALUE):
         super().__init__()
 
         self.initWidgets(value, benchmark)
@@ -79,3 +79,12 @@ class benchmarkCell(contentCell):
 
         qp.end()
         self.update()
+
+    def updateUI(self, newValue = 0.0, newBenchmark = BENCHMARK_DEFAULT_VALUE):
+        """Update the appearance of the benchmarkCell"""
+        self.input.setText(str(newValue))
+        self.benchmark.setText(str(newBenchmark))
+        if newBenchmark == BENCHMARK_DEFAULT_VALUE:
+            self.input.setReadOnly(True)
+        else:
+            self.input.setReadOnly(False)

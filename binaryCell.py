@@ -81,9 +81,10 @@ class binaryCell(contentCell):
             self.setTrue()
         elif newValue == binaryState.false.value:
             self.setFalse()
-        elif newValue == np.nan:
+        elif newValue == np.inf:
             self.resetMarked()
         elif newValue == binaryState.readOnly.value:
+            self.resetMarked()
             self.setReadOnly()
     
     def setTrue(self):

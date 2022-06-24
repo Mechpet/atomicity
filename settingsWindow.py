@@ -47,6 +47,7 @@ class contentHeadSettingsWindow(Window):
         # Tab widgets:
         general = QWidget()
         self.rules = None
+        self.tabs.addTab(general, "General")
 
         generalGrid = QGridLayout()
 
@@ -114,6 +115,7 @@ class contentHeadSettingsWindow(Window):
             self.benchmark.setChecked(True)
             self.binary.setEnabled(False)
             self.benchmark.setEnabled(False)
+            self.enableRules()
         else:
             # Default to binary type if the head is new
             self.binary.setChecked(True)
@@ -154,11 +156,6 @@ class contentHeadSettingsWindow(Window):
         generalGrid.setVerticalSpacing(10)
     
         general.setLayout(generalGrid)
-
-        self.tabs.addTab(general, "General")
-        if self.benchmark.isChecked():
-            self.rules = ruleSettings()
-            self.tabs.addTab(self.rules, "General")
 
         layout.addWidget(self.tabs)
         globalButtonLayout.addWidget(self.delButton)
@@ -251,7 +248,7 @@ class contentHeadSettingsWindow(Window):
     def enableRules(self):
         """Adds the rules tab if not already added"""
         if self.rules is None:
-            self.rules = ruleSettings()
+            self.rules = ruleSettings(self.instance.settings.value("rules"))
             self.tabs.addTab(self.rules, "Rules")
 
     def disableRules(self):

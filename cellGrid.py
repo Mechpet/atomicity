@@ -54,4 +54,5 @@ class cellGrid(QWidget):
 
         # Update all lists:
         for i in range(self.layout.count()):
+            print("UPDATE")
             self.layout.itemAt(i).widget().updateUI(newDate)

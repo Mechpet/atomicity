@@ -1,3 +1,4 @@
+from mimetypes import init
 from PyQt6.QtWidgets import QWidget, QScrollArea, QLineEdit, QLabel, QVBoxLayout, QHBoxLayout
 from PyQt6.QtGui import QDoubleValidator
 
@@ -6,14 +7,17 @@ from dateList import dayNames
 BENCHMARK_DEFAULT_VALUE = 0.0
 
 class ruleSettings(QWidget):
-    def __init__(self):
+    def __init__(self, initRules = None):
         super().__init__()
 
-        self.initUI()
+        self.initUI(initRules)
 
-    def initUI(self):
+    def initUI(self, initRules):
         self.dayLabels = [QLabel(dayName) for dayName in dayNames.values()]
-        self.benchmarkEdit = [QLineEdit(str(BENCHMARK_DEFAULT_VALUE)) for label in self.dayLabels]
+        if initRules:
+            self.benchmarkEdit = [QLineEdit(str(rule)) for rule in initRules]
+        else:
+            self.benchmarkEdit = [QLineEdit(str(BENCHMARK_DEFAULT_VALUE)) for label in self.dayLabels]
 
         self.layout = QHBoxLayout()
         for i in range(len(self.dayLabels)):

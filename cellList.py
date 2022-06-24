@@ -111,7 +111,7 @@ class cellList(QWidget):
                     newBenchmarkCell = benchmarkCell(info[i][1], self.parentSettings.value("rules")[QDate.fromString(info[i][0], "yyyy-MM-dd").dayOfWeek() - 1])
                     newBenchmarkCell.commitRequest.connect(self.commit)
                 else:
-                    newBenchmarkCell = benchmarkCell(0.0)
+                    newBenchmarkCell = benchmarkCell()
                 self.layout.addWidget(newBenchmarkCell)
         else:
             print(f"EXCEPTION: {type} not in cellType enum; cellList.initUI()")
@@ -130,6 +130,12 @@ class cellList(QWidget):
                     self.layout.itemAt(i).widget().updateUI(info[i][1])
                 else:
                     self.layout.itemAt(i).widget().updateUI(binaryState.readOnly)
+        elif self.cellType == cellType.benchmark:
+            for i in range(DEFAULT_NUM_IN_COLUMN):
+                if i < len(info):
+                    self.layout.itemAt(i).widget().updateUI(info[i][1], self.parentSettings.value("rules")[QDate.fromString(info[i][0], "yyyy-MM-dd").dayOfWeek() - 1])
+                else:
+                    self.layout.itemAt(i).widget().updateUI()
         else:
             print(f"EXCEPTION: {type} not in cellType enum.")
 
