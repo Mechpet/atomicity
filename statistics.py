@@ -85,6 +85,7 @@ class statisticsWidget(QWidget):
         pass
 
     def getChain(self, clickedWidget, data):
+        """Get a list that contains data about habit chaining"""
         referenceDf = pd.DataFrame(data, columns = ["value"])
         referenceDf.replace([np.inf, -np.inf], np.nan, inplace=True)
 
@@ -111,5 +112,33 @@ class statisticsWidget(QWidget):
             chainDf.loc[chainDf == 0] = negativeChainDf
             chainDf = chainDf.iloc[1:]
             print("Ret list of length = ", chainDf.shape[0])
+
+        return chainDf.to_list()
+
+    def onePercent(self, clickedWidget, data):
+        referenceDf = pd.DataFrame(data, columns = ["value"])
+        referenceDf.replace([np.inf, -np.inf], np.nan, inplace=True)
+
+        if clickedWidget.settings.value("type") == cellType.binary:
+            referenceDf["true"] = referenceDf["value"].ge(1)
+            referenceDf["false"] = referenceDf["value"].lt(1)
+            referenceDf["trueCnt"] = referenceDf["true"].cumsum()
+            referenceDf["falseCnt"] = referenceDf["false"].cumsum()
+            ones = np.full(referenceDf.shape[0], 1.01)
+            nines = np.full(referenceDf.shape[0], 0.99)
+            progress = np.power(ones, referenceDf["trueCnt"]) * np.power(nines, referenceDf["falseCnt"])
+        elif clickedWidget.settings.value("type") == cellType.benchmark:
+            startingDayIndex = clickedWidget.settings.value("startDate").dayOfWeek()
+            numDays = referenceDf.shape[0]
+            rulesList = [float(ruleNum) for ruleNum in clickedWidget.settings.value("rules")]
+            rulesListShifted = cycle(rulesList[startingDayIndex:] + rulesList[:startingDayIndex])
+            rulesDf = [next(rulesListShifted) for count in range(numDays + 1)]
+
+            referenceDf = pd.concat([pd.DataFrame([np.nan]), referenceDf]).reset_index(drop = True)
+            truthDf = referenceDf["value"].ge(rulesDf)
+            chainDf = truthDf * (truthDf.groupby((truthDf != truthDf.shift()).cumsum()).cumcount() + 1)
+            negativeChainDf = -1 * truthDf.groupby(truthDf.cumsum()).cumcount()
+            chainDf.loc[chainDf == 0] = negativeChainDf
+            chainDf = chainDf.iloc[1:]
 
         return chainDf.to_list()
