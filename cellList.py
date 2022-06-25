@@ -140,6 +140,7 @@ class cellList(QWidget):
             print(f"EXCEPTION: {type} not in cellType enum.")
 
     def commit(self, newValue):
+        print("COMMIT")
         index = self.layout.indexOf(self.sender())
         if index >= 0:
             # Valid sender

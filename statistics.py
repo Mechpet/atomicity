@@ -16,6 +16,7 @@ class plotModes(IntEnum):
     Value = 0
     Consecutive = 1
     Average = 2
+    OnePercent = 3
 
 class statisticsWidget(QWidget):
     def __init__(self):
@@ -61,6 +62,7 @@ class statisticsWidget(QWidget):
         # x = # of days since the startDay
         # y = value
         x = [i for i in range(startDate.daysTo(today) + 1)]
+        print("Length of x = ", len(x))
 
         currentMode = self.plotModeSelect.currentIndex()
         match currentMode:
@@ -74,7 +76,12 @@ class statisticsWidget(QWidget):
                 ySeries = pd.Series([row[1] for row in info])
                 y = ySeries.expanding().mean().to_list()
                 self.plot.setLabel("left", "Average value")
+            case plotModes.OnePercent.value:
+                ySeries = [row[1] for row in info]
+                y = self.onePercent(clickedWidget, ySeries)
         
+        print("Info = ", info)
+        print("Length of y = ", y)
         self.plot.setLabel("bottom", f"Days since {startDate.toString(Qt.DateFormat.ISODate)}")
 
         line = pg.PlotDataItem(x, y, connect = "finite", pen = 'g', symbol = 'o', symbolPen = 'g', symbolBrush = 1.0, name = 'normal')
@@ -121,7 +128,7 @@ class statisticsWidget(QWidget):
 
         if clickedWidget.settings.value("type") == cellType.binary:
             referenceDf["true"] = referenceDf["value"].ge(1)
-            referenceDf["false"] = referenceDf["value"].lt(1)
+            referenceDf["false"] = ~referenceDf["true"]
             referenceDf["trueCnt"] = referenceDf["true"].cumsum()
             referenceDf["falseCnt"] = referenceDf["false"].cumsum()
             ones = np.full(referenceDf.shape[0], 1.01)
@@ -132,13 +139,14 @@ class statisticsWidget(QWidget):
             numDays = referenceDf.shape[0]
             rulesList = [float(ruleNum) for ruleNum in clickedWidget.settings.value("rules")]
             rulesListShifted = cycle(rulesList[startingDayIndex:] + rulesList[:startingDayIndex])
-            rulesDf = [next(rulesListShifted) for count in range(numDays + 1)]
+            rulesDf = [next(rulesListShifted) for count in range(numDays)]
 
-            referenceDf = pd.concat([pd.DataFrame([np.nan]), referenceDf]).reset_index(drop = True)
-            truthDf = referenceDf["value"].ge(rulesDf)
-            chainDf = truthDf * (truthDf.groupby((truthDf != truthDf.shift()).cumsum()).cumcount() + 1)
-            negativeChainDf = -1 * truthDf.groupby(truthDf.cumsum()).cumcount()
-            chainDf.loc[chainDf == 0] = negativeChainDf
-            chainDf = chainDf.iloc[1:]
+            referenceDf["true"] = referenceDf["value"].ge(rulesDf)
+            referenceDf["false"] = ~referenceDf["true"]
+            referenceDf["trueCnt"] = referenceDf["true"].cumsum()
+            referenceDf["falseCnt"] = referenceDf["false"].cumsum()
+            ones = np.full(referenceDf.shape[0], 1.01)
+            nines = np.full(referenceDf.shape[0], 0.99)
+            progress = np.power(ones, referenceDf["trueCnt"]) * np.power(nines, referenceDf["falseCnt"])
 
-        return chainDf.to_list()
+        return progress.to_list()

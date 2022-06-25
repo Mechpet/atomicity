@@ -112,10 +112,12 @@ def fillTable(connection, tableName):
 
         cursor.execute(existsCmd)
         retvalue = cursor.fetchone()
+        print(F"RETVALUE of {tableName} = {retvalue}")
         if retvalue is not None:
             # The row with the next iterated date exists; conclude that there's no more need to update
             break
         else:
+            print(F"FILLING {tableName}")
             upsertDay(connection, tableName, nextDate.toString(Qt.DateFormat.ISODate), inf, 1.00)
             nextDate = nextDate.addDays(-1)
 

@@ -41,7 +41,8 @@ class benchmarkCell(contentCell):
         self.setLayout(layout)
 
     def updateProperties(self):
-        self.commitRequest.emit(float(self.input.text()))
+        if not self.input.isReadOnly():
+            self.commitRequest.emit(float(self.input.text()))
 
     def paintEvent(self, e):
         qp = QPainter(self)
