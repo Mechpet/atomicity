@@ -27,8 +27,6 @@ class statisticsWidget(QWidget):
         self.selectedDisplay = QLabel("")
         self.selectedDisplay.setFixedSize(200, 200)
 
-        plotViewbox = self.plot.getViewBox()
-
         self.initPlotMode()
         self.layout.addWidget(self.plotModeSelect, 0, 2, 1, 1)
         self.layout.addWidget(self.selectedDisplay, 0, 1, Qt.AlignmentFlag.AlignCenter)
@@ -86,6 +84,9 @@ class statisticsWidget(QWidget):
 
         line = pg.PlotDataItem(x, y, connect = "finite", pen = 'g', symbol = 'o', symbolPen = 'g', symbolBrush = 1.0, name = 'normal')
         self.plot.addItem(line)
+
+        # Fit the new plot
+        self.plot.getViewBox().autoRange()
 
     @pyqtSlot(int)
     def updatePlot(self, index):
