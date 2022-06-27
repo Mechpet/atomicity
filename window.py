@@ -1,13 +1,13 @@
 # The main window of the application 
 import ctypes
 
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import QMainWindow
 from PyQt6.QtGui import QIcon
 
 APP_ID = "Atomicity"
 
 # Common window of the application (sharing the same appId)
-class Window(QWidget):
+class Window(QMainWindow):
     """A new window that share the same appID with all other `Windows`."""
     def __init__(self, name, x, y, w, h):
         super().__init__()

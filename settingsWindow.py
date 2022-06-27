@@ -45,6 +45,8 @@ class contentHeadSettingsWindow(Window):
         self.tabs = QTabWidget()
 
         # Tab widgets:
+        self.tabs = QTabWidget()
+        
         general = QWidget()
         self.rules = None
         self.tabs.addTab(general, "General")
@@ -157,13 +159,16 @@ class contentHeadSettingsWindow(Window):
     
         general.setLayout(generalGrid)
 
+        centralWidget = QWidget()
+
         layout.addWidget(self.tabs)
         globalButtonLayout.addWidget(self.delButton)
         globalButtonLayout.addWidget(self.applyButton)
         globalButtonLayout.addWidget(self.cancelButton)
         layout.addLayout(globalButtonLayout)
 
-        self.setLayout(layout)
+        centralWidget.setLayout(layout)
+        self.setCentralWidget(centralWidget)
 
     def sendData(self):
         """[Slot] Communicate backward to associated contentHead the text and color, then force close window to immediately update."""

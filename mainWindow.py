@@ -1,10 +1,9 @@
-# The main window of the application 
-from cgitb import reset
+# The main window of the application
 import sys
 import ctypes
 from types import CellType
 
-from PyQt6.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QSizePolicy, QPushButton, QFrame, QVBoxLayout, QLabel
+from PyQt6.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QSizePolicy, QPushButton, QFrame, QVBoxLayout, QLabel, QMenu
 from PyQt6.QtGui import QIcon, QCursor
 from PyQt6.QtCore import Qt, QSettings
 
@@ -17,30 +16,22 @@ from contentCell import cellType
 from cellList import cellList
 from cellGrid import cellGrid
 from statistics import statisticsWidget
+from window import Window
 from scroll import scroll
 
 app = QApplication(sys.argv)
 
-class mainWrapper(QWidget):
+class mainWrapper(Window):
     def __init__(self):
-        super().__init__()
+        super().__init__('Atomicity', 300, 300, 650, 550)
 
-        self.initUI()
+        self.initWidgets()
 
-    def initUI(self):
+    def initWidgets(self):
         """Initialize the interface"""
-        # Set the window icon and taskbar icon
-        self.setWindowIcon(QIcon(r"images\icon3_trans.png"))
-        self.setWindowTitle('Atomicity')
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_ID)
-
-        layout = QVBoxLayout()
         self.layout = QGridLayout()
 
-        self.tabs = QTabWidget()
-
-        # Initialize widgets
-        self.tracker = QWidget()
+        # Initialize child widgets
         self.adder = headAdder()
 
         self.headList = headList()
@@ -111,16 +102,23 @@ class mainWrapper(QWidget):
         self.headListScroll.verticalScrollBar().valueChanged.connect(self.cellGridScroll.verticalScrollBar().setValue)
         self.cellGridScroll.verticalScrollBar().valueChanged.connect(self.headListScroll.verticalScrollBar().setValue)
 
+        # Initialize the tab widgets 
+        self.tabs = QTabWidget()
+        self.tracker = QWidget()
         self.tracker.setLayout(self.layout)
         self.stats = statisticsWidget()
 
+        # Set the tabs 
         self.tabs.addTab(self.tracker, "Tracker")
         self.tabs.addTab(self.stats, "Stats")
         self.tabs.currentChanged.connect(self.updateTabViewport)
+        self.setCentralWidget(self.tabs)
 
-        layout.addWidget(self.tabs)
-        self.setLayout(layout)
-        self.setGeometry(300, 300, 650, 550)
+        # Set the menubar
+        menubar = self.menuBar()
+        pref = menubar.addMenu("Preferences")
+
+
         self.show()
 
     def updateTabViewport(self, index):

@@ -1,5 +1,5 @@
 from PyQt6.QtCore import QDate, pyqtSignal, Qt
-from PyQt6.QtWidgets import QCalendarWidget, QHBoxLayout, QVBoxLayout, QPushButton
+from PyQt6.QtWidgets import QCalendarWidget, QHBoxLayout, QVBoxLayout, QPushButton, QWidget
 from window import Window
 
 CALENDAR_WINDOW_NAME = "Adjust date"
@@ -34,7 +34,10 @@ class calendarWindow(Window):
         hLayout1.addWidget(self.cancelBtn)
         mainLayout.addLayout(hLayout1)
 
-        self.setLayout(mainLayout)
+        centralWidget = QWidget()
+        centralWidget.setLayout(mainLayout)
+
+        self.setCentralWidget(centralWidget)
 
     def sendDate(self):
         self.apply.emit(self.calendar.selectedDate())
