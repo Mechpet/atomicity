@@ -1,4 +1,3 @@
-from operator import truth
 from PyQt6.QtWidgets import QWidget, QGridLayout, QComboBox, QLabel
 from PyQt6.QtCore import Qt, QDate, QSettings, pyqtSlot
 import pyqtgraph as pg
@@ -85,8 +84,18 @@ class statisticsWidget(QWidget):
         line = pg.PlotDataItem(x, y, connect = "finite", pen = 'g', symbol = 'o', symbolPen = 'g', symbolBrush = 1.0, name = 'normal')
         self.plot.addItem(line)
 
-        # Fit the new plot
+        if clickedWidget.settings.value("type") == cellType.binary:
+            match currentMode:
+                case plotModes.Value.value | plotModes.Average.value:
+                    self.plot.getViewBox().setRange(xRange = (0, startDate.daysTo(today) + 1), yRange = (0, 1.5))
+                    yAxis = self.plot.getAxis("left")
+                    yAxis.setTicks([[(0, "0"), (1, "1")]])
+                    return
+        
+        yAxis = self.plot.getAxis("left")
+        yAxis.setTicks(None)
         self.plot.getViewBox().autoRange()
+                
 
     @pyqtSlot(int)
     def updatePlot(self, index):

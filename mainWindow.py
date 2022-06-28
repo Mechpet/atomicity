@@ -117,6 +117,7 @@ class mainWrapper(Window):
         # Set the menubar
         menubar = self.menuBar()
         pref = menubar.addMenu("Preferences")
+        pref.addAction("Quit")
 
 
         self.show()
