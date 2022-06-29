@@ -18,6 +18,7 @@ from cellGrid import cellGrid
 from statistics import statisticsWidget
 from window import Window
 from scroll import scroll
+from preferences import preferences
 
 app = QApplication(sys.argv)
 
@@ -116,9 +117,8 @@ class mainWrapper(Window):
 
         # Set the menubar
         menubar = self.menuBar()
-        pref = menubar.addMenu("Preferences")
-        pref.addAction("Quit")
-
+        preferences = menubar.addAction("Preferences")
+        preferences.triggered.connect(self.openPreferences)
 
         self.show()
 
@@ -128,6 +128,11 @@ class mainWrapper(Window):
             self.stats.listWidget.uninstallMouseEvents()
         elif index == 0:
             self.layout.addWidget(self.headListScroll, 1, 0, -1, 1)
+
+    def openPreferences(self):
+        self.pref = preferences()
+        self.pref.show()
+
 
 def main():
     #resetContentHeads()
@@ -140,6 +145,7 @@ def resetContentHeads():
     settings.beginGroup("headList")
 
     settings.setValue("num", 0)
+    settings.endGroup()
     quit()
 
 def setHorScroll():

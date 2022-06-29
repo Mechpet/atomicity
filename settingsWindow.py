@@ -224,6 +224,7 @@ class contentHeadSettingsWindow(Window):
     def openConfirmDialog(self):
         """Opens a confirmation window that asks for the user to confirm deletion"""
         self.dialog = Window("Confirmation", 500, 500, 300, 300)
+        centralWidget = QWidget()
 
         queryLabel = QLabel("Are you sure you want to delete this habit?")
         confirmBtn = QPushButton("Confirm")
@@ -236,7 +237,8 @@ class contentHeadSettingsWindow(Window):
         layout.addWidget(confirmBtn, 1, 0, 1, 1)
         layout.addWidget(cancelBtn, 1, 2, 1, 1)
 
-        self.dialog.setLayout(layout)
+        centralWidget.setLayout(layout)
+        self.dialog.setCentralWidget(centralWidget)
         self.dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.dialog.show()
 

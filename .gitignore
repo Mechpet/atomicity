@@ -1,6 +1,8 @@
-images/
 __pycache__/
 test.py/
 test2.py/
+test3.py/
 README.md/
 tempCodeRunnerFile.py/
+database/
+.vscode/
