@@ -4,7 +4,7 @@ import ctypes
 from types import CellType
 
 from PyQt6.QtWidgets import QApplication, QWidget, QTabWidget, QGridLayout, QSizePolicy, QPushButton, QFrame, QVBoxLayout, QLabel, QMenu
-from PyQt6.QtGui import QIcon, QCursor
+from PyQt6.QtGui import QColor, QCursor
 from PyQt6.QtCore import Qt, QSettings
 
 from headList import headList, headListScroll
@@ -136,6 +136,7 @@ class mainWrapper(Window):
 
 def main():
     #resetContentHeads()
+    initPreferences()
     window = mainWrapper()
 
     sys.exit(app.exec())
@@ -147,6 +148,14 @@ def resetContentHeads():
     settings.setValue("num", 0)
     settings.endGroup()
     quit()
+
+def initPreferences():
+    settings = QSettings("Mechpet", "Atomicity")
+    settings.beginGroup("global")
+
+    if settings.value("cellColor") is None:
+        settings.setValue("cellColor", QColor(55, 55, 55))
+        settings.setValue("textColor", QColor(0, 0, 0))
 
 def setHorScroll():
     app.setOverrideCursor(QCursor(Qt.CursorShape.SizeHorCursor))

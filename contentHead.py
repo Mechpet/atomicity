@@ -1,4 +1,5 @@
 # Header of each column (topmost block of data that is static to vertical scrolling)
+from glob import glob
 from PyQt6.QtWidgets import QWidget, QPushButton, QDialog, QGridLayout, QLabel
 from PyQt6.QtGui import QPainter, QPainterPath, QBrush, QPen, QColor, QTextOption, QCursor, QIcon
 from PyQt6.QtCore import Qt, QRectF, QSettings, QSize, QFile, QDate
@@ -196,9 +197,11 @@ class contentHead(QWidget):
 
     def default(self):
         """Sets all of its attributes to default settings and saves settings"""
+        globalPrefs = QSettings("Mechpet", "Atomicity")
+        globalPrefs.beginGroup("global")
         self.text = None
-        self.cellColor = QColor(55, 55, 55)
-        self.textColor = QColor(0, 0, 0)
+        self.cellColor = globalPrefs.value("cellColor")
+        self.textColor = globalPrefs.value("textColor")
         self.iconPath = None
         self.type = None
         self.startDate = None
