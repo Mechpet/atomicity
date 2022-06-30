@@ -39,8 +39,15 @@ class statisticsWidget(QWidget):
 
     def initPlotMode(self):
         """Initialize the QComboBox that holds the modes selectable"""
+        plotModeHints = {
+            plotModes.Value : "Raw user-input.",
+            plotModes.Consecutive : "Consecutive days where the user-input meets the benchmark value.",
+            plotModes.Average : "Cumulative average (all days leading up to) of the raw user-inputs.",
+            plotModes.OnePercent : "Abstract percent where meeting/missing the benchmark value is a 1%% increase/decrease."
+        }
         for enumItem in plotModes:
             self.plotModeSelect.insertItem(enumItem.value, enumItem.name)
+            self.plotModeSelect.setItemData(enumItem.value, plotModeHints[enumItem], Qt.ItemDataRole.ToolTipRole)
         self.plotModeSelect.currentIndexChanged.connect(self.updatePlot)
 
     @pyqtSlot(contentHead) # from a contentHead
