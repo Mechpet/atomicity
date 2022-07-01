@@ -162,9 +162,15 @@ class contentHeadSettingsWindow(Window):
         centralWidget = QWidget()
 
         layout.addWidget(self.tabs)
-        globalButtonLayout.addWidget(self.delButton)
-        globalButtonLayout.addWidget(self.applyButton)
-        globalButtonLayout.addWidget(self.cancelButton)
+
+        if type:
+            self.new = False
+            globalButtonLayout.addWidget(self.delButton)
+            globalButtonLayout.addWidget(self.applyButton)
+            globalButtonLayout.addWidget(self.cancelButton)
+        else:
+            self.new = True
+            globalButtonLayout.addWidget(self.applyButton)
         layout.addLayout(globalButtonLayout)
 
         centralWidget.setLayout(layout)
@@ -181,6 +187,7 @@ class contentHeadSettingsWindow(Window):
         else:
             newRules = []
         self.apply.emit(newText, self.cellColorEdit.palette().button().color(), self.textColorEdit.palette().button().color(), newIconPath, self.cellTypeOption.checkedId(), self.calendar.selectedDate(), newRules)
+        self.new = False
         self.close()
 
     def openColorDialog(self, initColor, widget):
@@ -264,3 +271,8 @@ class contentHeadSettingsWindow(Window):
             self.tabs.removeTab(self.tabs.indexOf(self.rules))
             self.rules.close()
             self.rules = None
+
+    def closeEvent(self, event):
+        if self.new:
+            self.sendData()
+        event.accept()
