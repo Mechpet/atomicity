@@ -8,8 +8,7 @@ import sqliteHelper as sql
 
 from time import sleep
 import numpy as np
-
-DEFAULT_NUM_IN_COLUMN = 14
+import default
 
 # Layout of contentCells
 class cellList(QWidget):
@@ -77,12 +76,14 @@ class cellList(QWidget):
     def initDefault(self):
         self.layout = QHBoxLayout()
 
+        numDays = default.fetchDays()
+
         if self.cellType == cellType.binary:
-            for i in range(DEFAULT_NUM_IN_COLUMN):
+            for i in range(numDays):
                 newBinaryCell = binaryCell()
                 self.layout.addWidget(newBinaryCell)
         elif self.cellType == cellType.benchmark:
-            for i in range(DEFAULT_NUM_IN_COLUMN):
+            for i in range(numDays):
                 newBenchmarkCell = benchmarkCell()
                 self.layout.addWidget(newBenchmarkCell)
         else:
@@ -95,10 +96,12 @@ class cellList(QWidget):
         self.topDate = topDate
         self.layout = QHBoxLayout()
 
-        info = sql.fetchConsecutive(sql.connection, self.tableName, topDate.toString(Qt.DateFormat.ISODate), DEFAULT_NUM_IN_COLUMN)
+        numDays = default.fetchDays()
+
+        info = sql.fetchConsecutive(sql.connection, self.tableName, topDate.toString(Qt.DateFormat.ISODate), numDays)
 
         if self.cellType == cellType.binary:
-            for i in range(DEFAULT_NUM_IN_COLUMN):
+            for i in range(numDays):
                 if i < len(info):
                     newBinaryCell = binaryCell(info[i][1])
                     newBinaryCell.commitRequest.connect(self.commit)
@@ -106,7 +109,7 @@ class cellList(QWidget):
                     newBinaryCell = binaryCell(binaryState.readOnly)
                 self.layout.addWidget(newBinaryCell)
         elif self.cellType == cellType.benchmark:
-            for i in range(DEFAULT_NUM_IN_COLUMN):
+            for i in range(numDays):
                 if i < len(info):
                     newBenchmarkCell = benchmarkCell(info[i][1], self.parentSettings.value("rules")[QDate.fromString(info[i][0], "yyyy-MM-dd").dayOfWeek() - 1])
                     newBenchmarkCell.commitRequest.connect(self.commit)
@@ -119,19 +122,22 @@ class cellList(QWidget):
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
 
-    def updateUI(self, newTopDate):
-        self.topDate = newTopDate
+    def updateUI(self, newTopDate = None):
+        if newTopDate:
+            self.topDate = newTopDate
 
-        info = sql.fetchConsecutive(sql.connection, self.tableName, newTopDate.toString(Qt.DateFormat.ISODate), DEFAULT_NUM_IN_COLUMN)
+        numDays = default.fetchDays()
+
+        info = sql.fetchConsecutive(sql.connection, self.tableName, newTopDate.toString(Qt.DateFormat.ISODate), numDays)
 
         if self.cellType == cellType.binary:
-            for i in range(DEFAULT_NUM_IN_COLUMN):
+            for i in range(numDays):
                 if i < len(info):
                     self.layout.itemAt(i).widget().updateUI(info[i][1])
                 else:
                     self.layout.itemAt(i).widget().updateUI(binaryState.readOnly)
         elif self.cellType == cellType.benchmark:
-            for i in range(DEFAULT_NUM_IN_COLUMN):
+            for i in range(numDays):
                 if i < len(info):
                     self.layout.itemAt(i).widget().updateUI(info[i][1], self.parentSettings.value("rules")[QDate.fromString(info[i][0], "yyyy-MM-dd").dayOfWeek() - 1])
                 else:
@@ -140,7 +146,6 @@ class cellList(QWidget):
             print(f"EXCEPTION: {type} not in cellType enum.")
 
     def commit(self, newValue):
-        print("COMMIT")
         index = self.layout.indexOf(self.sender())
         if index >= 0:
             # Valid sender

@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
-from PyQt6.QtCore import Qt, QDate, pyqtSignal
+from PyQt6.QtCore import Qt, QDate, pyqtSignal, QSettings
+
 from calendarWindow import calendarWindow
 
 # Maps the dayOfWeek() -> Name of day
@@ -17,8 +18,9 @@ class dateList(QWidget):
     topDateChanged = pyqtSignal(QDate)
     def __init__(self, firstDay = QDate.currentDate()):
         super().__init__()
-        self.numDays = 14
         self.dialog = None
+        self.settings = QSettings("Mechpet", "Atomicity")
+        self.settings.beginGroup("global")
 
         self.setStyleSheet("""
             QLabel#dateLabel {
@@ -31,14 +33,15 @@ class dateList(QWidget):
         """)
         self.initUI(firstDay)
 
-    def initUI(self, firstDay):
+    def initUI(self, firstDay = None):
         self.size = 200
         self.setMinimumSize(self.size, self.size)
 
-        self.topDate = firstDay
+        if firstDay:
+            self.topDate = firstDay
         self.dates = [self.topDate]
         self.dayDates = []
-        for i in range(self.numDays - 1):
+        for i in range(self.settings.value("numDays") - 1):
             self.dates.append(self.dates[-1].addDays(-1))
         self.layout = QHBoxLayout(self)
 
@@ -54,7 +57,7 @@ class dateList(QWidget):
         if topDate != self.topDate:
             self.topDate = topDate
             self.dates = [self.topDate]
-            for i in range(self.numDays):
+            for i in range(self.settings.value("numDays")):
                 self.dayDates[i].updateDate(self.dates[-1])
                 self.dates.append(self.dates[-1].addDays(-1))
             self.topDateChanged.emit(topDate)

@@ -19,6 +19,7 @@ from statistics import statisticsWidget
 from window import Window
 from scroll import scroll
 from preferences import preferences
+import default
 
 app = QApplication(sys.argv)
 
@@ -131,6 +132,8 @@ class mainWrapper(Window):
 
     def openPreferences(self):
         self.pref = preferences()
+        self.pref.updateDateList.connect(self.dateList.initUI)
+        self.pref.updateDateList.connect(self.cellGrid.updateGrid)
         self.pref.show()
 
 
@@ -154,8 +157,11 @@ def initPreferences():
     settings.beginGroup("global")
 
     if settings.value("cellColor") is None:
-        settings.setValue("cellColor", QColor(55, 55, 55))
-        settings.setValue("textColor", QColor(0, 0, 0))
+        settings.setValue("cellColor", default.cellColor)
+    if settings.value("textColor") is None:
+        settings.setValue("textColor", default.textColor)
+    if settings.value("numDays") is None:
+        settings.setValue("numDays", default.numDays)
 
 def setHorScroll():
     app.setOverrideCursor(QCursor(Qt.CursorShape.SizeHorCursor))
