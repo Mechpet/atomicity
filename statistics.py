@@ -66,7 +66,6 @@ class statisticsWidget(QWidget):
         # x = # of days since the startDay
         # y = value
         x = [i for i in range(startDate.daysTo(today) + 1)]
-        print("Length of x = ", len(x))
 
         currentMode = self.plotModeSelect.currentIndex()
         match currentMode:
@@ -84,8 +83,6 @@ class statisticsWidget(QWidget):
                 ySeries = [row[1] for row in info]
                 y = self.onePercent(clickedWidget, ySeries)
         
-        print("Info = ", info)
-        print("Length of y = ", y)
         self.plot.setLabel("bottom", f"Days since {startDate.toString(Qt.DateFormat.ISODate)}")
 
         line = pg.PlotDataItem(x, y, connect = "finite", pen = 'g', symbol = 'o', symbolPen = 'g', symbolBrush = 1.0, name = 'normal')
@@ -126,8 +123,6 @@ class statisticsWidget(QWidget):
             rulesList = [float(ruleNum) for ruleNum in clickedWidget.settings.value("rules")]
             rulesListShifted = cycle(rulesList[startingDayIndex:] + rulesList[:startingDayIndex])
             rulesDf = [next(rulesListShifted) for count in range(numDays + 1)]
-            print(f"referenceDf = {referenceDf}, Shape of referenceDf = {numDays}")
-            print(f"RulesDf = {rulesDf}, len = {len(rulesDf)}")
 
             referenceDf = pd.concat([pd.DataFrame([np.nan]), referenceDf]).reset_index(drop = True)
             truthDf = referenceDf["value"].ge(rulesDf)
@@ -135,7 +130,6 @@ class statisticsWidget(QWidget):
             negativeChainDf = -1 * truthDf.groupby(truthDf.cumsum()).cumcount()
             chainDf.loc[chainDf == 0] = negativeChainDf
             chainDf = chainDf.iloc[1:]
-            print("Ret list of length = ", chainDf.shape[0])
 
         return chainDf.to_list()
 

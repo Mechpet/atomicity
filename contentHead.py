@@ -186,7 +186,6 @@ class contentHead(QWidget):
     def fetch(self):
         """Sets all of its attributes based on the currently set settings"""
         self.text = self.settings.value("text")
-        print("Index = ", self.index)
         self.cellColor = QColor(int(self.settings.value("cellRed")), int(self.settings.value("cellGreen")), int(self.settings.value("cellBlue")))
         self.textColor = QColor(int(self.settings.value("textRed")), int(self.settings.value("textGreen")), int(self.settings.value("textBlue")))
         self.iconPath = self.settings.value("path")
